@@ -1,18 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\SuperAdmin;
+namespace App\Http\Controllers\API\Organization;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use DateTime;
 use Validator;
-use Session;
 use App\Models\User;
-use App\Models\Designation;
+use App\Models\Organization;
 use Hash;
 
-class SuperAdminController extends Controller
+class OrganizationController extends Controller
 {
     public $successStatus = 200;
     /** 
@@ -24,14 +22,10 @@ class SuperAdminController extends Controller
     {
     }
 
-    public function index(Request $request)
-    {
-        echo "hiiii SuperAdminController";
-    }
     public function signin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
         if ($validator->fails()) {
@@ -39,11 +33,11 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
-        $checkRecord = User::where('email', $request->all('email'))->where('role', 'SUPERADMIN')->count();
+        $checkRecord = User::where('email', $request->all('email'))->where('role', 'ORGANIZATION')->count();
         if ($checkRecord == 0) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SUPERADMIN'])) {
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'ORGANIZATION'])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
@@ -56,12 +50,12 @@ class SuperAdminController extends Controller
      * 
      * @return \Illuminate\Http\Response 
      */
-    public function register(Request $request)
+    public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'full_name' => 'required',
+            'organization_name' => 'required',
             'password' => 'required|min:6',
-            'email' => 'required|unique:users:email',
+            'email' => 'required|email|unique:users',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -70,11 +64,17 @@ class SuperAdminController extends Controller
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
-        // $input['status'] = 'ACTIVE';
+        $input['first_name'] = $input['organization_name'];
+        $input['last_name'] = $input['organization_name'];
+        $input['status'] = 'Active';
+        $input['role'] = 'ORGANIZATION';
+        // dd($input);
         $user = User::create($input);
-
         $userRes = User::find($user['id']);
         if (!empty($userRes)) {
+            $requestData = $request->all();
+            $requestData['user_id'] = $user['id'];
+            Organization::create($requestData);
             $userRes['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Register Successfully completed.', 'data' => $userRes], $this->successStatus);
         } else {
@@ -90,7 +90,7 @@ class SuperAdminController extends Controller
     {
         $user = Auth::user();
         return response()->json([
-            'status' => true, 'message' => 'Super Admin Details Get Successfully',
+            'status' => true, 'message' => 'organization Details Get Successfully',
             'data' => $user
         ], $this->successStatus);
     }
@@ -126,7 +126,7 @@ class SuperAdminController extends Controller
      */
     public function forgot(Request $request)
     {
-        $user = User::where('role', "SUPERADMIN")
+        $user = User::where('role', "ORGANIZATION")
             ->where('email', $request->all('email'))->get()->toArray();
         // print_r($user);
         // exit;
@@ -155,7 +155,7 @@ class SuperAdminController extends Controller
      */
     public function otpVerify(Request $request)
     {
-        $user = User::where('role', "SUPERADMIN")
+        $user = User::where('role', "ORGANIZATION")
             ->where('email', $request->all('email'))->first();
         if ($user['otp'] == $request->post('otp')) {
             $userObj = User::find($user['id']);
@@ -185,7 +185,7 @@ class SuperAdminController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $user = User::where('role', 'SUPERADMIN')->where('email', $request->all('email'))->first();
+        $user = User::where('role', 'ORGANIZATION')->where('email', $request->all('email'))->first();
         if (!empty($user)) {
             $userObj = User::find($user['id']);
             $userObj['password'] = Hash::make($request->post('password'));
@@ -241,4 +241,5 @@ class SuperAdminController extends Controller
 
     //     return response()->json(['data'=> $success, 'status'=>true, 'message'=> 'Your profile Successfully changed'], $this->successStatus); 
     // }
+
 }
