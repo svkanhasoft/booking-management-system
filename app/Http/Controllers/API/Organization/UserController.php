@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Requests;
 use App\Models\User;
+use App\Models\OrganizationUserDetail;
 use Hash;
 use App\Models\Role;
 
-class RoleController extends Controller
+class UserController extends Controller
 {   
     public $successStatus = 200;
     /** 
@@ -28,6 +29,7 @@ class RoleController extends Controller
             return $next($request);
         });
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -58,21 +60,32 @@ class RoleController extends Controller
      */
     public function create(Request $request)
     { 
+        // $UserObj = new User();
+        // $UserObj->getOrganizationDetails();
         $validator = Validator::make($request->all(), [
-            // 'role_name' => 'required|unique:roles',
-            'role_name' => 'required|unique:roles,user_id,' . $this->userId,
+            "email" => 'required|unique:users',
+            "first_name" => 'required',
+            "last_name" => 'required',
+            "password" => 'required',
+            "contact_number" => 'required',
+            "role_id" => 'required',
+            "designation_id" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-        $requestData['user_id'] = $this->userId;
-        $roleCreated = Role::create($requestData);
-        if ($roleCreated) {
-            return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $roleCreated], $this->successStatus);
+        $requestData['password'] = Hash::make($request->post('password'));
+        $requestData['role'] = 'STAFF';
+        $userCreated = User::create($requestData);
+        // print_r($userCreated['id']);exit;
+        if ($userCreated) {
+            $requestData['user_id'] = $userCreated['id'];
+            $userCreated = OrganizationUserDetail::create($requestData);
+            return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role added failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
         }
     }
  
@@ -103,23 +116,20 @@ class RoleController extends Controller
      */
     public function edit(Request $request)
     {
-        $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            // 'role_name' => 'required',
+            'role_name' => 'required',
             'role_id' => 'required',
-            // 'role_name' => 'required|unique:roles,id,' . $requestData["role_id"],
-            'role_name' => 'required|unique:roles,role_name,'.$requestData["role_id"],
-
+            // 'role_name' => 'required|unique:roles',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        
+        $requestData = $request->all();
         $role = Role::findOrFail($requestData["role_id"]);
         $roleUpdated = $role->update($requestData);
         if ($roleUpdated) {
-            return response()->json(['status' => true, 'message' => 'Role update Successfully.', 'data' => $role], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Role update Successfully', 'data' => $role], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Role update failed!', 'status' => false], 200);
         }

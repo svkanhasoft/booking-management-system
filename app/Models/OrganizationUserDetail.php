@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Role extends Model
+class OrganizationUserDetail extends Model
 {
     use SoftDeletes;
     /**
@@ -13,8 +13,7 @@ class Role extends Model
      *
      * @var string
      */
-    protected $table = 'roles';
-    protected $hidden = ['pseudo','deleted_at','updated_at', 'created_at', 'created_by', 'updated_by'];
+    protected $table = 'organization_user_details';
 
     /**
     * The database primary key value.
@@ -28,6 +27,7 @@ class Role extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'role_name'];
-    // protected $fillable = ['user_id', 'role_name', 'created_by', 'updated_by'];
+    protected $fillable = ['user_id', 'contact_number', 'role_id', 'designation_id', 'created_by', 'updated_by'];
+
+    
 }

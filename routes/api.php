@@ -40,5 +40,10 @@ Route::prefix('organization')->group(function () {
         Route::post('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details'])->name('get-details');
         Route::get('/logout', [App\Http\Controllers\API\Organization\OrganizationController::class, 'logout'])->name('logout');
         Route::post('/add-role', [App\Http\Controllers\API\Organization\RoleController::class, 'create'])->name('add-role');
+        Route::post('/edit-role', [App\Http\Controllers\API\Organization\RoleController::class, 'edit'])->name('edit-role');
+        Route::get('/get-role/{id?}', [App\Http\Controllers\API\Organization\RoleController::class, 'show'])->name('get-role');
+        Route::get('/get-all-role', [App\Http\Controllers\API\Organization\RoleController::class, 'showAll'])->name('get-all-role');
+        Route::delete('/delete-role/{id?}', [App\Http\Controllers\API\Organization\RoleController::class, 'destroy'])->name('role-delete');
+        Route::post('/add-user/{id?}', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('add-user');
     });
 });

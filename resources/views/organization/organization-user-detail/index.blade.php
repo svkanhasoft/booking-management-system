@@ -7,13 +7,13 @@
 
             <div class="col-md-9">
                 <div class="card">
-                    <div class="card-header">Organization</div>
+                    <div class="card-header">Organizationuserdetail</div>
                     <div class="card-body">
-                        <a href="{{ url('/organization/organization/create') }}" class="btn btn-success btn-sm" title="Add New Organization">
+                        <a href="{{ url('/organization/organization-user-detail/create') }}" class="btn btn-success btn-sm" title="Add New OrganizationUserDetail">
                             <i class="fa fa-plus" aria-hidden="true"></i> Add New
                         </a>
 
-                        <form method="GET" action="{{ url('/organization/organization') }}" accept-charset="UTF-8" class="form-inline my-2 my-lg-0 float-right" role="search">
+                        <form method="GET" action="{{ url('/organization/organization-user-detail') }}" accept-charset="UTF-8" class="form-inline my-2 my-lg-0 float-right" role="search">
                             <div class="input-group">
                                 <input type="text" class="form-control" name="search" placeholder="Search..." value="{{ request('search') }}">
                                 <span class="input-group-append">
@@ -30,29 +30,29 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>#</th><th>User Id</th><th>Organization Name</th><th>Contact Person Name</th><th>Actions</th>
+                                        <th>#</th><th>User Id</th><th>Contact Number</th><th>Role Id</th><th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($organization as $item)
+                                @foreach($organizationuserdetail as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->user_id }}</td><td>{{ $item->organization_name }}</td><td>{{ $item->contact_person_name }}</td>
+                                        <td>{{ $item->user_id }}</td><td>{{ $item->contact_number }}</td><td>{{ $item->role_id }}</td>
                                         <td>
-                                            <a href="{{ url('/organization/organization/' . $item->id) }}" title="View Organization"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> View</button></a>
-                                            <a href="{{ url('/organization/organization/' . $item->id . '/edit') }}" title="Edit Organization"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button></a>
+                                            <a href="{{ url('/organization/organization-user-detail/' . $item->id) }}" title="View OrganizationUserDetail"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> View</button></a>
+                                            <a href="{{ url('/organization/organization-user-detail/' . $item->id . '/edit') }}" title="Edit OrganizationUserDetail"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button></a>
 
-                                            <form method="POST" action="{{ url('/organization/organization' . '/' . $item->id) }}" accept-charset="UTF-8" style="display:inline">
+                                            <form method="POST" action="{{ url('/organization/organization-user-detail' . '/' . $item->id) }}" accept-charset="UTF-8" style="display:inline">
                                                 {{ method_field('DELETE') }}
                                                 {{ csrf_field() }}
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete Organization" onclick="return confirm(&quot;Confirm delete?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete OrganizationUserDetail" onclick="return confirm(&quot;Confirm delete?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
                                             </form>
                                         </td>
                                     </tr>
                                 @endforeach
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper"> {!! $organization->appends(['search' => Request::get('search')])->render() !!} </div>
+                            <div class="pagination-wrapper"> {!! $organizationuserdetail->appends(['search' => Request::get('search')])->render() !!} </div>
                         </div>
 
                     </div>

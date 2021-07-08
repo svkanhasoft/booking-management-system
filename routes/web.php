@@ -24,3 +24,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::resource('organization/organization', 'Organization\OrganizationController');
 Route::resource('organization/designation', 'Organization\DesignationController');
 Route::resource('organization/role', 'Organization\RoleController');
+Route::resource('organization/organization_user_detail', 'Organization\organization_user_detailController');
+Route::resource('organization/organization-user-detail', 'Organization\OrganizationUserDetailController');

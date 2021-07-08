@@ -7,9 +7,9 @@
 
             <div class="col-md-9">
                 <div class="card">
-                    <div class="card-header">Create New Organization</div>
+                    <div class="card-header">Edit OrganizationUserDetail #{{ $organizationuserdetail->id }}</div>
                     <div class="card-body">
-                        <a href="{{ url('/organization/organization') }}" title="Back"><button class="btn btn-warning btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
+                        <a href="{{ url('/organization/organization-user-detail') }}" title="Back"><button class="btn btn-warning btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button></a>
                         <br />
                         <br />
 
@@ -21,10 +21,11 @@
                             </ul>
                         @endif
 
-                        <form method="POST" action="{{ url('/organization/organization') }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">
+                        <form method="POST" action="{{ url('/organization/organization-user-detail/' . $organizationuserdetail->id) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">
+                            {{ method_field('PATCH') }}
                             {{ csrf_field() }}
 
-                            @include ('organization.organization.form', ['formMode' => 'create'])
+                            @include ('organization.organization-user-detail.form', ['formMode' => 'edit'])
 
                         </form>
 
