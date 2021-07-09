@@ -28,29 +28,7 @@ class RoleController extends Controller
             return $next($request);
         });
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index(Request $request)
-    {
-        $keyword = $request->get('search');
-        $perPage = 25;
-
-        if (!empty($keyword)) {
-            $role = Role::where('user_id', 'LIKE', "%$keyword%")
-                ->orWhere('role_name', 'LIKE', "%$keyword%")
-                ->orWhere('created_by', 'LIKE', "%$keyword%")
-                ->orWhere('updated_by', 'LIKE', "%$keyword%")
-                ->latest()->paginate($perPage);
-        } else {
-            $role = Role::latest()->paginate($perPage);
-        }
-
-        return view('organization.role.index', compact('role'));
-    }
-
+    
     /**
      * Show the form for creating a new resource.
      *

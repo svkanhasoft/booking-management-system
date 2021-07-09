@@ -26,3 +26,4 @@ Route::resource('organization/designation', 'Organization\DesignationController'
 Route::resource('organization/role', 'Organization\RoleController');
 Route::resource('organization/organization_user_detail', 'Organization\organization_user_detailController');
 Route::resource('organization/organization-user-detail', 'Organization\OrganizationUserDetailController');
+Route::resource('organization/specialities', 'Organization\SpecialitiesController');

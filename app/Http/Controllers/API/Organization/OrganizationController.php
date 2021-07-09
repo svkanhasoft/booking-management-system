@@ -18,8 +18,16 @@ class OrganizationController extends Controller
      * 
      * @return \Illuminate\Http\Response 
      */
+    protected $userId;
+
     public function __construct()
     {
+        $this->middleware(function ($request, $next) {
+            if (!empty(Auth::user())) {
+                $this->userId = Auth::user()->id;
+            }
+            return $next($request);
+        });
     }
 
     public function signin(Request $request)
@@ -178,7 +186,7 @@ class OrganizationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
-            'c_password' => 'required|same:password',
+            'confirm_password' => 'required|same:password',
             'email' => 'required',
         ]);
         if ($validator->fails()) {
@@ -193,6 +201,69 @@ class OrganizationController extends Controller
             return response()->json(['status' => true, 'message' => 'Password Successfully changed, please login'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 200);
+        }
+    }
+    /** 
+     * change Status 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function changeStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+            'user_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $userObj = User::find($request->post('user_id'));
+        $userObj['status'] = $request->post('status');
+        $res =  $userObj->save();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+        }
+    }
+
+
+    /**
+     * Search user listing of the resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function search(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'keyword' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $keyword = $request->get('keyword');
+        $perPage = 10;
+
+        $query = User::select("users.*");
+        $query->leftjoin('organization_user_details as oud', 'oud.user_id', '=', 'users.id');
+        $query->leftjoin('roles',  'roles.id', '=', 'oud.role_id');
+        $query->leftjoin('designations',  'designations.id', '=', 'oud.designation_id');
+        $query->Where('users.status',  "Active");
+
+        $query->Where('users.first_name',  'LIKE', "%$keyword%");
+        $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
+        $query->orWhere('users.email',  'LIKE', "%$keyword%");
+        $query->orWhere('oud.contact_number',  'LIKE', "%$keyword%");
+        $query->orWhere('designations.designation_name',  'LIKE', "%$keyword%");
+        $query->orWhere('roles.role_name',  'LIKE', "%$keyword%");
+        $query->groupBy('users.id');
+        $res =  $query->latest('users.created_at')->paginate($perPage);
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Status changed successfully', 'data' => $res], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
         }
     }
 }

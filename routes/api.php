@@ -36,6 +36,8 @@ Route::prefix('organization')->group(function () {
     Route::post('/forgot', [App\Http\Controllers\API\Organization\OrganizationController::class, 'forgot'])->name('forgot');
     Route::post('/otp-verify', [App\Http\Controllers\API\Organization\OrganizationController::class, 'otpVerify'])->name('otp-verify');
     Route::post('/change-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changePassword'])->name('change-password');
+    Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
+    Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details'])->name('get-details');
         Route::get('/logout', [App\Http\Controllers\API\Organization\OrganizationController::class, 'logout'])->name('logout');
@@ -44,6 +46,21 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-role/{id?}', [App\Http\Controllers\API\Organization\RoleController::class, 'show'])->name('get-role');
         Route::get('/get-all-role', [App\Http\Controllers\API\Organization\RoleController::class, 'showAll'])->name('get-all-role');
         Route::delete('/delete-role/{id?}', [App\Http\Controllers\API\Organization\RoleController::class, 'destroy'])->name('role-delete');
-        Route::post('/add-user/{id?}', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('add-user');
+        Route::post('/change-status', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changeStatus'])->name('change-status');
+        Route::post('/search', [App\Http\Controllers\API\Organization\OrganizationController::class, 'search'])->name('search');
+        Route::post('/add-speciality', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'create'])->name('add-speciality');
+        Route::post('/edit-speciality', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'update'])->name('edit-speciality');
+        Route::delete('/delete-speciality/{id?}', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'destroy'])->name('delete-speciality');
+        Route::get('/get-speciality/{id?}', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'show'])->name('get-speciality');
+        Route::get('/get-all-speciality', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'showAll'])->name('get-all-speciality');
+    });
+});
+
+Route::prefix('user')->group(function () {
+    Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
+    Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
+    Route::middleware(['auth:api'])->group(function () {
+        Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
+        Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
     });
 });

@@ -13,7 +13,7 @@ use Hash;
 use App\Models\Role;
 
 class UserController extends Controller
-{   
+{
     public $successStatus = 200;
     /** 
      * login api 
@@ -25,43 +25,20 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            $this->userId= Auth::user()->id;
+            if (!empty(Auth::user())) {
+                $this->userId = Auth::user()->id;
+            }
             return $next($request);
         });
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index(Request $request)
-    {
-        $keyword = $request->get('search');
-        $perPage = 25;
-
-        if (!empty($keyword)) {
-            $role = Role::where('user_id', 'LIKE', "%$keyword%")
-                ->orWhere('role_name', 'LIKE', "%$keyword%")
-                ->orWhere('created_by', 'LIKE', "%$keyword%")
-                ->orWhere('updated_by', 'LIKE', "%$keyword%")
-                ->latest()->paginate($perPage);
-        } else {
-            $role = Role::latest()->paginate($perPage);
-        }
-
-        return view('organization.role.index', compact('role'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
+     *  creating a new resource.
      *
      * @return \Illuminate\View\View
      */
     public function create(Request $request)
-    { 
-        // $UserObj = new User();
-        // $UserObj->getOrganizationDetails();
+    {
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
             "first_name" => 'required',
@@ -77,113 +54,96 @@ class UserController extends Controller
         }
         $requestData = $request->all();
         $requestData['password'] = Hash::make($request->post('password'));
+        $requestData['parent_id'] = $this->userId;
         $requestData['role'] = 'STAFF';
         $userCreated = User::create($requestData);
-        // print_r($userCreated['id']);exit;
         if ($userCreated) {
             $requestData['user_id'] = $userCreated['id'];
-            $userCreated = OrganizationUserDetail::create($requestData);
-            return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+            $orgResult = OrganizationUserDetail::create($requestData);
+            if ($orgResult) {
+                $UserObj = new User();
+                $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
+                return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+            }
         } else {
             return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
         }
     }
- 
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
+     *  creating a new resource.
      *
      * @return \Illuminate\View\View
      */
-    public function show($id)
-    {
-        $role = Role::findOrFail($id);
-        if ($role) {
-            return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
-        }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\View\View
-     */
-    public function edit(Request $request)
+    public function signin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'role_name' => 'required',
-            'role_id' => 'required',
-            // 'role_name' => 'required|unique:roles',
+            "email" => 'required',
+            "password" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
-        $role = Role::findOrFail($requestData["role_id"]);
-        $roleUpdated = $role->update($requestData);
-        if ($roleUpdated) {
-            return response()->json(['status' => true, 'message' => 'Role update Successfully', 'data' => $role], $this->successStatus);
+
+        $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
+        if (empty($checkRecord)) {
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+        }
+        if($checkRecord->status !='Active'){
+            return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
+        }
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'STAFF'])) {
+            $userResult = Auth::user();
+            $UserObj = new User();
+            $user = $UserObj->getOrganizationDetails($userResult['id']);
+            $user[0]['token'] =  $userResult->createToken('User')->accessToken;
+            return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role update failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
         }
     }
 
-     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\View\View
+    /** 
+     * Get User details 
+     * 
+     * @return \Illuminate\Http\Response 
      */
-    public function showAll()
+    public function getDetails()
     {
-        // $role = Role::where('user_id',$this->userId)->where('user_id', 1)->get()->toArray();
-        $role = Role::whereIn('user_id', array($this->userId, 1))->get()->toArray();
-        if ($role) {
-            return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);
+        $UserObj = new User();
+        $user = $UserObj->getOrganizationDetails($this->userId);
+        if (!empty($user)) {
+            return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
         }
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param  int  $id
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+    /** 
+     * Change Password 
+     * 
+     * @return \Illuminate\Http\Response 
      */
-    public function update(Request $request, $id)
+    public function changePassword(Request $request)
     {
-        $requestData = $request->all();
-        $role = Role::findOrFail($id);
-        $role->update($requestData);
-        return redirect('organization/role')->with('flash_message', 'Role updated!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function destroy($id)
-    {
-        $role = Role::where(['user_id' => $this->userId,'id'=> $id])->where('id', $id)->delete();
-        if ($role) {
-            return response()->json(['status' => true, 'message' => 'Role deleted!', 'data' => $role], $this->successStatus);
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:6',
+            'confirm_password' => 'required|same:password',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $user = User::where('role', 'STAFF')->where('id', $this->userId)->first();
+        if (!empty($user)) {
+            $userObj = User::find($this->userId);
+            $userObj['password'] = Hash::make($request->post('password'));
+            $userObj->save();
+            return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not deleted!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 200);
         }
     }
 }
