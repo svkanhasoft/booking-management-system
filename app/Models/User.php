@@ -81,4 +81,10 @@ class User extends Authenticatable
         return $userDetais;
     }
 
+    public function SigneesDetail()
+    {
+        return $this->hasOne(SigneesDetail::class);
+        // OR return $this->hasOne('App\Phone');
+    }
+
 }
