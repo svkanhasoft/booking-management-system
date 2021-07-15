@@ -31,3 +31,7 @@ Route::resource('organization/trusts', 'Organization\TrustsController');
 Route::resource('organization/ward', 'Organization\WardController');
 Route::resource('organization/traning', 'Organization\TraningController');
 Route::resource('signees/signees-detail', 'Signees\SigneesDetailController');
+Route::resource('signee/signee_organization', 'Signee\signee_organizationController');
+Route::resource('signee/signee-organization', 'Signee\SigneeOrganizationController');
+Route::resource('organization/organization-shift', 'Organization\OrganizationShiftController');
+Route::resource('signees/signee-specialitie', 'Signees\SigneeSpecialitieController');

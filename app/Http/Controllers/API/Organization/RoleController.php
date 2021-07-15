@@ -64,7 +64,7 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        $role = Role::findOrFail($id);
+        $role = Role::where('id', $id)->first();
         if ($role) {
             return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);
         } else {
@@ -83,9 +83,7 @@ class RoleController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            // 'role_name' => 'required',
             'role_id' => 'required',
-            // 'role_name' => 'required|unique:roles,id,' . $requestData["role_id"],
             'role_name' => 'required|unique:roles,role_name,'.$requestData["role_id"],
 
         ]);

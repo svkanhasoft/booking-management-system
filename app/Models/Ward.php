@@ -41,6 +41,7 @@ class Ward extends Model
         }
         return true;
     }
+    
     public function post()
     {
         return $this->belongsTo(Trust::class);

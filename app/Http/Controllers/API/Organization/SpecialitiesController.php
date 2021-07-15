@@ -82,7 +82,7 @@ class SpecialitiesController extends Controller
      */
     public function show($id)
     {
-        $speciality = Speciality::findOrFail($id);
+        $speciality = Speciality::where('id', $id)->first();
         if ($speciality) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
         } else {

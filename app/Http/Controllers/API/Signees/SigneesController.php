@@ -7,11 +7,14 @@ use App\Http\Requests;
 use App\Models\SigneesDetail;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\SigneeOrganization;
+use App\Models\Speciality;
+use App\Models\SigneeSpecialitie;
 use Hash;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 
-class SigneesDetailController extends Controller
+class SigneesController extends Controller
 {
 
     public $successStatus = 200;
@@ -62,13 +65,29 @@ class SigneesDetailController extends Controller
         }
 
         $requestData = $request->all();
+
+        if ($request->hasFile('cv')) {
+            $files1 = $request->file('cv');
+            $name = time() . '_signee_' . $files1->getClientOriginalName();
+            $files1->move(public_path() . '/uploads/signee_docs/', $name);
+            $requestData['cv'] = $name;
+        }
+
         $requestData['password'] = Hash::make($request->post('password'));
+        $requestData['parent_id'] = $request->post('organization_id');
         // $requestData['parent_id'] = $this->userId;
         $requestData['role'] = 'SIGNEE';
         $userCreated = User::create($requestData);
         if ($userCreated) {
             $requestData['user_id'] = $userCreated['id'];
             $orgResult = SigneesDetail::create($requestData);
+
+            $objSpeciality = new SigneeSpecialitie();
+            $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+
+            $requestData['organization_id'] = $request->post('organization_id');
+            $requestData['user_id'] = $userCreated['id'];
+            $sing = SigneeOrganization::create($requestData);
             if ($orgResult) {
                 $UserObj = new User();
                 // $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
@@ -96,6 +115,7 @@ class SigneesDetailController extends Controller
         }
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'SIGNEE')->first();
+
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
@@ -103,9 +123,13 @@ class SigneesDetailController extends Controller
             return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
         }
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
+            $checkRecord->parent_id =  request('organization_id');
+            $checkRecord->save();
             $userResult = Auth::user();
             $this->userId = Auth::user()->id;
-            $user = User::find($this->userId)->SigneesDetail;
+            $this->organizationId = Auth::user()->organization_id;
+            $userObj = new User();
+            $user = $userObj->getSigneeDetails(Auth::user()->id);
             $user['token'] =  $userResult->createToken('User')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
@@ -120,14 +144,16 @@ class SigneesDetailController extends Controller
      */
     public function getDetails()
     {
-        $user =  User::find($this->userId)->SigneesDetail;
+        $userObj = new User();
+        $user = $userObj->getSigneeDetails($this->userId);
+        // $user = User::find($this->userId)->SigneesDetail;
+        // print_r($user);exit;
         if (!empty($user)) {
-            return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Signee details get successfully.', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
         }
     }
-
 
     /** 
      * Change Password 
@@ -164,7 +190,6 @@ class SigneesDetailController extends Controller
      */
     public function profileUpdate(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             // "email" => 'required|unique:users',
             'email' => 'unique:users,email,' . $this->userId,
@@ -186,7 +211,7 @@ class SigneesDetailController extends Controller
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
-        } 
+        }
         // echo "Hiii"; exit;
         $requestData = $request->all();
         if (!empty($request->post('password'))) {
@@ -206,7 +231,7 @@ class SigneesDetailController extends Controller
         }
     }
 
-     /** 
+    /** 
      * Forgot api 
      * 
      * @return \Illuminate\Http\Response 
@@ -215,24 +240,79 @@ class SigneesDetailController extends Controller
     {
         $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
         if (isset($user) && !empty($user)) {
-            // // $user = User::where(['email' => 'testshailesh1@gmail.com'])->first();
-            // $user['link'] = "<a  href=". route('reset-password',array('id' => base64_encode($user['id']))).">Click Here </a>";
-            // $details = [
-            //     'title' => '',
-            //     'body' => 'Hello ',
-            //     'mailTitle' => 'forgot',
-            //     'subject' => 'Booking management system: TEST EMAIL',
-            //     'data' =>  $user,
-            // ];
-            // $sss = \Mail::to('testshailesh1@gmail.com')->cc('shaileshv.kanhasoft@gmail.com')->send(new \App\Mail\MyTestMail($details));           
-            // // $sss = \Mail::to($user['email'])->cc('shaileshv.kanhasoft@gmail.com')->send(new \App\Mail\MyTestMail($details));           
-            // dd($sss);
-            // exit;
-            //  return response()->json(['data' => $user, 'message' => 'OTP sent to your email', 'status' => true], $this->successStatus);
-            return response()->json(['data' => $user, 'message' => 'Please check your email and chnge your password', 'status' => true], $this->successStatus);
+            // $user['link'] = "<a  href=". route('reset-passwordV2',array('id' => base64_encode($user['id']))).">Click Here </a>";
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'forgot',
+                'subject' => 'Booking management system: TEST EMAIL',
+                'data' => $user,
+            ];
+            // $sss = \Mail::to('testshailesh1@gmail.com')
+            $sss = \Mail::to($user['email'])
+                // ->cc('shaileshv.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+            return response()->json(['data' => $user, 'message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Invalid phone number', 'status' => false], 200);
         }
     }
+    /** 
+     * reset Password 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
+            'decode_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $user = Auth::user();
+        $input = $request->all();
+        $decodeId = base64_decode($input['decode_id']);
+        // base64_encode
 
+        $userObj = User::find($decodeId);
+        $userObj['password'] = Hash::make($input['password']);
+        $res = $userObj->save();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+        }
+    }
+    /** 
+     * delete Password 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function delete(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $user = Auth::user();
+        $input = $request->all();
+        $decodeId = base64_decode($input['decode_id']);
+        // base64_encode
+
+        $userObj = User::find($decodeId);
+        $userObj['password'] = Hash::make($input['password']);
+        $res = $userObj->save();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+        }
+    }
 }

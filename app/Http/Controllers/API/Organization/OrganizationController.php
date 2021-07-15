@@ -148,7 +148,7 @@ class OrganizationController extends Controller
             //     'subject' => 'Needeet Power Bank : TEST EMAIL',
             //     'data' =>  $user,
             // ];
-            // $sss = \Mail::to($user['email'])->cc('svanaliya@innovegicsolutions.in')->send(new \App\Mail\MyTestMail($details));            return response()->json(['data' => $userObj, 'message' => 'OTP sent to your email', 'status' => true], $this->successStatus);
+            // $sss = \Mail::to($user['email'])->cc('svanaliya@innovegicsolutions.in')->send(new \App\Mail\SendSmtpMail($details));            return response()->json(['data' => $userObj, 'message' => 'OTP sent to your email', 'status' => true], $this->successStatus);
 
             return response()->json(['data' => $user, 'message' => 'OTP sent to your email', 'status' => true], $this->successStatus);
         } else {
