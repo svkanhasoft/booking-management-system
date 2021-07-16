@@ -35,3 +35,5 @@ Route::resource('signee/signee_organization', 'Signee\signee_organizationControl
 Route::resource('signee/signee-organization', 'Signee\SigneeOrganizationController');
 Route::resource('organization/organization-shift', 'Organization\OrganizationShiftController');
 Route::resource('signees/signee-specialitie', 'Signees\SigneeSpecialitieController');
+Route::resource('organization/booking', 'Organization\BookingController');
+Route::resource('organization/booking-speciality', 'Organization\BookingSpecialityController');

@@ -55,14 +55,18 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-all-speciality', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'showAll'])->name('get-all-speciality');
         Route::post('/add-trust', [App\Http\Controllers\API\Organization\TrustsController::class, 'add'])->name('add-trust');
         Route::post('/update-trust', [App\Http\Controllers\API\Organization\TrustsController::class, 'update'])->name('update-trust');
-        Route::get('/get-trust/{id}', [App\Http\Controllers\API\Organization\TrustsController::class, 'getTrustDetail'])->name('get-trust');
-        Route::get('/get-all-trust', [App\Http\Controllers\API\Organization\TrustsController::class, 'getAllTrust'])->name('get-all-trust');
+        Route::get('/get-trust/{id?}', [App\Http\Controllers\API\Organization\TrustsController::class, 'getTrustDetail'])->name('get-trust');
+        // Route::get('/get-all-trust', [App\Http\Controllers\API\Organization\TrustsController::class, 'getAllTrust'])->name('get-all-trust');
         Route::delete('/delete-trust/{id}', [App\Http\Controllers\API\Organization\TrustsController::class, 'destroy'])->name('delete-trust');
         Route::post('/add-shift', [App\Http\Controllers\API\Organization\OrganizationShiftController::class, 'create'])->name('add-shift');
         Route::post('/edit-shift', [App\Http\Controllers\API\Organization\OrganizationShiftController::class, 'edit'])->name('edit-shift');
         Route::get('/get-shift/{id?}', [App\Http\Controllers\API\Organization\OrganizationShiftController::class, 'show'])->name('get-shift');
         Route::get('/get-shifts', [App\Http\Controllers\API\Organization\OrganizationShiftController::class, 'showAll'])->name('get-shifts');
         Route::DELETE('/delete-shift/{id?}', [App\Http\Controllers\API\Organization\OrganizationShiftController::class, 'destroy'])->name('delete-shift');
+        Route::post('/add-booking', [App\Http\Controllers\API\Organization\BookingController::class, 'add'])->name('add-booking');
+        Route::post('/edit-booking', [App\Http\Controllers\API\Organization\BookingController::class, 'edit'])->name('edit-booking');
+        Route::get('/get-booking/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'show'])->name('get-booking');
+        Route::get('/booking-by-status/{status}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus'])->name('booking-by-status');
     });
 
     // Route::prefix('user')->group(function () {

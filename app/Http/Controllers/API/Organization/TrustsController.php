@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Ward;
 use App\Models\Traning;
 use Validator;
+
 class TrustsController extends Controller
 {
     public $successStatus = 200;
@@ -49,7 +50,7 @@ class TrustsController extends Controller
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
-        } 
+        }
         // $result = $this->getTrustDetail(1);
         $requestData = $request->all();
         $requestData['password'] = Hash::make($request->post('portal_password'));
@@ -109,24 +110,34 @@ class TrustsController extends Controller
         }
     }
 
-    function getTrustDetail($trustId)
+    function getTrustDetail($trustId = null)
     {
-        $result = [];
-        $result = Trust::find($trustId);
-        $result->ward;
-        $result->training;
-        return response()->json(['status' => true, 'message' => 'Trust detail get successfully.', 'data' => $result], $this->successStatus);
-    }
-
-    function getAllTrust()
-    {
-        $result = Trust::where('user_id', $this->userId)->get();
-        if ($result) {
-            return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
+        if ($trustId > 0) {
+            $result = [];
+            $result = Trust::find($trustId);
+            $result->ward;
+            $result->training;
+            return response()->json(['status' => true, 'message' => 'Trust detail get successfully.', 'data' => $result], $this->successStatus);
         } else {
-            return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], $this->successStatus);
+            $result = Trust::where('user_id', $this->userId)->get();
+            if ($result) {
+                return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
+            } else {
+                return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], $this->successStatus);
+            }
         }
     }
+
+    // function getAllTrust()
+    // {
+    //     $result = Trust::where('user_id', $this->userId)->get();
+    //     if ($result) {
+    //         return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
+    //     } else {
+    //         return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], $this->successStatus);
+    //     }
+    // }
+
     function destroy($trustId)
     {
         // echo "$trustId" ;
