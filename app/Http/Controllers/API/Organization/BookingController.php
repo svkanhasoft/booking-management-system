@@ -99,7 +99,9 @@ class BookingController extends Controller
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             // 'reference_id' => 'required|unique:bookings,reference_id,reference_id,' .  $requestData["booking_id"],
+            'reference_id' => 'required',
             'trust_id' => 'required',
+            'booking_id' => 'required',
             'ward_id' => 'required',
             'grade_id' => 'required',
             'date' => 'required',
@@ -153,7 +155,7 @@ class BookingController extends Controller
     {
         $objBooking = new Booking();
         $booking = $objBooking->getBookingByFilter($status);
-        
+
         if (count($booking) > 0) {
             return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
         } else {
@@ -169,4 +171,5 @@ class BookingController extends Controller
         //     return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         // }
     }
+    
 }

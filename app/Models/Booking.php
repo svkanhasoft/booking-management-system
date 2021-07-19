@@ -28,7 +28,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id'];
+    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id','rate'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     public function getBooking($bookingId = null)
@@ -74,7 +74,7 @@ class Booking extends Model
             'ward.ward_name',
             'trusts.name',
             'organization_shift.start_time',
-            'organization_shift.end_time', 
+            'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -84,20 +84,21 @@ class Booking extends Model
         $query->where('bookings.status', $status);
         $bookingList = $query->get();
         //  print_r($bookingList);
-            // exit;
-            $subArray = [];
+        // exit;
+        $subArray = [];
         foreach ($bookingList as $key => $booking) {
-           
+
             $subArray[$key] = $booking;
             $subQuery = BookingSpeciality::select(
-                'users.id',
-                'booking_specialities.booking_id', 
-                'specialities.speciality_name',
-                'signees_detail.candidate_id', 'signees_detail.phone_number', 'signees_detail.mobile_number', 
-                'signees_detail.address_line_1', 'signees_detail.address_line_2', 'signees_detail.address_line_3', 
-                'signees_detail.city', 'signees_detail.post_code', 'signees_detail.date_of_birth', 'signees_detail.nationality', 
-                'signees_detail.candidate_referred_from', 'signees_detail.date_registered','signees_detail.cv','signees_detail.nmc_dmc_pin',
+                'users.id','booking_specialities.booking_id','specialities.speciality_name',
+                'signees_detail.candidate_id','signees_detail.phone_number',
+                'signees_detail.mobile_number','signees_detail.address_line_1',
+                'signees_detail.address_line_2','signees_detail.address_line_3',
+                'signees_detail.city','signees_detail.post_code','signees_detail.date_of_birth',
+                'signees_detail.nationality','signees_detail.candidate_referred_from',
+                'signees_detail.date_registered','signees_detail.cv','signees_detail.nmc_dmc_pin',
                 DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+                DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
                 DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality'),
                 DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
             );
@@ -107,13 +108,13 @@ class Booking extends Model
             $subQuery->Join('signees_detail',  'signees_detail.user_id', '=', 'users.id');
             $subQuery->where('booking_specialities.booking_id', $booking['id']);
             $subQuery->groupBy('users.id');
+            $subQuery->orderBy('signeeBookingCount','DESC');
             // $subQuery->groupBy('booking_specialities.booking_id');
-            $res = $subQuery->get()->toArray(); 
-            // print_r( $res);
+            $res = $subQuery->get()->toArray();
             $subArray[$key]['user'] = $res;
             // print_r( $bookingList);
             // exit;
-        } 
+        }
         // print_r($subArray);exit;
         return $subArray;
     }

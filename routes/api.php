@@ -69,24 +69,24 @@ Route::prefix('organization')->group(function () {
         Route::get('/booking-by-status/{status}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus'])->name('booking-by-status');
     });
 
-    // Route::prefix('user')->group(function () {
-    //     Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
-    //     Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
-    //     Route::middleware(['auth:api'])->group(function () {
-    //         Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
-    //         Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
-    //     });
-    // });
-});
-
-Route::prefix('user')->group(function () {
-    Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
-    Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
-    Route::middleware(['auth:api'])->group(function () {
-        Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
-        Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
+    Route::prefix('user')->group(function () {
+        Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
+        Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
+        Route::middleware(['auth:api'])->group(function () {
+            Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
+            Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
+        });
     });
 });
+
+// Route::prefix('user')->group(function () {
+//     Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
+//     Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
+//     Route::middleware(['auth:api'])->group(function () {
+//         Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
+//         Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
+//     });
+// });
 
 Route::prefix('signee')->group(function () {
     Route::post('/signup-signee', [App\Http\Controllers\API\Signees\SigneesController::class, 'create'])->name('signup-signee');
@@ -99,5 +99,6 @@ Route::prefix('signee')->group(function () {
         Route::post('/signee-change-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'changePassword'])->name('signee-change-password');
         Route::post('/signee-profile-update', [App\Http\Controllers\API\Signees\SigneesController::class, 'profileUpdate'])->name('signee-profile-update');
         Route::post('/signee-delete', [App\Http\Controllers\API\Signees\SigneesController::class, 'delete'])->name('signee-delete');
+        Route::post('/availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'availability'])->name('availability');
     });
 });

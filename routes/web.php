@@ -37,3 +37,4 @@ Route::resource('organization/organization-shift', 'Organization\OrganizationShi
 Route::resource('signees/signee-specialitie', 'Signees\SigneeSpecialitieController');
 Route::resource('organization/booking', 'Organization\BookingController');
 Route::resource('organization/booking-speciality', 'Organization\BookingSpecialityController');
+// Route::resource('signees/availability', 'Signees\AvailabilityController');
