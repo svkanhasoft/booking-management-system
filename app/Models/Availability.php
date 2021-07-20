@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Hamcrest\Arrays\IsArray;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -27,26 +28,35 @@ class Availability extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'day_name', 'shift_id','is_selected'];
+    protected $fillable = ['user_id', 'day_name', 'shift_id', 'is_selected'];
+    protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
-    function addAvailability($postData,$userId)
+    function addAvailability($postData, $userId)
     {
-        // print_r($postData);
-        // exit;
-        foreach ($postData['sunday'] as $key => $available) {
-            // print_r($available);
-            // exit;
-            //   $objAvailability = new Availability();
-            // $objAvailability = Availability::where('shift_id', $available['shift_id'])->firstOrNew();
-            $objAvailability = Availability::where(['user_id' => $userId, 'day_name' => 'sunday', 
-            'shift_id' => $available['shift_id'] ])->firstOrNew();
-            $objAvailability->user_id = $userId;
-            $objAvailability->is_selected = $available['is_selected'];
-            $objAvailability->day_name = 'sunday';
-            $objAvailability->shift_id = $available['shift_id'];
-            $objAvailability->save();
-            $objAvailability = '';
+        foreach ($postData as $key => $available) {
+            if (is_array($available)) {
+                foreach ($postData[$key] as $keys => $values) {
+                    $objAvailability = Availability::where([ 'user_id' => $userId, 'day_name' =>  $key,
+                        'shift_id' => $values['shift_id'] ])->firstOrNew();
+                    $objAvailability->user_id = $userId;
+                    $objAvailability->is_selected = $values['is_selected'];
+                    $objAvailability->day_name = $key;
+                    $objAvailability->shift_id = $values['shift_id'];
+                    $objAvailability->save();
+                    $objAvailability = '';
+                }
+            }
         }
-       return true;
+        return true;
+    }
+
+    function getAvailability($userId)
+    {
+        $res = Availability::where(['user_id' => $userId])->groupBy('day_name')->get()->toArray();
+        $result = [];
+        foreach ($res as $key => $val) {
+            $result[$val['day_name']]  = Availability::where(['day_name' => $val['day_name']])->get()->toArray();
+        }
+        return $result;
     }
 }

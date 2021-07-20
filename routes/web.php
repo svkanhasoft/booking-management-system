@@ -38,3 +38,4 @@ Route::resource('signees/signee-specialitie', 'Signees\SigneeSpecialitieControll
 Route::resource('organization/booking', 'Organization\BookingController');
 Route::resource('organization/booking-speciality', 'Organization\BookingSpecialityController');
 // Route::resource('signees/availability', 'Signees\AvailabilityController');
+Route::resource('organization/candidate-referred-from', 'Organization\CandidateReferredFromController');

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\SigneeOrganization;
 use App\Models\Speciality;
 use App\Models\SigneeSpecialitie;
+use App\Models\CandidateReferredFrom;
 use Hash;
 use Validator;
 use Illuminate\Support\Facades\Auth;
@@ -313,6 +314,25 @@ class SigneesController extends Controller
             return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+        }
+    }
+
+    /** 
+     * Candidate Referred From
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function getCandidateReferredFrom(Request $request)
+    {
+
+        // $CandidateReferredFromObj = new CandidateReferredFrom();
+
+        $candidateReferredFromObj = CandidateReferredFrom::all();
+ 
+        if ($candidateReferredFromObj) {
+            return response()->json(['status' => true, 'message' => 'Candidate Referred From get successfully','data'=>$candidateReferredFromObj], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Candidate Referred From.', 'status' => false], 200);
         }
     }
 }

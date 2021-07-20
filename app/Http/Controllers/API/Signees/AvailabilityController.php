@@ -56,10 +56,20 @@ class AvailabilityController extends Controller
         $orgResult = $objAvailability->addAvailability($request->all(), $this->userId);
         if ($orgResult) {
             $UserObj = new User();
-            return response()->json(['status' => true, 'message' => 'Availablity added Successfully','data' =>$request->all()], $this->successStatus);
-            // return response()->json(['status' => true, 'message' => 'Availablity added Successfully','data' => $orgResult], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Availablity update Successfully', 'data' => $request->all()], $this->successStatus);
+            // return response()->json(['status' => true, 'message' => 'Availablity update Successfully','data' => $orgResult], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Availablity added failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Availablity update failed!', 'status' => false], 200);
+        }
+    }
+    public function getAvailability()
+    {
+        $objAvailability = new Availability();
+        $availability = $objAvailability->getAvailability($this->userId);
+        if ($availability) {
+            return response()->json(['status' => true, 'message' => 'Availablity get successfully', 'data' => $availability], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, availablity not available!', 'status' => false], 200);
         }
     }
 }

@@ -94,11 +94,13 @@ Route::prefix('signee')->group(function () {
     Route::post('/forgot-signee', [App\Http\Controllers\API\Signees\SigneesController::class, 'forgot'])->name('forgot-signee');
     Route::post('/reset-passwordV2/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'resetPassword'])->name('reset-passwordv2');
     Route::post('/reset-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'resetPassword'])->name('reset-password');
+    Route::get('/candidate-referred-from', [App\Http\Controllers\API\Signees\SigneesController::class, 'getCandidateReferredFrom'])->name('candidate-referred-from');
     Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-signee-details', [App\Http\Controllers\API\Signees\SigneesController::class, 'getDetails'])->name('get-signee-details');
         Route::post('/signee-change-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'changePassword'])->name('signee-change-password');
         Route::post('/signee-profile-update', [App\Http\Controllers\API\Signees\SigneesController::class, 'profileUpdate'])->name('signee-profile-update');
         Route::post('/signee-delete', [App\Http\Controllers\API\Signees\SigneesController::class, 'delete'])->name('signee-delete');
         Route::post('/availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'availability'])->name('availability');
+        Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability'])->name('get-availability');
     });
 });
