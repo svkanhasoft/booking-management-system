@@ -37,7 +37,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function create(Request $request)
+    public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
@@ -63,6 +63,7 @@ class UserController extends Controller
             if ($orgResult) {
                 $UserObj = new User();
                 $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
+                $mailRes =  $UserObj->sendRegisterEmail($request);
                 return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
             }
         } else {

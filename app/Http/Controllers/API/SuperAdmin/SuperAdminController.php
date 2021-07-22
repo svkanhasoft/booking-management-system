@@ -126,25 +126,13 @@ class SuperAdminController extends Controller
      */
     public function forgot(Request $request)
     {
-        $user = User::where('role', "SUPERADMIN")
-            ->where('email', $request->all('email'))->get()->toArray();
-        // print_r($user);
-        // exit;
-        if (isset($user) && !empty($user)) {
-            // $user = User::where(['email' => 'testshailesh1@gmail.com'])->first();
-            // $user['link'] = "<a  href=". route('reset-password',array('lang'=>'en','id' => base64_encode($user['id']))).">Click Here </a>";
-            // $details = [
-            //     'title' => '',
-            //     'body' => 'Hello ',
-            //     'mailTitle' => 'forgot',
-            //     'subject' => 'Needeet Power Bank : TEST EMAIL',
-            //     'data' =>  $user,
-            // ];
-            // $sss = \Mail::to($user['email'])->cc('svanaliya@innovegicsolutions.in')->send(new \App\Mail\SendSmtpMail($details));            return response()->json(['data' => $userObj, 'message' => 'OTP sent to your email', 'status' => true], $this->successStatus);
-
-            return response()->json(['data' => $user, 'message' => 'OTP sent to your email', 'status' => true], $this->successStatus);
+        $user = User::where('role', "SUPERADMIN")->where('email', $request->all('email'))->get()->toArray();
+        $userObj = new User();
+        $mailRes =  $userObj->sendForgotEmail($request);
+        if ($mailRes) {
+            return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Invalid phone number', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
         }
     }
 

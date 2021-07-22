@@ -41,7 +41,7 @@ class SigneesController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function create(Request $request)
+    public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
@@ -91,6 +91,7 @@ class SigneesController extends Controller
             $sing = SigneeOrganization::create($requestData);
             if ($orgResult) {
                 $UserObj = new User();
+                $mailRes =  $UserObj->sendRegisterEmail($request);
                 // $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
                 return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
             }
@@ -239,24 +240,31 @@ class SigneesController extends Controller
      */
     public function forgot(Request $request)
     {
-        $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
-        if (isset($user) && !empty($user)) {
-            // $user['link'] = "<a  href=". route('reset-passwordV2',array('id' => base64_encode($user['id']))).">Click Here </a>";
-            $details = [
-                'title' => '',
-                'body' => 'Hello ',
-                'mailTitle' => 'forgot',
-                'subject' => 'Booking management system: TEST EMAIL',
-                'data' => $user,
-            ];
-            // $sss = \Mail::to('testshailesh1@gmail.com')
-            $sss = \Mail::to($user['email'])
-                // ->cc('shaileshv.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
-            return response()->json(['data' => $user, 'message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
+        $userObj = new User();
+        $mailRes =  $userObj->sendForgotEmail($request);
+        if ($mailRes) {
+            return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Invalid phone number', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
         }
+        // $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
+        // if (isset($user) && !empty($user)) {
+        //     // $user['link'] = "<a  href=". route('reset-passwordV2',array('id' => base64_encode($user['id']))).">Click Here </a>";
+        //     $details = [
+        //         'title' => '',
+        //         'body' => 'Hello ',
+        //         'mailTitle' => 'forgot',
+        //         'subject' => 'Booking management system: TEST EMAIL',
+        //         'data' => $user,
+        //     ];
+        //     // $sss = \Mail::to('testshailesh1@gmail.com')
+        //     $sss = \Mail::to($user['email'])
+        //         // ->cc('shaileshv.kanhasoft@gmail.com')
+        //         ->send(new \App\Mail\SendSmtpMail($details));
+        //     return response()->json(['data' => $user, 'message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
+        // } else {
+        //     return response()->json(['message' => 'Sorry, Invalid phone number', 'status' => false], 200);
+        // }
     }
     /** 
      * reset Password 
@@ -328,9 +336,9 @@ class SigneesController extends Controller
         // $CandidateReferredFromObj = new CandidateReferredFrom();
 
         $candidateReferredFromObj = CandidateReferredFrom::all();
- 
+
         if ($candidateReferredFromObj) {
-            return response()->json(['status' => true, 'message' => 'Candidate Referred From get successfully','data'=>$candidateReferredFromObj], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Candidate Referred From get successfully', 'data' => $candidateReferredFromObj], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Candidate Referred From.', 'status' => false], 200);
         }

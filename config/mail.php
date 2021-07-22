@@ -86,8 +86,8 @@ return [
     */
 
     'from' => [
-        'address' => 'no-replay@jenarthtour.co.in',
-        'name' => 'Example',
+        'address' => 'no-replay@pluto.co.in',
+        'name' => 'Booking management system',
         // 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         // 'name' => env('MAIL_FROM_NAME', 'Example'),
     ],

@@ -167,4 +167,60 @@ class User extends Authenticatable
         return $this->hasOne(Organization::class);
         // OR return $this->hasOne('App\Phone');
     }
+    public function sendForgotEmail($request)
+    {
+        $user = User::where('email', $request->all('email'))->first();
+        // $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
+        // print_r($user);exit;
+        if (isset($user) && !empty($user)) {
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'forgot',
+                'subject' => 'Booking Management System: Forgot Password',
+                'data' => $user,
+            ];
+            // $sss = \Mail::to('testshailesh1@gmail.com')
+            $emailRes = \Mail::to($user['email'])
+                ->cc('shaileshv.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function sendRegisterEmail($request)
+    {
+        $user = User::where('email', $request->all('email'))->first();
+        $randPassword =  $this->RandomString();
+        // $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
+        $user->password = $randPassword;
+        if (isset($user) && !empty($user)) {
+            $userObj = User::find($user->id);
+            $userObj->password = Hash::make($randPassword);
+            $userObj->save();
+
+            $details = [
+                'mailTitle' => 'register',
+                'subject' => 'Booking Management System: Registration Done!',
+                'data' => $user,
+            ];
+            // $emailRes = \Mail::to('testshailesh1@gmail.com')
+            $emailRes = \Mail::to($user['email'])
+                ->cc('shaileshv.kanhasoft@gmail.com')
+                // ->bcc('testshailesh1@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function RandomString()
+    {
+        return substr(str_shuffle(str_repeat("0123456789szABCDEFGHIJUVWXYZ", 8)), 0, 8);
+        // $randstring =  mt_rand($characters, 7);
+        // return $randstring;
+    }
 }

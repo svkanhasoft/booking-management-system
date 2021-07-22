@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Organization;
 use Hash;
 
-use App\Models\Speciality; 
+use App\Models\Speciality;
 
 class SpecialitiesController extends Controller
 {
@@ -25,7 +25,7 @@ class SpecialitiesController extends Controller
             return $next($request);
         });
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -96,10 +96,19 @@ class SpecialitiesController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function showAll()
+    public function showAll(Request $request)
     {
-        $speciality = Speciality::all();
-        if ($speciality) {
+        $perPage = 5;
+        $keyword = $request->get('search');
+        $query = Speciality::select("specialities.*",);
+        $query->Where('specialities.user_id',  $this->userId);
+        if (!empty($keyword)) {
+            // echo $keyword;exit;
+            $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
+        }
+        $speciality =  $query->latest('specialities.created_at')->simplePaginate($perPage);
+        $count =  $query->latest('specialities.created_at')->count();
+        if ($count > 0) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
