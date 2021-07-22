@@ -97,6 +97,7 @@ class OrganizationController extends Controller
     public function details(Request $request)
     {
         $user = Auth::user();
+        $user->Organization;
         return response()->json([
             'status' => true, 'message' => 'organization Details Get Successfully',
             'data' => $user
@@ -264,6 +265,56 @@ class OrganizationController extends Controller
             return response()->json(['status' => true, 'message' => 'Status changed successfully', 'data' => $res], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+        }
+    }
+
+    public function organizationlist(Request $request, $status = null)
+    {
+        // $validator = Validator::make($request->all(), [
+        //     // 'keyword' => 'required',
+        // ]);
+        // if ($validator->fails()) {
+        //     $error = $validator->messages()->first();
+        //     return response()->json(['status' => false, 'message' => $error], 200);
+        // }
+        $keyword = $request->get('search');
+        $status = $request->get('status');
+        $perPage = 10;
+        // echo $status . $keyword;
+        // exit;
+        $query = User::select(
+            "users.*",
+            'org.organization_name',
+            'org.contact_person_name',
+            'org.contact_no',
+            'org.address_line_1',
+            'org.address_line_2',
+            'org.city',
+            'org.postcode'
+        );
+        $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+        $query->Where('users.role',  "ORGANIZATION");
+
+        if (!empty($keyword)) {
+            $query->orWhere('users.first_name',  'LIKE', "%$keyword%");
+            $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
+            $query->orWhere('users.email',  'LIKE', "%$keyword%");
+            $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
+            $query->orWhere('org.contact_person_name',  'LIKE', "%$keyword%");
+            $query->orWhere('org.contact_no',  'LIKE', "%$keyword%");
+            $query->orWhere('org.address_line_1',  'LIKE', "%$keyword%");
+            $query->orWhere('org.address_line_2',  'LIKE', "%$keyword%");
+            $query->orWhere('org.city',  'LIKE', "%$keyword%");
+            $query->orWhere('org.postcode',  'LIKE', "%$keyword%");
+        }
+        if (!empty($status)) {
+            $query->Where('users.status',  "$status");
+        }
+        $res =  $query->latest('users.created_at')->simplePaginate($perPage);
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
     }
 }

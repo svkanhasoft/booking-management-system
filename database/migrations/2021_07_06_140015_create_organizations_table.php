@@ -19,8 +19,6 @@ class CreateOrganizationsTable extends Migration
             $table->string('contact_person_name');
             $table->string('contact_no');
             $table->string('address');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

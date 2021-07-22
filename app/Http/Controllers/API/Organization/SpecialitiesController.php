@@ -39,9 +39,9 @@ class SpecialitiesController extends Controller
         if (!empty($keyword)) {
             $specialities = Speciality::where('user_id', 'LIKE', "%$keyword%")
                 ->orWhere('speciality_name', 'LIKE', "%$keyword%")
-                ->latest()->paginate($perPage);
+                ->latest()->simplePaginate($perPage);
         } else {
-            $specialities = Speciality::latest()->paginate($perPage);
+            $specialities = Speciality::latest()->simplePaginate($perPage);
         }
 
         return view('organization.specialities.index', compact('specialities'));

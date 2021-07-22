@@ -39,7 +39,8 @@ Route::prefix('organization')->group(function () {
     // Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
     // Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
     Route::middleware(['auth:api'])->group(function () {
-        Route::post('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details'])->name('get-details');
+        Route::get('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details'])->name('get-details');
+        Route::get('/organization-list/{search?}/{status?}', [App\Http\Controllers\API\Organization\OrganizationController::class, 'organizationlist'])->name('organization-list');
         Route::get('/logout', [App\Http\Controllers\API\Organization\OrganizationController::class, 'logout'])->name('logout');
         Route::post('/add-role', [App\Http\Controllers\API\Organization\RoleController::class, 'create'])->name('add-role');
         Route::post('/edit-role', [App\Http\Controllers\API\Organization\RoleController::class, 'edit'])->name('edit-role');
@@ -74,6 +75,7 @@ Route::prefix('organization')->group(function () {
         Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
         Route::middleware(['auth:api'])->group(function () {
             Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
+            Route::get('/get-user-list', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist'])->name('get-user-list');
             Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
         });
     });

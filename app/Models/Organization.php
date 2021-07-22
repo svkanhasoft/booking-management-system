@@ -27,7 +27,8 @@ class Organization extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'organization_name', 'contact_person_name', 'contact_no', 'address', 'created_by', 'updated_by'];
-
+    protected $fillable = ['user_id', 'organization_name', 'contact_person_name', 'contact_no', 'address_line_1','address_line_2','city','postcode','created_at', 'updated_at'];
+    protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
+     
     
 }

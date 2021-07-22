@@ -110,7 +110,7 @@ class TrustsController extends Controller
         }
     }
 
-    function getTrustDetail($trustId = null)
+    function getTrustDetail($trustId = null, Request $request)
     {
         if ($trustId > 0) {
             $result = [];
@@ -119,8 +119,30 @@ class TrustsController extends Controller
             $result->training;
             return response()->json(['status' => true, 'message' => 'Trust detail get successfully.', 'data' => $result], $this->successStatus);
         } else {
-            $result = Trust::where('user_id', $this->userId)->get();
-            if ($result) {
+            $keyword = $request->get('search');
+            // echo $keyword;exit;
+            $query = Trust::where('user_id', $this->userId);
+            if (!empty($keyword)) {
+                $query->Where('name',  'LIKE', "%$keyword%");
+                $query->orWhere('code',  'LIKE', "%$keyword%");
+                $query->orWhere('preference_invoive_method',  'LIKE', "%$keyword%");
+                $query->orWhere('email_address',  'LIKE', "%$keyword%");
+                $query->orWhere('address_line_1',  'LIKE', "%$keyword%");
+                $query->orWhere('address_line_2',  'LIKE', "%$keyword%");
+                $query->orWhere('address_line_3',  'LIKE', "%$keyword%");
+                $query->orWhere('city',  'LIKE', "%$keyword%");
+                $query->orWhere('post_code',  'LIKE', "%$keyword%");
+                $query->orWhere('trust_portal_url',  'LIKE', "%$keyword%");
+                $query->orWhere('portal_email',  'LIKE', "%$keyword%");
+                $query->orWhere('first_name',  'LIKE', "%$keyword%");
+                $query->orWhere('last_name',  'LIKE', "%$keyword%");
+                $query->orWhere('contact_email_address',  'LIKE', "%$keyword%");
+                $query->orWhere('phone_number',  'LIKE', "%$keyword%");
+                $query->orWhere('client',  'LIKE', "%$keyword%");
+                $query->orWhere('department',  'LIKE', "%$keyword%");
+            }
+            $result = $query->get();
+            if (count($result) > 0) {
                 return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], $this->successStatus);
