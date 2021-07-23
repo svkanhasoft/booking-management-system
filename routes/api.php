@@ -18,8 +18,8 @@ Route::prefix('superadmin')->group(function () {
     Route::post('/signin', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'signin'])->name('signin');
     Route::post('/forgot', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'forgot'])->name('forgot');
     Route::post('/otp-verify', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'otpVerify'])->name('otp-verify');
-    Route::post('/change-password', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'changePassword'])->name('change-password');
     Route::middleware(['auth:api'])->group(function () {
+        Route::post('/change-password', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'changePassword'])->name('change-password');
         Route::post('/get-detail', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'details'])->name('get-details');
         Route::get('/logout', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'logout'])->name('logout');
         Route::post('/add-designation', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'add'])->name('add-designation');
@@ -35,11 +35,9 @@ Route::prefix('organization')->group(function () {
     Route::post('/signin', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signin'])->name('signin');
     Route::post('/forgot', [App\Http\Controllers\API\Organization\OrganizationController::class, 'forgot'])->name('forgot');
     Route::post('/otp-verify', [App\Http\Controllers\API\Organization\OrganizationController::class, 'otpVerify'])->name('otp-verify');
-    Route::post('/change-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changePassword'])->name('change-password');
-    // Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
-    // Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
+    Route::post('/reset-password', [App\Http\Controllers\API\Signees\OrganizationController::class, 'resetPassword'])->name('reset-password');
     Route::middleware(['auth:api'])->group(function () {
-        
+        Route::post('/change-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changePassword'])->name('change-password');
         Route::get('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details'])->name('get-details');
         Route::get('/organization-list/{search?}/{status?}', [App\Http\Controllers\API\Organization\OrganizationController::class, 'organizationlist'])->name('organization-list');
         Route::get('/logout', [App\Http\Controllers\API\Organization\OrganizationController::class, 'logout'])->name('logout');
@@ -74,6 +72,7 @@ Route::prefix('organization')->group(function () {
     Route::prefix('user')->group(function () {
         Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
         Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
+        Route::post('/reset-password', [App\Http\Controllers\API\Signees\UserController::class, 'resetPassword'])->name('reset-password');
         Route::middleware(['auth:api'])->group(function () {
             Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
             Route::get('/get-user-list', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist'])->name('get-user-list');

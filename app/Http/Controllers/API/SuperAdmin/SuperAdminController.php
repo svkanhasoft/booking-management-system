@@ -15,6 +15,7 @@ use Hash;
 class SuperAdminController extends Controller
 {
     public $successStatus = 200;
+    protected $userId;
     /** 
      * login api 
      * 
@@ -22,6 +23,12 @@ class SuperAdminController extends Controller
      */
     public function __construct()
     {
+        $this->middleware(function ($request, $next) {
+            if (!empty(Auth::user())) {
+                $this->userId = Auth::user()->id;
+            }
+            return $next($request);
+        });
     }
 
     public function index(Request $request)
@@ -167,13 +174,17 @@ class SuperAdminController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
-            'email' => 'required',
+            'old_password' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $user = User::where('role', 'SUPERADMIN')->where('email', $request->all('email'))->first();
+        if (!(Hash::check($request->old_password, Auth::user()->password))) {
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
+        }
+        // $user = User::where('role', 'SUPERADMIN')->where('email', $request->all('email'))->first();
+        $user = User::where('role', 'SUPERADMIN')->where('id', $this->userId)->first();
         if (!empty($user)) {
             $userObj = User::find($user['id']);
             $userObj['password'] = Hash::make($request->post('password'));

@@ -190,13 +190,17 @@ class OrganizationController extends Controller
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
-            'email' => 'required',
+            'old_password' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $user = User::where('role', 'ORGANIZATION')->where('email', $request->all('email'))->first();
+        if (!(Hash::check($request->old_password, Auth::user()->password))) {
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
+        }
+        $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
+        // $user = User::where('role', 'ORGANIZATION')->where('email', $request->all('email'))->first();
         if (!empty($user)) {
             $userObj = User::find($user['id']);
             $userObj['password'] = Hash::make($request->post('password'));
@@ -321,4 +325,36 @@ class OrganizationController extends Controller
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
     }
+
+     /** 
+     * reset Password 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
+            'decode_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $user = Auth::user();
+        $input = $request->all();
+        $decodeId = base64_decode($input['decode_id']);
+        // base64_encode
+
+        $userObj = User::find($decodeId);
+        $userObj['password'] = Hash::make($input['password']);
+        $res = $userObj->save();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+        }
+    }
+    
 }

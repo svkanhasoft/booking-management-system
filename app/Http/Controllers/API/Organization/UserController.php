@@ -163,4 +163,35 @@ class UserController extends Controller
             return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 200);
         }
     }
+
+     /** 
+     * reset Password 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
+            'decode_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $user = Auth::user();
+        $input = $request->all();
+        $decodeId = base64_decode($input['decode_id']);
+        // base64_encode
+
+        $userObj = User::find($decodeId);
+        $userObj['password'] = Hash::make($input['password']);
+        $res = $userObj->save();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+        }
+    }
 }

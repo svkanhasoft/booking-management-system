@@ -165,12 +165,17 @@ class SigneesController extends Controller
     public function changePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
+        }
+      
+        if (!(Hash::check($request->old_password, Auth::user()->password))) {
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
         }
         $user = User::where('role', 'SIGNEE')->where('id', $this->userId)->first();
         if (!empty($user)) {
