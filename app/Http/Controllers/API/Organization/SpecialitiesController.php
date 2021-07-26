@@ -39,9 +39,9 @@ class SpecialitiesController extends Controller
         if (!empty($keyword)) {
             $specialities = Speciality::where('user_id', 'LIKE', "%$keyword%")
                 ->orWhere('speciality_name', 'LIKE', "%$keyword%")
-                ->latest()->simplePaginate($perPage);
+                ->latest()->paginate($perPage);
         } else {
-            $specialities = Speciality::latest()->simplePaginate($perPage);
+            $specialities = Speciality::latest()->paginate($perPage);
         }
 
         return view('organization.specialities.index', compact('specialities'));
@@ -106,7 +106,7 @@ class SpecialitiesController extends Controller
             // echo $keyword;exit;
             $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
         }
-        $speciality =  $query->latest('specialities.created_at')->simplePaginate($perPage);
+        $speciality =  $query->latest('specialities.created_at')->paginate($perPage);
         $count =  $query->latest('specialities.created_at')->count();
         if ($count > 0) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);

@@ -113,7 +113,7 @@ class User extends Authenticatable
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->where('users.parent_id', $userId);
         $query->where('users.role', "STAFF");
-        $userDetais = $query->simplePaginate(15);
+        $userDetais = $query->paginate(15);
         return $userDetais;
     }
 

@@ -60,18 +60,13 @@ class OrganizationController extends Controller
      */
     public function signup(Request $request)
     {
-       
-        // if ($mailRes) {
-        //     return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
-        // } else {
-        //     return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
-        // }
-        // exit;
+      
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
             'password' => 'required|min:6',
             'email' => 'required|email|unique:users',
         ]);
+        
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
@@ -85,19 +80,19 @@ class OrganizationController extends Controller
         $input['role'] = 'ORGANIZATION';
         // dd($input);
         $user = User::create($input);
-      
+
         $userRes = User::find($user['id']);
         if (!empty($userRes)) {
             $requestData = $request->all();
             $requestData['user_id'] = $user['id'];
             $requestData['start_date'] = date('Y-m-d');
-            $requestData['end_date'] =  date('Y-m-d', strtotime('+1 years'));;
+            $requestData['end_date'] =  date('Y-m-d', strtotime('+1 month'));
             $requestData['plan'] = 'Basic';
             Organization::create($requestData);
 
             $userObj = new User();
             $mailRes =  $userObj->sendRegisterEmail($request);
-           
+
             $userRes['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Register Successfully completed.', 'data' => $userRes], $this->successStatus);
         } else {
@@ -316,17 +311,17 @@ class OrganizationController extends Controller
         if (!empty($status)) {
             $query->Where('users.status',  "$status");
         }
-        $res =  $query->latest('users.created_at')->simplePaginate($perPage);
+        $res =  $query->latest('users.created_at')->paginate($perPage);
         $count =  $query->latest('users.created_at')->count();
         if ($count > 0) {
-        // if ($res) {
+            // if ($res) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
     }
 
-     /** 
+    /** 
      * reset Password 
      * 
      * @return \Illuminate\Http\Response 
@@ -356,5 +351,48 @@ class OrganizationController extends Controller
             return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
         }
     }
-    
+
+
+    /** 
+     * update profile api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function update(Request $request)
+    {
+        // print_r($request->all());
+        // exit;
+        $validator = Validator::make($request->all(), [
+            'organization_name' => 'required',
+            'contact_no' => 'required|min:6',
+            'contact_person_name' => 'required',
+            'address_line_1' => 'required',
+            'address_line_2' => 'required',
+            'city' => 'required',
+            'postcode' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+
+        $requestData = $request->all();
+        $role = User::findOrFail(Auth::user()->id);
+        $roleUpdated = $role->update($requestData);
+        if (!empty($roleUpdated)) {
+            $requestData = $request->all();
+            $org = Organization::where(['user_id' => Auth::user()->id])->update([
+                "organization_name" => $requestData['organization_name'],
+                "contact_person_name" => $requestData['contact_person_name'],
+                "contact_no" => $requestData['contact_no'],
+                "address_line_1" => $requestData['address_line_1'],
+                "address_line_2" => $requestData['address_line_2'],
+                "city" => $requestData['city'],
+                "postcode" => $requestData['postcode'],
+            ]);
+            return response()->json(['status' => true, 'message' => 'Update profile successfully.', 'data' => $requestData], $this->successStatus);
+        } else {
+            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+        }
+    }
 }

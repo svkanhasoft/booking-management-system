@@ -37,6 +37,7 @@ Route::prefix('organization')->group(function () {
     Route::post('/otp-verify', [App\Http\Controllers\API\Organization\OrganizationController::class, 'otpVerify'])->name('otp-verify');
     Route::post('/reset-password', [App\Http\Controllers\API\Signees\OrganizationController::class, 'resetPassword'])->name('reset-password');
     Route::middleware(['auth:api'])->group(function () {
+        Route::post('/update', [App\Http\Controllers\API\Organization\OrganizationController::class, 'update'])->name('update');
         Route::post('/change-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changePassword'])->name('change-password');
         Route::get('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details'])->name('get-details');
         Route::get('/organization-list/{search?}/{status?}', [App\Http\Controllers\API\Organization\OrganizationController::class, 'organizationlist'])->name('organization-list');
