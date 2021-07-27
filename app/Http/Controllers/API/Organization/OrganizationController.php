@@ -9,7 +9,7 @@ use Validator;
 use App\Models\User;
 use App\Models\Organization;
 use Hash;
-
+use Config;
 class OrganizationController extends Controller
 {
     public $successStatus = 200;
@@ -63,6 +63,12 @@ class OrganizationController extends Controller
       
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
+            'contact_person_name' => 'required',
+            'contact_no' => 'required',
+            'address_line_1' => 'required',
+            'address_line_2' => 'required',
+            'city' => 'required',
+            'postcode' => 'required',
             'password' => 'required|min:6',
             'email' => 'required|email|unique:users',
         ]);
@@ -246,8 +252,8 @@ class OrganizationController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $keyword = $request->get('keyword');
-        $perPage = 10;
-
+        $perPage = Config::get('constants.pagination.perPage');
+        
         $query = User::select("users.*");
         $query->leftjoin('organization_user_details as oud', 'oud.user_id', '=', 'users.id');
         $query->leftjoin('roles',  'roles.id', '=', 'oud.role_id');
@@ -280,9 +286,7 @@ class OrganizationController extends Controller
         // }
         $keyword = $request->get('search');
         $status = $request->get('status');
-        $perPage = 10;
-        // echo $status . $keyword;
-        // exit;
+        $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             "users.*",
             'org.organization_name',
@@ -294,10 +298,10 @@ class OrganizationController extends Controller
             'org.postcode'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-        $query->Where('users.role',  "ORGANIZATION");
+        $query->where('users.role',  "ORGANIZATION");
 
         if (!empty($keyword)) {
-            $query->orWhere('users.first_name',  'LIKE', "%$keyword%");
+            $query->Where('users.first_name',  'LIKE', "%$keyword");
             $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
             $query->orWhere('users.email',  'LIKE', "%$keyword%");
             $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
@@ -312,7 +316,7 @@ class OrganizationController extends Controller
             $query->Where('users.status',  "$status");
         }
         $res =  $query->latest('users.created_at')->paginate($perPage);
-        $count =  $query->latest('users.created_at')->count();
+        $count =  $query->latest('users.created_at')->paginate($perPage)->count();
         if ($count > 0) {
             // if ($res) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);

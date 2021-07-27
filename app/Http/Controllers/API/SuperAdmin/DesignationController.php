@@ -11,7 +11,7 @@ use Session;
 use App\Models\User;
 use App\Models\Designation;
 use Hash;
-
+use Config;
 class DesignationController extends Controller
 {
     public $successStatus = 200;
@@ -38,7 +38,7 @@ class DesignationController extends Controller
      */
     public function list(Request $request)
     {
-        $perPage = 25;
+        $perPage = Config::get('constants.pagination.perPage');
         $designationList = Designation::select('id','designation_name')->latest()->paginate($perPage);
         if ($designationList) {
             return response()->json(['status' => true, 'message' => 'Designation get Successfully', 'data' => $designationList], $this->successStatus);

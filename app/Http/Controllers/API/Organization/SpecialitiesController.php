@@ -9,7 +9,7 @@ use Validator;
 use App\Models\User;
 use App\Models\Organization;
 use Hash;
-
+use Config;
 use App\Models\Speciality;
 
 class SpecialitiesController extends Controller
@@ -34,7 +34,7 @@ class SpecialitiesController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->get('search');
-        $perPage = 25;
+        $perPage = Config::get('constants.pagination.perPage');
 
         if (!empty($keyword)) {
             $specialities = Speciality::where('user_id', 'LIKE', "%$keyword%")
