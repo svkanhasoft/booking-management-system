@@ -9,6 +9,7 @@ use DateTime;
 use Validator;
 use Session;
 use App\Models\User;
+use App\Models\Organization;
 use App\Models\Designation;
 use Hash;
 
@@ -237,7 +238,60 @@ class SuperAdminController extends Controller
     //             }
     //             $userObj->save();
     //             $success =  User::findOrFail($user->id);
-
     //     return response()->json(['data'=> $success, 'status'=>true, 'message'=> 'Your profile Successfully changed'], $this->successStatus); 
     // }
+
+    /** 
+     * get organization details api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function getOrgdetails(Request $request, $id)
+    {
+        $user = User::find($id);
+        $user->Organization;
+        return response()->json([
+            'status' => true, 'message' => 'organization Details Get Successfully',
+            'data' => $user
+        ], $this->successStatus);
+    }
+
+    public function updateorg(Request $request)
+    {
+        // print_r($request->all());
+        // exit;
+        $validator = Validator::make($request->all(), [
+            'organization_name' => 'required',
+            'contact_no' => 'required|min:6',
+            'contact_person_name' => 'required',
+            'address_line_1' => 'required',
+            'address_line_2' => 'required',
+            'city' => 'required',
+            'postcode' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+
+        $requestData = $request->all();
+        $role = User::findOrFail($requestData['user_id']);
+        $roleUpdated = $role->update($requestData);
+        if (!empty($roleUpdated)) {
+            $requestData = $request->all();
+            $org = Organization::where(['user_id' =>  $requestData['user_id']])->update([
+                "organization_name" => $requestData['organization_name'],
+                "contact_person_name" => $requestData['contact_person_name'],
+                "contact_no" => $requestData['contact_no'],
+                "address_line_1" => $requestData['address_line_1'],
+                "address_line_2" => $requestData['address_line_2'],
+                "city" => $requestData['city'],
+                "postcode" => $requestData['postcode'],
+            ]);
+            return response()->json(['status' => true, 'message' => 'Update profile successfully.', 'data' => $requestData], $this->successStatus);
+        } else {
+            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+        }
+    }
+
 }
