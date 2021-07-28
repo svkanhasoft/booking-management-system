@@ -59,6 +59,38 @@ class SuperAdminController extends Controller
             return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
         }
     }
+
+    /** 
+     * login for super admin and  organization admin api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function signinV2(Request $request)
+    {
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION'))->count();
+        // $checkRecord = User::where('email', $request->all('email'))->where('role', 'SUPERADMIN')->count();
+        if ($checkRecord == 0) {
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+        }
+
+        // if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SUPERADMIN'])) {
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+            $user = Auth::user();
+            $user['token'] =  $user->createToken('MyApp')->accessToken;
+            return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+        }
+    }
     /** 
      * Register api 
      * 
@@ -293,5 +325,4 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
         }
     }
-
 }

@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('superadmin')->group(function () {
-    Route::post('/signin', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'signin']);
+    // Route::post('/signin', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'signin']);
+    Route::post('/signin', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'signinV2']);
     Route::post('/forgot', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'forgot']);
     Route::post('/otp-verify', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'otpVerify']);
     Route::middleware(['auth:api'])->group(function () {
@@ -28,7 +29,7 @@ Route::prefix('superadmin')->group(function () {
         Route::delete('/delete-designation/{id?}', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'destroy'])->name('delete-designation');
         Route::get('/get-designation-list', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'list'])->name('get-designation-list');
         Route::get('/get-organization-detail/{id?}', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'getOrgdetails'])->name('get-organization-detail');
-        Route::post('/update', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'updateorg']);
+        Route::post('/update-org', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'updateorg']);
     });
 });
 

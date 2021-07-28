@@ -104,6 +104,39 @@ class UserController extends Controller
             return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
         }
     }
+    /**
+     *  creating a new resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function signinV2(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "email" => 'required',
+            "password" => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+
+        $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
+        if (empty($checkRecord)) {
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+        }
+        if($checkRecord->status !='Active'){
+            return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
+        }
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'STAFF'])) {
+            $userResult = Auth::user();
+            $UserObj = new User();
+            $user = $UserObj->getOrganizationDetails($userResult['id']);
+            $user[0]['token'] =  $userResult->createToken('User')->accessToken;
+            return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+        }
+    }
 
     /** 
      * Get User details 
