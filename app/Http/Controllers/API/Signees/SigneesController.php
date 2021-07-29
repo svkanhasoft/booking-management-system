@@ -167,7 +167,7 @@ class SigneesController extends Controller
         $validator = Validator::make($request->all(), [
             'old_password' => 'required',
             'password' => 'required|min:6',
-            'confirm_password' => 'required|same:password',
+            'conform_password' => 'required|same:password',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -280,7 +280,7 @@ class SigneesController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required',
-            'confirm_password' => 'required|same:password',
+            'conform_password' => 'required|same:password',
             'decode_id' => 'required',
         ]);
         if ($validator->fails()) {

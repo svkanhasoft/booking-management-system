@@ -159,8 +159,18 @@
                                                         {{ $details['data']['email'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A"><a href="{{ route('reset-password', ['id' => base64_encode($details['data']['id'])]) }}">Click
+                                                    @if(request()->getHttpHost() =='localhost:8000')
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                        <a href="http://localhost:3000/change-password?query={{ base64_encode($details['data']['id']) }}">Click
                                                             Here to reset your password.</a>
+                                                        @else
+                                                        <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                            <a href="http://adminbooking.kanhasoftdev.com/change-password?query={{ base64_encode($details['data']['id']) }}">Click
+                                                                Here to reset your password.</a>
+                                                            @endif
+
+                                                            <!-- <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A"><a href="{{ route('reset-password', ['id' => base64_encode($details['data']['id'])]) }}">Click
+                                                            Here to reset your password.</a> -->
                                                 </p> <br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
                                                         you for being a part of the booking management system family.</span></p>

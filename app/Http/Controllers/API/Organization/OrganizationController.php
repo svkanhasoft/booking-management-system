@@ -189,7 +189,7 @@ class OrganizationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
-            'confirm_password' => 'required|same:password',
+            'conform_password' => 'required|same:password',
             'old_password' => 'required',
         ]);
         if ($validator->fails()) {
@@ -333,7 +333,7 @@ class OrganizationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required',
-            'confirm_password' => 'required|same:password',
+            'conform_password' => 'required|same:password',
             'decode_id' => 'required',
         ]);
         if ($validator->fails()) {

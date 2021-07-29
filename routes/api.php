@@ -19,6 +19,7 @@ Route::prefix('superadmin')->group(function () {
     Route::post('/signin', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'signinV2']);
     Route::post('/forgot', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'forgot']);
     Route::post('/otp-verify', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'otpVerify']);
+    Route::post('/reset-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'resetPassword']);
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/change-password', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'changePassword'])->name('change-password');
         Route::get('/get-detail', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'details'])->name('get-details');

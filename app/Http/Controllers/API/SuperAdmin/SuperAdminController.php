@@ -77,7 +77,7 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION'))->first();
-        if (empty($checkRecord) ) {
+        if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
         if ($checkRecord->status !== 'Active') {
@@ -166,10 +166,11 @@ class SuperAdminController extends Controller
      */
     public function forgot(Request $request)
     {
-        $user = User::where('role', "SUPERADMIN")->where('email', $request->all('email'))->get()->toArray();
-        $userObj = new User();
-        $mailRes =  $userObj->sendForgotEmail($request);
-        if ($mailRes) {
+        $user = User::where('email', $request->all('email'))->count();
+        // $user = User::where('role', "SUPERADMIN")->where('email', $request->all('email'))->count();
+        if ($user >  0) {
+            $userObj = new User();
+            $mailRes =  $userObj->sendForgotEmail($request);
             return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
@@ -206,7 +207,7 @@ class SuperAdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
-            'confirm_password' => 'required|same:password',
+            'conform_password' => 'required|same:password',
             'old_password' => 'required',
         ]);
         if ($validator->fails()) {
@@ -280,8 +281,10 @@ class SuperAdminController extends Controller
      */
     public function getOrgdetails(Request $request, $id)
     {
-        $user = User::find($id);
-        $user->Organization;
+        $userObj = new User();
+        $user = $userObj->getOrganizationById($id);
+        // $user = User::find($id);
+        // $user->Organization;
         return response()->json([
             'status' => true, 'message' => 'organization Details Get Successfully',
             'data' => $user

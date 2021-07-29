@@ -225,4 +225,26 @@ class User extends Authenticatable
         // $randstring =  mt_rand($characters, 7);
         // return $randstring;
     }
+
+
+    public function getOrganizationById($userId = null)
+    {
+
+        $query = User::select(
+            'users.id',
+            'users.first_name',
+            'users.last_name',
+            'users.email',
+            'users.parent_id',
+            'organizations.*',
+            'organizations.contact_person_name',
+            'organizations.contact_no',
+            'organizations.address_line_1',
+            'organizations.address_line_2',
+        );
+        $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.id');
+        $query->where('users.id', $userId);
+        $userDetais = $query->first();
+        return $userDetais;
+    }
 }
