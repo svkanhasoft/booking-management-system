@@ -68,8 +68,7 @@ class OrganizationController extends Controller
             'address_line_1' => 'required',
             'address_line_2' => 'required',
             'city' => 'required',
-            'postcode' => 'required',
-            'password' => 'required|min:6',
+            // 'password' => 'required|min:6',
             'email' => 'required|email|unique:users',
         ]);
         
@@ -79,7 +78,7 @@ class OrganizationController extends Controller
         }
 
         $input = $request->all();
-        $input['password'] = Hash::make($input['password']);
+        $input['password'] = Hash::make(123456);
         $input['first_name'] = $input['organization_name'];
         $input['last_name'] = $input['organization_name'];
         $input['status'] = 'Active';

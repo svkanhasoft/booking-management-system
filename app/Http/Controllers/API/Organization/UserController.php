@@ -43,7 +43,7 @@ class UserController extends Controller
             "email" => 'required|unique:users',
             "first_name" => 'required',
             "last_name" => 'required',
-            "password" => 'required',
+            // "password" => 'required',
             "contact_number" => 'required',
             "role_id" => 'required',
             "designation_id" => 'required',
@@ -53,7 +53,7 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-        $requestData['password'] = Hash::make($request->post('password'));
+        $requestData['password'] = Hash::make(123456);
         $requestData['parent_id'] = $this->userId;
         $requestData['role'] = 'STAFF';
         $userCreated = User::create($requestData);

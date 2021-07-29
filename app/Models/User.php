@@ -183,6 +183,7 @@ class User extends Authenticatable
             // $sss = \Mail::to('testshailesh1@gmail.com')
             $emailRes = \Mail::to($user['email'])
                 ->cc('shaileshv.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
@@ -209,6 +210,7 @@ class User extends Authenticatable
             // $emailRes = \Mail::to('testshailesh1@gmail.com')
             $emailRes = \Mail::to($user['email'])
                 ->cc('shaileshv.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
                 // ->bcc('testshailesh1@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
             return true;

@@ -76,12 +76,13 @@ class SuperAdminController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION'))->count();
-        // $checkRecord = User::where('email', $request->all('email'))->where('role', 'SUPERADMIN')->count();
-        if ($checkRecord == 0) {
+        $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION'))->first();
+        if (empty($checkRecord) ) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
-
+        if ($checkRecord->status !== 'Active') {
+            return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
+        }
         // if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SUPERADMIN'])) {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
@@ -112,7 +113,6 @@ class SuperAdminController extends Controller
         $input['password'] = Hash::make($input['password']);
         // $input['status'] = 'ACTIVE';
         $user = User::create($input);
-
         $userRes = User::find($user['id']);
         if (!empty($userRes)) {
             $userRes['token'] =  $user->createToken('MyApp')->accessToken;
