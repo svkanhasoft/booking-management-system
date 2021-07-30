@@ -32,11 +32,12 @@ Route::prefix('superadmin')->group(function () {
         Route::get('/get-organization-detail/{id?}', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'getOrgdetails'])->name('get-organization-detail');
         Route::post('/update-org', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'updateorg']);
         Route::post('/signup', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signup'])->name('signup');
+        Route::get('/organization-list/{search?}/{status?}', [App\Http\Controllers\API\Organization\OrganizationController::class, 'organizationlist'])->name('organization-list');
     });
 });
 
 Route::prefix('organization')->group(function () {
-    Route::post('/signup', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signup'])->name('signup');
+    // Route::post('/signup', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signup'])->name('signup');
     Route::post('/signin', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signin'])->name('signin');
     Route::post('/forgot', [App\Http\Controllers\API\Organization\OrganizationController::class, 'forgot'])->name('forgot');
     Route::post('/otp-verify', [App\Http\Controllers\API\Organization\OrganizationController::class, 'otpVerify'])->name('otp-verify');
@@ -45,7 +46,7 @@ Route::prefix('organization')->group(function () {
         Route::post('/update', [App\Http\Controllers\API\Organization\OrganizationController::class, 'update'])->name('update');
         Route::post('/change-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changePassword'])->name('change-password');
         Route::get('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details']);
-        Route::get('/organization-list/{search?}/{status?}', [App\Http\Controllers\API\Organization\OrganizationController::class, 'organizationlist'])->name('organization-list');
+        // Route::get('/organization-list/{search?}/{status?}', [App\Http\Controllers\API\Organization\OrganizationController::class, 'organizationlist'])->name('organization-list');
         Route::get('/logout', [App\Http\Controllers\API\Organization\OrganizationController::class, 'logout'])->name('logout');
         Route::post('/add-role', [App\Http\Controllers\API\Organization\RoleController::class, 'create'])->name('add-role');
         Route::post('/edit-role', [App\Http\Controllers\API\Organization\RoleController::class, 'edit'])->name('edit-role');

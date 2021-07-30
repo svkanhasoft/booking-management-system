@@ -235,6 +235,7 @@ class User extends Authenticatable
             'users.first_name',
             'users.last_name',
             'users.email',
+            'users.status',
             'users.parent_id',
             'organizations.*',
             'organizations.contact_person_name',
