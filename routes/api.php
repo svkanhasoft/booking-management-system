@@ -31,6 +31,7 @@ Route::prefix('superadmin')->group(function () {
         Route::get('/get-designation-list', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'list'])->name('get-designation-list');
         Route::get('/get-organization-detail/{id?}', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'getOrgdetails'])->name('get-organization-detail');
         Route::post('/update-org', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'updateorg']);
+        Route::post('/signup', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signup'])->name('signup');
     });
 });
 
@@ -85,15 +86,6 @@ Route::prefix('organization')->group(function () {
         });
     });
 });
-
-// Route::prefix('user')->group(function () {
-//     Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create'])->name('signup-user');
-//     Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin'])->name('signin-user');
-//     Route::middleware(['auth:api'])->group(function () {
-//         Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails'])->name('get-user-details');
-//         Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword'])->name('user-change-password');
-//     });
-// });
 
 Route::prefix('signee')->group(function () {
     Route::post('/signup-signee', [App\Http\Controllers\API\Signees\SigneesController::class, 'signup'])->name('signup-signee');
