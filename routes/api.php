@@ -23,6 +23,7 @@ Route::prefix('superadmin')->group(function () {
     Route::middleware(['auth:api'])->group(function () {
         Route::post('/change-password', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'changePassword'])->name('change-password');
         Route::get('/get-detail', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'details'])->name('get-details');
+        Route::post('/update-profile', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'updates']);
         Route::get('/logout', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'logout'])->name('logout');
         Route::post('/add-designation', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'add'])->name('add-designation');
         Route::post('/edit-designation', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'edit'])->name('edit-designation');

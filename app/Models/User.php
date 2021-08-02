@@ -23,9 +23,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password',
-        'remember_token', 'created_at', 'updated_at', 'role', 'status', 'profile_pic',
-        'is_verified', 'ip_address', 'created_by', 'updated_by', 'is_deleted', 'parent_id'
+        'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password','remember_token',
+        'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'is_verified', 'ip_address', 'is_deleted', 
+        'parent_id','postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number'
     ];
 
     /**
@@ -34,7 +34,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'created_by', 'updated_by', 'remember_token',
+        'password', 'remember_token',
         'deleted_at', 'created_at', 'updated_at'
     ];
 
@@ -68,9 +68,9 @@ class User extends Authenticatable
             'parentUser.email  as org_email',
             'organizations.organization_name',
             'organizations.contact_person_name',
-            'organizations.contact_no',
-            'organizations.address_line_1',
-            'organizations.address_line_2',
+            'organizations.contact_number',
+            'users.address_line_1',
+            'users.address_line_2',
         );
         $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
         $query->Join('roles',  'roles.id', '=', 'oud.role_id');
@@ -102,9 +102,9 @@ class User extends Authenticatable
             'parentUser.email  as org_email',
             'organizations.organization_name',
             'organizations.contact_person_name',
-            'organizations.contact_no',
-            'organizations.address_line_1',
-            'organizations.address_line_2',
+            'organizations.contact_number',
+            'users.address_line_1',
+            'users.address_line_2',
         );
         $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
         $query->leftJoin('roles',  'roles.id', '=', 'oud.role_id');
@@ -134,9 +134,9 @@ class User extends Authenticatable
             'parentUser.email  as org_email',
             'organizations.organization_name',
             'organizations.contact_person_name',
-            'organizations.contact_no',
-            'organizations.address_line_1',
-            'organizations.address_line_2',
+            'organizations.contact_number',
+            'users.address_line_1',
+            'users.address_line_2',
             'signees_detail.candidate_id',
             'signees_detail.address_line_1',
             'signees_detail.address_line_2',
@@ -222,8 +222,6 @@ class User extends Authenticatable
     public function RandomString()
     {
         return substr(str_shuffle(str_repeat("0123456789szABCDEFGHIJUVWXYZ", 8)), 0, 8);
-        // $randstring =  mt_rand($characters, 7);
-        // return $randstring;
     }
 
 
@@ -232,16 +230,12 @@ class User extends Authenticatable
 
         $query = User::select(
             'users.id',
-            'users.first_name',
-            'users.last_name',
-            'users.email',
-            'users.status',
-            'users.parent_id',
+            'users.*',
             'organizations.*',
             'organizations.contact_person_name',
-            'organizations.contact_no',
-            'organizations.address_line_1',
-            'organizations.address_line_2',
+            'organizations.contact_number',
+            'users.address_line_1',
+            'users.address_line_2',
         );
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.id');
         $query->where('users.id', $userId);
