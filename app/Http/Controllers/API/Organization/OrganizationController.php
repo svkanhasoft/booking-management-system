@@ -64,7 +64,7 @@ class OrganizationController extends Controller
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
             'contact_person_name' => 'required',
-            'contact_no' => 'required',
+            'contact_number' => 'required',
             'address_line_1' => 'required',
             'address_line_2' => 'required',
             'city' => 'required',
@@ -290,7 +290,7 @@ class OrganizationController extends Controller
             "users.*",
             'org.organization_name',
             'org.contact_person_name',
-            'org.contact_no',
+            'org.contact_number',
             'org.address_line_1',
             'org.address_line_2',
             'org.city',
@@ -305,7 +305,7 @@ class OrganizationController extends Controller
             $query->orWhere('users.email',  'LIKE', "%$keyword%");
             $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
             $query->orWhere('org.contact_person_name',  'LIKE', "%$keyword%");
-            $query->orWhere('org.contact_no',  'LIKE', "%$keyword%");
+            $query->orWhere('org.contact_number',  'LIKE', "%$keyword%");
             $query->orWhere('org.address_line_1',  'LIKE', "%$keyword%");
             $query->orWhere('org.address_line_2',  'LIKE', "%$keyword%");
             $query->orWhere('org.city',  'LIKE', "%$keyword%");
@@ -367,7 +367,7 @@ class OrganizationController extends Controller
         // exit;
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
-            'contact_no' => 'required|min:6',
+            'contact_number' => 'required|min:6',
             'contact_person_name' => 'required',
             'address_line_1' => 'required',
             'address_line_2' => 'required',
@@ -387,7 +387,7 @@ class OrganizationController extends Controller
             $org = Organization::where(['user_id' => Auth::user()->id])->update([
                 "organization_name" => $requestData['organization_name'],
                 "contact_person_name" => $requestData['contact_person_name'],
-                "contact_no" => $requestData['contact_no'],
+                "contact_number" => $requestData['contact_number'],
                 "address_line_1" => $requestData['address_line_1'],
                 "address_line_2" => $requestData['address_line_2'],
                 "city" => $requestData['city'],
