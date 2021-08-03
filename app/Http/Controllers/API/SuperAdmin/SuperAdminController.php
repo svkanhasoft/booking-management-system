@@ -87,6 +87,10 @@ class SuperAdminController extends Controller
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
+
+            User::where(['id' => $user->id])->update([
+                'last_login_date' => date('Y-m-d H:i:s')
+            ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
@@ -222,6 +226,7 @@ class SuperAdminController extends Controller
         if (!empty($user)) {
             $userObj = User::find($user['id']);
             $userObj['password'] = Hash::make($request->post('password'));
+            $userObj['password_change'] = 1;
             $userObj->save();
             return response()->json(['status' => true, 'message' => 'Password Successfully changed, please login'], $this->successStatus);
         } else {

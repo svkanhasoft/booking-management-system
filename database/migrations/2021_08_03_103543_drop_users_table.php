@@ -14,7 +14,7 @@ class DropUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->date('last_login_date')->nullable()->after('contact_number');
+            $table->dateTime('last_login_date')->nullable()->after('contact_number');
             $table->renameColumn('is_verified', 'password_change');
             $table->dropColumn(['created_by', 'updated_by','ip_address']);
         });
