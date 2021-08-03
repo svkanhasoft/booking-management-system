@@ -68,7 +68,7 @@ class User extends Authenticatable
             'parentUser.email  as org_email',
             'organizations.organization_name',
             'organizations.contact_person_name',
-            'organizations.contact_number',
+            'users.contact_number',
             'users.address_line_1',
             'users.address_line_2',
         );
@@ -102,7 +102,7 @@ class User extends Authenticatable
             'parentUser.email  as org_email',
             'organizations.organization_name',
             'organizations.contact_person_name',
-            'organizations.contact_number',
+            'users.contact_number',
             'users.address_line_1',
             'users.address_line_2',
         );
@@ -134,7 +134,7 @@ class User extends Authenticatable
             'parentUser.email  as org_email',
             'organizations.organization_name',
             'organizations.contact_person_name',
-            'organizations.contact_number',
+            'users.contact_number',
             'users.address_line_1',
             'users.address_line_2',
             'signees_detail.candidate_id',
@@ -233,7 +233,7 @@ class User extends Authenticatable
             'users.*',
             'organizations.*',
             'organizations.contact_person_name',
-            'organizations.contact_number',
+            'users.contact_number',
             'users.address_line_1',
             'users.address_line_2',
         );
