@@ -316,13 +316,13 @@ class SuperAdminController extends Controller
             $org = Organization::where(['user_id' =>  $requestData['user_id']])->update([
                 "organization_name" => $requestData['organization_name'],
                 "contact_person_name" => $requestData['contact_person_name'],
-                "contact_number" => $requestData['contact_number'],
-                "address_line_1" => $requestData['address_line_1'],
-                "address_line_2" => $requestData['address_line_2'],
-                "city" => $requestData['city'],
-                "postcode" => $requestData['postcode'],
+                // "contact_number" => $requestData['contact_number'],
+                // "address_line_1" => $requestData['address_line_1'],
+                // "address_line_2" => $requestData['address_line_2'],
+                // "city" => $requestData['city'],
+                // "postcode" => $requestData['postcode'],
             ]);
-            return response()->json(['status' => true, 'message' => 'Organization detail profile successfully.', 'data' => $requestData], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Organization detail update successfully.', 'data' => $requestData], $this->successStatus);
         } else {
             return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
         }
