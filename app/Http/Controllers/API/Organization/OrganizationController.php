@@ -290,11 +290,11 @@ class OrganizationController extends Controller
             "users.*",
             'org.organization_name',
             'org.contact_person_name',
-            'org.contact_number',
-            'org.address_line_1',
-            'org.address_line_2',
-            'org.city',
-            'org.postcode'
+            'users.contact_number',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.postcode'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
         $query->where('users.role',  "ORGANIZATION");
@@ -305,11 +305,11 @@ class OrganizationController extends Controller
             $query->orWhere('users.email',  'LIKE', "%$keyword%");
             $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
             $query->orWhere('org.contact_person_name',  'LIKE', "%$keyword%");
-            $query->orWhere('org.contact_number',  'LIKE', "%$keyword%");
-            $query->orWhere('org.address_line_1',  'LIKE', "%$keyword%");
-            $query->orWhere('org.address_line_2',  'LIKE', "%$keyword%");
-            $query->orWhere('org.city',  'LIKE', "%$keyword%");
-            $query->orWhere('org.postcode',  'LIKE', "%$keyword%");
+            $query->orWhere('users.contact_number',  'LIKE', "%$keyword%");
+            $query->orWhere('users.address_line_1',  'LIKE', "%$keyword%");
+            $query->orWhere('users.address_line_2',  'LIKE', "%$keyword%");
+            $query->orWhere('users.city',  'LIKE', "%$keyword%");
+            $query->orWhere('users.postcode',  'LIKE', "%$keyword%");
         }
         if (!empty($status)) {
             $query->Where('users.status',  "$status");
