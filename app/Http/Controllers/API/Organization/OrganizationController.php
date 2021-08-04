@@ -66,7 +66,7 @@ class OrganizationController extends Controller
             'contact_person_name' => 'required',
             'contact_number' => 'required',
             'address_line_1' => 'required',
-            'address_line_2' => 'required',
+            // 'address_line_2' => 'required',
             'city' => 'required',
             // 'password' => 'required|min:6',
             'email' => 'required|email|unique:users',
@@ -197,7 +197,7 @@ class OrganizationController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
-            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
         $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
         // $user = User::where('role', 'ORGANIZATION')->where('email', $request->all('email'))->first();
@@ -370,7 +370,7 @@ class OrganizationController extends Controller
             'contact_number' => 'required|min:6',
             'contact_person_name' => 'required',
             'address_line_1' => 'required',
-            'address_line_2' => 'required',
+            // 'address_line_2' => 'required',
             'city' => 'required',
             'postcode' => 'required',
         ]);

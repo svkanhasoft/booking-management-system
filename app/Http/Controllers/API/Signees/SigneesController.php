@@ -175,7 +175,7 @@ class SigneesController extends Controller
         }
       
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
-            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
         $user = User::where('role', 'SIGNEE')->where('id', $this->userId)->first();
         if (!empty($user)) {

@@ -219,7 +219,7 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
-            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
         // $user = User::where('role', 'SUPERADMIN')->where('email', $request->all('email'))->first();
         $user = User::where('role', 'SUPERADMIN')->where('id', $this->userId)->first();
