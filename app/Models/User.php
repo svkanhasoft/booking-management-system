@@ -231,8 +231,11 @@ class User extends Authenticatable
         $query = User::select(
             'users.id',
             'users.*',
-            'organizations.*',
+            'organizations.organization_name',
             'organizations.contact_person_name',
+            'organizations.plan',
+            'organizations.start_date',
+            'organizations.end_date',
             'users.contact_number',
             'users.address_line_1',
             'users.address_line_2',

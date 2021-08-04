@@ -111,8 +111,10 @@ class OrganizationController extends Controller
      */
     public function details(Request $request)
     {
-        $user = Auth::user();
-        $user->Organization;
+        // $user = Auth::user();
+        // $user->Organization;
+        $userObj = new User();
+        $user = $userObj->getOrganizationById(Auth::user()->id);
         return response()->json([
             'status' => true, 'message' => 'organization Details Get Successfully',
             'data' => $user
@@ -387,11 +389,11 @@ class OrganizationController extends Controller
             $org = Organization::where(['user_id' => Auth::user()->id])->update([
                 "organization_name" => $requestData['organization_name'],
                 "contact_person_name" => $requestData['contact_person_name'],
-                "contact_number" => $requestData['contact_number'],
-                "address_line_1" => $requestData['address_line_1'],
-                "address_line_2" => $requestData['address_line_2'],
-                "city" => $requestData['city'],
-                "postcode" => $requestData['postcode'],
+                // "contact_number" => $requestData['contact_number'],
+                // "address_line_1" => $requestData['address_line_1'],
+                // "address_line_2" => $requestData['address_line_2'],
+                // "city" => $requestData['city'],
+                // "postcode" => $requestData['postcode'],
             ]);
             return response()->json(['status' => true, 'message' => 'Update profile successfully.', 'data' => $requestData], $this->successStatus);
         } else {
