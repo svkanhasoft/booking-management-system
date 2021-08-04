@@ -227,13 +227,13 @@ class User extends Authenticatable
 
     public function getOrganizationById($userId = null)
     {
-
         $query = User::select(
             'users.id',
             'users.*',
             'organizations.organization_name',
             'organizations.contact_person_name',
             'organizations.plan',
+            'organizations.user_id',
             'organizations.start_date',
             'organizations.end_date',
             'users.contact_number',
