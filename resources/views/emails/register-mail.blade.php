@@ -14,107 +14,6 @@
     <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
     <!--<![endif]-->
-    <style type="text/css">
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        table,
-        td,
-        tr {
-            vertical-align: top;
-            border-collapse: collapse;
-        }
-
-        * {
-            line-height: inherit;
-        }
-
-        a[x-apple-data-detectors=true] {
-            color: inherit !important;
-            text-decoration: none !important;
-        }
-    </style>
-    <style type="text/css" id="media-query">
-        @media (max-width: 520px) {
-
-            .block-grid,
-            .col {
-                min-width: 320px !important;
-                max-width: 100% !important;
-                display: block !important;
-            }
-
-            .block-grid {
-                width: 100% !important;
-            }
-
-            .col {
-                width: 100% !important;
-            }
-
-            .col>div {
-                margin: 0 auto;
-            }
-
-            img.fullwidth,
-            img.fullwidthOnMobile {
-                max-width: 100% !important;
-            }
-
-            .no-stack .col {
-                min-width: 0 !important;
-                display: table-cell !important;
-            }
-
-            .no-stack.two-up .col {
-                width: 50% !important;
-            }
-
-            .no-stack .col.num4 {
-                width: 33% !important;
-            }
-
-            .no-stack .col.num8 {
-                width: 66% !important;
-            }
-
-            .no-stack .col.num4 {
-                width: 33% !important;
-            }
-
-            .no-stack .col.num3 {
-                width: 25% !important;
-            }
-
-            .no-stack .col.num6 {
-                width: 50% !important;
-            }
-
-            .no-stack .col.num9 {
-                width: 75% !important;
-            }
-
-            .video-block {
-                max-width: none !important;
-            }
-
-            .mobile_hide {
-                min-height: 0px;
-                max-height: 0px;
-                max-width: 0px;
-                display: none;
-                overflow: hidden;
-                font-size: 0px;
-            }
-
-            .desktop_hide {
-                display: block !important;
-                max-height: none !important;
-            }
-        }
-    </style>
 </head>
 
 <body class="clean-body" style="margin: 0; padding: 0; -webkit-text-size-adjust: 100%; background-color: #F9F9F9;">
@@ -122,7 +21,6 @@
         <tbody>
             <tr style="vertical-align: top;" valign="top">
                 <td style="word-break: break-word; vertical-align: top;" valign="top">
-
                     <div style="background-color:transparent;">
                         <div class="block-grid " style="Margin: 0 auto; min-width: 320px; max-width: 500px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;">
                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
@@ -130,7 +28,6 @@
                                     <div style="width:100% !important;">
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
                                             <div class="img-container center  autowidth  fullwidth" align="center" style="padding-right: 0px;padding-left: 0px;">
-
                                                 <img class="center  autowidth  fullwidth" align="center" border="0" src="http://backendbooking.kanhasoftdev.com/uploads/logo.png" alt="Image" title="Image" style="text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 100%; max-width: 500px; display: block;" width="500">
                                             </div>
                                         </div>
@@ -153,6 +50,12 @@
                                                         {{ $details['data']['email'] }} <br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Password:
                                                         {{ $details['data']['password'] }} <br></span></p>
+                                                <p class="MsoNormal" style="line-height:145%">
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                        <a href="http://adminbooking.kanhasoftdev.com/login">Click here to login.</a>
+                                                        <br>
+                                                    </span>
+                                                </p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
                                                         you for being a part of the booking management system family.</span></p>
                                             </div>
@@ -161,7 +64,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                     <!--end section-->
                 </td>

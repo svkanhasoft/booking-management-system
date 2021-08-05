@@ -162,16 +162,13 @@
                                                     @if(request()->getHttpHost() =='localhost:8000')
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
                                                         <a href="http://localhost:3000/change-password?query={{ base64_encode($details['data']['id']) }}">Click
-                                                            Here to reset your password.</a>
+                                                            Here to reset your password.</a></span>
                                                         @else
                                                         <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
                                                             <a href="http://adminbooking.kanhasoftdev.com/change-password?query={{ base64_encode($details['data']['id']) }}">Click
-                                                                Here to reset your password.</a>
+                                                                Here to reset your password.</a></span>
                                                             @endif
-
-                                                            <!-- <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A"><a href="{{ route('reset-password', ['id' => base64_encode($details['data']['id'])]) }}">Click
-                                                            Here to reset your password.</a> -->
-                                                </p> <br></span></p>
+                                                 <br></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
                                                         you for being a part of the booking management system family.</span></p>
                                             </div>
@@ -180,7 +177,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                     <!--end section-->
                 </td>
