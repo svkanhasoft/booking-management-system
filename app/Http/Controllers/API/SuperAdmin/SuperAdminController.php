@@ -327,7 +327,7 @@ class SuperAdminController extends Controller
                 // "city" => $requestData['city'],
                 // "postcode" => $requestData['postcode'],
             ]);
-            return response()->json(['status' => true, 'message' => 'Organization detail update successfully.', 'data' => $requestData], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Organization detail updated successfully.', 'data' => $requestData], $this->successStatus);
         } else {
             return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
         }
