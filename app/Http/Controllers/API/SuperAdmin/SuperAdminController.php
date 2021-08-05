@@ -355,7 +355,7 @@ class SuperAdminController extends Controller
         $roleUpdated = $role->update($requestData);
         if (!empty($roleUpdated)) {
             $user = Auth::user();
-            return response()->json(['status' => true, 'message' => 'Update profile successfully.', 'data' => $user], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
         }

@@ -395,7 +395,7 @@ class OrganizationController extends Controller
                 // "city" => $requestData['city'],
                 // "postcode" => $requestData['postcode'],
             ]);
-            return response()->json(['status' => true, 'message' => 'Update profile successfully.', 'data' => $requestData], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
         } else {
             return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
         }
