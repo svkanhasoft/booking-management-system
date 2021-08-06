@@ -180,7 +180,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
-            'conform_password' => 'required|same:password',
+            'confirm_password' => 'required|same:password',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -206,7 +206,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required',
-            'conform_password' => 'required|same:password',
+            'confirm_password' => 'required|same:password',
             'decode_id' => 'required',
         ]);
         if ($validator->fails()) {

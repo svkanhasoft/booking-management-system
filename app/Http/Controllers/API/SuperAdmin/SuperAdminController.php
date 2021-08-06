@@ -211,7 +211,7 @@ class SuperAdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'password' => 'required|min:6',
-            'conform_password' => 'required|same:password',
+            'confirm_password' => 'required|same:password',
             'old_password' => 'required',
         ]);
         if ($validator->fails()) {
