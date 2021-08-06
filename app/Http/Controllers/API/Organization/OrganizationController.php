@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Organization;
 use Hash;
 use Config;
+
 class OrganizationController extends Controller
 {
     public $successStatus = 200;
@@ -60,7 +61,7 @@ class OrganizationController extends Controller
      */
     public function signup(Request $request)
     {
-      
+
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
             'contact_person_name' => 'required',
@@ -71,7 +72,7 @@ class OrganizationController extends Controller
             // 'password' => 'required|min:6',
             'email' => 'required|email|unique:users',
         ]);
-        
+
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
@@ -254,7 +255,7 @@ class OrganizationController extends Controller
         }
         $keyword = $request->get('keyword');
         $perPage = Config::get('constants.pagination.perPage');
-        
+
         $query = User::select("users.*");
         $query->leftjoin('organization_user_details as oud', 'oud.user_id', '=', 'users.id');
         $query->leftjoin('roles',  'roles.id', '=', 'oud.role_id');
@@ -288,36 +289,59 @@ class OrganizationController extends Controller
         $keyword = $request->get('search');
         $status = $request->get('status');
         $perPage = Config::get('constants.pagination.perPage');
-        $query = User::select(
+
+        $qr = User::select(
             "users.*",
             'org.organization_name',
             'org.contact_person_name',
-            'users.contact_number',
-            'users.address_line_1',
-            'users.address_line_2',
-            'users.city',
-            'users.postcode'
-        );
-        $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-        $query->where('users.role',  "ORGANIZATION");
-
-        if (!empty($keyword)) {
-            $query->Where('users.first_name',  'LIKE', "%$keyword");
-            $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
-            $query->orWhere('users.email',  'LIKE', "%$keyword%");
-            $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
-            $query->orWhere('org.contact_person_name',  'LIKE', "%$keyword%");
-            $query->orWhere('users.contact_number',  'LIKE', "%$keyword%");
-            $query->orWhere('users.address_line_1',  'LIKE', "%$keyword%");
-            $query->orWhere('users.address_line_2',  'LIKE', "%$keyword%");
-            $query->orWhere('users.city',  'LIKE', "%$keyword%");
-            $query->orWhere('users.postcode',  'LIKE', "%$keyword%");
-        }
+        )->join('organizations as org', 'org.user_id', '=', 'users.id');
         if (!empty($status)) {
-            $query->Where('users.status',  "$status");
+            $qr->Where('users.status',  "$status");
         }
-        $res =  $query->latest('users.created_at')->paginate($perPage);
-        $count =  $query->latest('users.created_at')->paginate($perPage)->count();
+        if (!empty($keyword)) {
+            $qr->where(function ($query2) use ($status, $keyword) {
+                $query2->where('users.email', 'like',  "%$keyword%")
+                    ->orWhere('org.organization_name', 'like',  "%$keyword%")
+                    ->orWhere('org.contact_person_name',  'LIKE', "%$keyword%")
+                    ->orWhere('users.contact_number',  'LIKE', "%$keyword%")
+                    ->orWhere('users.address_line_1',  'LIKE', "%$keyword%")
+                    ->orWhere('users.address_line_2',  'LIKE', "%$keyword%")
+                    ->orWhere('users.city',  'LIKE', "%$keyword%")
+                    ->orWhere('users.postcode',  'LIKE', "%$keyword%");
+            });
+        }
+        $res =  $qr->latest('users.created_at')->paginate($perPage);
+        $count =  $qr->latest('users.created_at')->paginate($perPage)->count();
+
+        // $query = User::select(
+        //     "users.*",
+        //     'org.organization_name',
+        //     'org.contact_person_name',
+        //     'users.contact_number',
+        //     'users.address_line_1',
+        //     'users.address_line_2',
+        //     'users.city',
+        //     'users.postcode'
+        // );
+        // $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+        // $query->where('users.role',  "ORGANIZATION");
+        // if (!empty($status)) {
+        //     $query->Where('users.statusa',  "$status");
+        // }
+        // if (!empty($keyword)) {
+        //     $query->Where('users.first_name',  'LIKE', "%$keyword");
+        //     $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
+        //     $query->Where('users.email',  'LIKE', "%$keyword%");
+        //     $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
+        //     $query->orWhere('org.contact_person_name',  'LIKE', "%$keyword%");
+        //     $query->orWhere('users.contact_number',  'LIKE', "%$keyword%");
+        //     $query->orWhere('users.address_line_1',  'LIKE', "%$keyword%");
+        //     $query->orWhere('users.address_line_2',  'LIKE', "%$keyword%");
+        //     $query->orWhere('users.city',  'LIKE', "%$keyword%");
+        //     $query->orWhere('users.postcode',  'LIKE', "%$keyword%");
+        // }
+        // $res =  $query->latest('users.created_at')->paginate($perPage);
+        // $count =  $query->latest('users.created_at')->paginate($perPage)->count();
         if ($count > 0) {
             // if ($res) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
