@@ -220,6 +220,7 @@ class UserController extends Controller
 
         $userObj = User::find($decodeId);
         $userObj['password'] = Hash::make($input['password']);
+        $userObj['password_change'] = 1;
         $res = $userObj->save();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
