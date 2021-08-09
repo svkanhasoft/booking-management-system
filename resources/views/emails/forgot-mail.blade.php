@@ -161,11 +161,11 @@
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <!-- @if(request()->getHttpHost() =='localhost:8000')
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        <a href="http://localhost:3000/change-password?query={{ base64_encode($details['data']['id']) }}">Click
+                                                        <a href="http://localhost:3000/reset-password?query={{ base64_encode($details['data']['id']) }}">Click
                                                             Here to reset your password.</a></span>
                                                         @else -->
                                                         <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                            <a href="http://adminbooking.kanhasoftdev.com/change-password?query={{ base64_encode($details['data']['id']) }}">Click
+                                                            <a href="http://adminbooking.kanhasoftdev.com/reset-password?query={{ base64_encode($details['data']['id']) }}">Click
                                                                 Here to reset your password.</a></span>
                                                             <!-- @endif -->
                                                  <br></p>
