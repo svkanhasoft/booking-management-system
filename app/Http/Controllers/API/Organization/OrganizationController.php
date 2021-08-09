@@ -402,7 +402,8 @@ class OrganizationController extends Controller
             'postcode' => 'required',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
+            // $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
