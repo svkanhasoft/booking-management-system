@@ -2,7 +2,8 @@
 
 $defaultPath = public_path() . '/uploads/';
 $defaultPath1 = storage_path() . '/app/uploads/';
-$viewPath = $_SERVER['APP_URL'] . '/uploads/';
+$viewPath = '/uploads/';
+// $viewPath = $_SERVER['APP_URL'] . '/uploads/';
 $viewPath1 = storage_path() . '/app/uploads/';
 $perPage = 20;
 return [

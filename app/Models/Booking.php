@@ -92,9 +92,10 @@ class Booking extends Model
             $subQuery = BookingSpeciality::select(
                 'users.id','booking_specialities.booking_id','specialities.speciality_name',
                 'signees_detail.candidate_id','signees_detail.phone_number',
-                'signees_detail.mobile_number','signees_detail.address_line_1',
-                'signees_detail.address_line_2','signees_detail.address_line_3',
-                'signees_detail.city','signees_detail.post_code','signees_detail.date_of_birth',
+                'signees_detail.mobile_number','users.address_line_1',
+                'users.address_line_2',
+                // 'users.address_line_3',
+                'users.city','users.postcode','signees_detail.date_of_birth',
                 'signees_detail.nationality','signees_detail.candidate_referred_from',
                 'signees_detail.date_registered','signees_detail.cv','signees_detail.nmc_dmc_pin',
                 DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
