@@ -76,7 +76,7 @@ class SuperAdminController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION'))->first();
+        $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
