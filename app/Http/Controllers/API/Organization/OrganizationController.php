@@ -151,16 +151,16 @@ class OrganizationController extends Controller
      * 
      * @return \Illuminate\Http\Response 
      */
-    public function forgot(Request $request)
-    {
-        $userObj = new User();
-        $mailRes =  $userObj->sendForgotEmail($request);
-        if ($mailRes) {
-            return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
-        }
-    }
+    // public function forgot(Request $request)
+    // {
+    //     $userObj = new User();
+    //     $mailRes =  $userObj->sendForgotEmail($request);
+    //     if ($mailRes) {
+    //         return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
+    //     } else {
+    //         return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
+    //     }
+    // }
 
     /** 
      * otp verify 
@@ -334,6 +334,7 @@ class OrganizationController extends Controller
             'confirm_password' => 'required|same:password',
             'decode_id' => 'required',
         ]);
+        
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
@@ -341,7 +342,6 @@ class OrganizationController extends Controller
         $user = Auth::user();
         $input = $request->all();
         $decodeId = base64_decode($input['decode_id']);
-        // base64_encode
 
         $userObj = User::find($decodeId);
         $userObj['password'] = Hash::make($input['password']);
@@ -362,6 +362,8 @@ class OrganizationController extends Controller
      */
     public function update(Request $request)
     {
+        // print_r($request->all());
+        // exit;
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
             'contact_number' => 'required|min:6',
@@ -373,6 +375,7 @@ class OrganizationController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
+            // $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
@@ -384,6 +387,11 @@ class OrganizationController extends Controller
             $org = Organization::where(['user_id' => Auth::user()->id])->update([
                 "organization_name" => $requestData['organization_name'],
                 "contact_person_name" => $requestData['contact_person_name'],
+                // "contact_number" => $requestData['contact_number'],
+                // "address_line_1" => $requestData['address_line_1'],
+                // "address_line_2" => $requestData['address_line_2'],
+                // "city" => $requestData['city'],
+                // "postcode" => $requestData['postcode'],
             ]);
             return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
         } else {
