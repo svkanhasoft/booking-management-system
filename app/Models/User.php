@@ -111,6 +111,7 @@ class User extends Authenticatable
         $query->Join('designations',  'designations.id', '=', 'oud.designation_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
+        $query->where('users.parent_id', $userId);
         $query->where('users.role', "STAFF");
         $userDetais = $query->paginate(15);
         return $userDetais;
