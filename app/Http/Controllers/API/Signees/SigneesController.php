@@ -76,7 +76,6 @@ class SigneesController extends Controller
 
         $requestData['password'] = Hash::make($request->post('password'));
         $requestData['parent_id'] = $request->post('organization_id');
-        // $requestData['parent_id'] = $this->userId;
         $requestData['role'] = 'SIGNEE';
         $userCreated = User::create($requestData);
         if ($userCreated) {
@@ -92,7 +91,6 @@ class SigneesController extends Controller
             if ($orgResult) {
                 $UserObj = new User();
                 $mailRes =  $UserObj->sendRegisterEmail($request);
-                // $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
                 return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
             }
         } else {
@@ -148,8 +146,6 @@ class SigneesController extends Controller
     {
         $userObj = new User();
         $user = $userObj->getSigneeDetails($this->userId);
-        // $user = User::find($this->userId)->SigneesDetail;
-        // print_r($user);exit;
         if (!empty($user)) {
             return response()->json(['status' => true, 'message' => 'Signee details get successfully.', 'data' => $user], $this->successStatus);
         } else {
@@ -199,7 +195,6 @@ class SigneesController extends Controller
     public function profileUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            // "email" => 'required|unique:users',
             'email' => 'unique:users,email,' . $this->userId,
             "first_name" => 'required',
             "last_name" => 'required',
@@ -220,7 +215,6 @@ class SigneesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        // echo "Hiii"; exit;
         $requestData = $request->all();
         if (!empty($request->post('password'))) {
             $requestData['password'] = Hash::make($request->post('password'));
@@ -253,24 +247,6 @@ class SigneesController extends Controller
         } else {
             return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
         }
-        // $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
-        // if (isset($user) && !empty($user)) {
-        //     // $user['link'] = "<a  href=". route('reset-passwordV2',array('id' => base64_encode($user['id']))).">Click Here </a>";
-        //     $details = [
-        //         'title' => '',
-        //         'body' => 'Hello ',
-        //         'mailTitle' => 'forgot',
-        //         'subject' => 'Booking management system: TEST EMAIL',
-        //         'data' => $user,
-        //     ];
-        //     // $sss = \Mail::to('testshailesh1@gmail.com')
-        //     $sss = \Mail::to($user['email'])
-        //         // ->cc('shaileshv.kanhasoft@gmail.com')
-        //         ->send(new \App\Mail\SendSmtpMail($details));
-        //     return response()->json(['data' => $user, 'message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
-        // } else {
-        //     return response()->json(['message' => 'Sorry, Invalid phone number', 'status' => false], 200);
-        // }
     }
     /** 
      * reset Password 
@@ -338,9 +314,6 @@ class SigneesController extends Controller
      */
     public function getCandidateReferredFrom(Request $request)
     {
-
-        // $CandidateReferredFromObj = new CandidateReferredFrom();
-
         $candidateReferredFromObj = CandidateReferredFrom::all();
 
         if ($candidateReferredFromObj) {

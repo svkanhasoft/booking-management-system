@@ -32,8 +32,6 @@ class Trust extends Model
    
     function ward(){
         return $this->hasMany(Ward::class, 'trust_id');
-        // echo $trustId;
-        // exit;
     }
     public function training()
     {

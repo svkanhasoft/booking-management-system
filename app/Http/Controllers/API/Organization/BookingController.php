@@ -37,7 +37,6 @@ class BookingController extends Controller
      */
     public function add(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'reference_id' => 'unique:bookings,reference_id,NULL,id,user_id,' . $this->userId,
             // 'reference_id' => 'required',
@@ -76,7 +75,6 @@ class BookingController extends Controller
     {
         $objBooking = new Booking();
         $booking = $objBooking->getBooking($id);
-        // $shift = Booking::where('id', $id)->first();
         $obj = new BookingSpeciality();
         $booking['speciality'] = $obj->getBookingSpeciality($id);
         // $shift['speciality'] = BookingSpeciality::where('booking_id', $id)->get()->toArray();
@@ -98,7 +96,6 @@ class BookingController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            // 'reference_id' => 'required|unique:bookings,reference_id,reference_id,' .  $requestData["booking_id"],
             'reference_id' => 'required',
             'trust_id' => 'required',
             'booking_id' => 'required',
@@ -161,15 +158,6 @@ class BookingController extends Controller
         } else {
             return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         }
-
-        // $objBooking = new Booking();
-        // $booking = $objBooking->getBookingByStatus($status);
-        // // echo $booking->count();exit;
-        // if ($booking->count() > 0) {
-        //     return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
-        // } else {
-        //     return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
-        // }
     }
     
 }

@@ -313,35 +313,7 @@ class OrganizationController extends Controller
         $res =  $qr->latest('users.created_at')->paginate($perPage);
         $count =  $qr->latest('users.created_at')->paginate($perPage)->count();
 
-        // $query = User::select(
-        //     "users.*",
-        //     'org.organization_name',
-        //     'org.contact_person_name',
-        //     'users.contact_number',
-        //     'users.address_line_1',
-        //     'users.address_line_2',
-        //     'users.city',
-        //     'users.postcode'
-        // );
-        // $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-        // $query->where('users.role',  "ORGANIZATION");
-        // if (!empty($status)) {
-        //     $query->Where('users.statusa',  "$status");
-        // }
-        // if (!empty($keyword)) {
-        //     $query->Where('users.first_name',  'LIKE', "%$keyword");
-        //     $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
-        //     $query->Where('users.email',  'LIKE', "%$keyword%");
-        //     $query->orWhere('org.organization_name',  'LIKE', "%$keyword%");
-        //     $query->orWhere('org.contact_person_name',  'LIKE', "%$keyword%");
-        //     $query->orWhere('users.contact_number',  'LIKE', "%$keyword%");
-        //     $query->orWhere('users.address_line_1',  'LIKE', "%$keyword%");
-        //     $query->orWhere('users.address_line_2',  'LIKE', "%$keyword%");
-        //     $query->orWhere('users.city',  'LIKE', "%$keyword%");
-        //     $query->orWhere('users.postcode',  'LIKE', "%$keyword%");
-        // }
-        // $res =  $query->latest('users.created_at')->paginate($perPage);
-        // $count =  $query->latest('users.created_at')->paginate($perPage)->count();
+        
         if ($count > 0) {
             // if ($res) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
@@ -390,8 +362,6 @@ class OrganizationController extends Controller
      */
     public function update(Request $request)
     {
-        // print_r($request->all());
-        // exit;
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
             'contact_number' => 'required|min:6',
@@ -403,7 +373,6 @@ class OrganizationController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            // $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
@@ -415,11 +384,6 @@ class OrganizationController extends Controller
             $org = Organization::where(['user_id' => Auth::user()->id])->update([
                 "organization_name" => $requestData['organization_name'],
                 "contact_person_name" => $requestData['contact_person_name'],
-                // "contact_number" => $requestData['contact_number'],
-                // "address_line_1" => $requestData['address_line_1'],
-                // "address_line_2" => $requestData['address_line_2'],
-                // "city" => $requestData['city'],
-                // "postcode" => $requestData['postcode'],
             ]);
             return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
         } else {

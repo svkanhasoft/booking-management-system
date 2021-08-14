@@ -111,7 +111,6 @@ class User extends Authenticatable
         $query->Join('designations',  'designations.id', '=', 'oud.designation_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
-        $query->where('users.parent_id', $userId);
         $query->where('users.role', "STAFF");
         $userDetais = $query->paginate(15);
         return $userDetais;
@@ -140,7 +139,6 @@ class User extends Authenticatable
             'signees_detail.candidate_id',
             'users.address_line_1',
             'users.address_line_2',
-            // 'users.address_line_3',
             'users.city',
             'users.postcode',
             'signees_detail.nationality',
@@ -160,18 +158,14 @@ class User extends Authenticatable
     public function SigneesDetail()
     {
         return $this->hasOne(SigneesDetail::class);
-        // OR return $this->hasOne('App\Phone');
     }
     public function Organization()
     {
         return $this->hasOne(Organization::class);
-        // OR return $this->hasOne('App\Phone');
     }
     public function sendForgotEmail($request)
     {
         $user = User::where('email', $request->all('email'))->first();
-        // $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
-        // print_r($user);exit;
         if (isset($user) && !empty($user)) {
             $details = [
                 'title' => '',
@@ -180,7 +174,6 @@ class User extends Authenticatable
                 'subject' => 'Booking Management System: Forgot Password',
                 'data' => $user,
             ];
-            // $sss = \Mail::to('testshailesh1@gmail.com')
             $emailRes = \Mail::to($user['email'])
                 ->cc('shaileshv.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
@@ -195,7 +188,6 @@ class User extends Authenticatable
     {
         $user = User::where('email', $request->all('email'))->first();
         $randPassword =  $this->RandomString();
-        // $user = User::where('role', "SIGNEE")->where('email', $request->all('email'))->first();
         $user->password = $randPassword;
         if (isset($user) && !empty($user)) {
             $userObj = User::find($user->id);
@@ -207,11 +199,9 @@ class User extends Authenticatable
                 'subject' => 'Booking Management System: Registration Done!',
                 'data' => $user,
             ];
-            // $emailRes = \Mail::to('testshailesh1@gmail.com')
             $emailRes = \Mail::to($user['email'])
                 ->cc('shaileshv.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
-                // ->bcc('testshailesh1@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {

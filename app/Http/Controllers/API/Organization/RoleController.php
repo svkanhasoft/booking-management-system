@@ -37,7 +37,6 @@ class RoleController extends Controller
     public function create(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            // 'role_name' => 'required|unique:roles',
             'role_name' => 'required|unique:roles,user_id,' . $this->userId,
         ]);
         if ($validator->fails()) {
@@ -110,7 +109,6 @@ class RoleController extends Controller
      */
     public function showAll()
     {
-        // $role = Role::where('user_id',$this->userId)->where('user_id', 1)->get()->toArray();
         $role = Role::whereIn('user_id', array($this->userId, 1))->get()->toArray();
         if ($role) {
             return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);

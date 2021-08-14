@@ -43,7 +43,6 @@ class TrustsController extends Controller
             "last_name" => 'required',
             "contact_email_address" => 'required',
             "phone_number" => 'required',
-            // 'traning.0.traning_name' => 'required|max:255',
             'traning' => 'required:traning,[]',
             'ward' => 'required:ward,[]',
         ]);
@@ -51,7 +50,7 @@ class TrustsController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        // $result = $this->getTrustDetail(1);
+
         $requestData = $request->all();
         $requestData['password'] = Hash::make($request->post('portal_password'));
         $requestData['user_id'] = $this->userId;
@@ -86,8 +85,6 @@ class TrustsController extends Controller
             "phone_number" => 'required',
             'traning' => 'required:traning,[]',
             'ward' => 'required:ward,[]',
-            // "ward.*" => 'required|min:1',
-            // "traning.*" => 'required|min:1',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -103,7 +100,6 @@ class TrustsController extends Controller
         $objTraning = new Traning();
         $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
         if ($specialityResult) {
-            // $result = $this->getTrustDetail($requestData['id']);
             return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $specialityResult], $this->successStatus);
         } else {
             return response()->json(['message' => 'Trust update failed.', 'status' => false], 200);
@@ -120,7 +116,6 @@ class TrustsController extends Controller
             return response()->json(['status' => true, 'message' => 'Trust detail get successfully.', 'data' => $result], $this->successStatus);
         } else {
             $keyword = $request->get('search');
-            // echo $keyword;exit;
             $query = Trust::where('user_id', $this->userId);
             if (!empty($keyword)) {
                 $query->Where('name',  'LIKE', "%$keyword%");
@@ -149,16 +144,6 @@ class TrustsController extends Controller
             }
         }
     }
-
-    // function getAllTrust()
-    // {
-    //     $result = Trust::where('user_id', $this->userId)->get();
-    //     if ($result) {
-    //         return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
-    //     } else {
-    //         return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], $this->successStatus);
-    //     }
-    // }
 
     function destroy($trustId)
     {

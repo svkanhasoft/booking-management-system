@@ -34,8 +34,6 @@ class AvailabilityController extends Controller
 
     public function availability(Request $request)
     {
-        // echo $this->userId;exit;
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'user_id' => 'required',
             'sunday' => 'required:sunday,[]',
@@ -50,14 +48,12 @@ class AvailabilityController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        // print_r($request->all());
-        // exit;
+
         $objAvailability = new Availability();
         $orgResult = $objAvailability->addAvailability($request->all(), $this->userId);
         if ($orgResult) {
             $UserObj = new User();
             return response()->json(['status' => true, 'message' => 'Availablity update Successfully', 'data' => $request->all()], $this->successStatus);
-            // return response()->json(['status' => true, 'message' => 'Availablity update Successfully','data' => $orgResult], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Availablity update failed!', 'status' => false], 200);
         }

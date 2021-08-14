@@ -38,7 +38,6 @@ class OrganizationShiftController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'start_time' => 'unique:organization_shift,start_time,NULL,id,user_id,' . $this->userId,
-            // 'start_time' => 'required|unique:organization_shift,start_time,' . $this->userId,
             'end_time' => 'required',
         ]);
         if ($validator->fails()) {

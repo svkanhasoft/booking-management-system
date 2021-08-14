@@ -94,7 +94,6 @@ class Booking extends Model
                 'signees_detail.candidate_id','signees_detail.phone_number',
                 'signees_detail.mobile_number','users.address_line_1',
                 'users.address_line_2',
-                // 'users.address_line_3',
                 'users.city','users.postcode','signees_detail.date_of_birth',
                 'signees_detail.nationality','signees_detail.candidate_referred_from',
                 'signees_detail.date_registered','signees_detail.cv','signees_detail.nmc_dmc_pin',
@@ -110,13 +109,9 @@ class Booking extends Model
             $subQuery->where('booking_specialities.booking_id', $booking['id']);
             $subQuery->groupBy('users.id');
             $subQuery->orderBy('signeeBookingCount','DESC');
-            // $subQuery->groupBy('booking_specialities.booking_id');
             $res = $subQuery->get()->toArray();
             $subArray[$key]['user'] = $res;
-            // print_r( $bookingList);
-            // exit;
         }
-        // print_r($subArray);exit;
         return $subArray;
     }
 }

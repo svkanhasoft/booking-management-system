@@ -43,7 +43,6 @@ class UserController extends Controller
             "email" => 'required|unique:users',
             "first_name" => 'required',
             "last_name" => 'required',
-            // "password" => 'required',
             "contact_number" => 'required',
             "role_id" => 'required',
             "designation_id" => 'required',
@@ -160,7 +159,6 @@ class UserController extends Controller
      */
     public function getuserlist()
     {
-        // echo $this->userId;exit;
         $UserObj = new User();
         $user = $UserObj->fetchStaflist($this->userId);
         if (!empty($user)) {
@@ -216,7 +214,6 @@ class UserController extends Controller
         $user = Auth::user();
         $input = $request->all();
         $decodeId = base64_decode($input['decode_id']);
-        // base64_encode
 
         $userObj = User::find($decodeId);
         $userObj['password'] = Hash::make($input['password']);

@@ -67,7 +67,6 @@ class SuperAdminController extends Controller
      */
     public function signinV2(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'password' => 'required',
@@ -83,7 +82,7 @@ class SuperAdminController extends Controller
         if ($checkRecord->status !== 'Active') {
             return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
         }
-        // if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SUPERADMIN'])) {
+
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
@@ -115,7 +114,6 @@ class SuperAdminController extends Controller
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
-        // $input['status'] = 'ACTIVE';
         $user = User::create($input);
         $userRes = User::find($user['id']);
         if (!empty($userRes)) {
@@ -171,7 +169,6 @@ class SuperAdminController extends Controller
     public function forgot(Request $request)
     {
         $user = User::where('email', $request->all('email'))->count();
-        // $user = User::where('role', "SUPERADMIN")->where('email', $request->all('email'))->count();
         if ($user >  0) {
             $userObj = new User();
             $mailRes =  $userObj->sendForgotEmail($request);
@@ -221,7 +218,6 @@ class SuperAdminController extends Controller
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
             return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
-        // $user = User::where('role', 'SUPERADMIN')->where('email', $request->all('email'))->first();
         $user = User::where('role', 'SUPERADMIN')->where('id', $this->userId)->first();
         if (!empty($user)) {
             $userObj = User::find($user['id']);
@@ -234,50 +230,7 @@ class SuperAdminController extends Controller
         }
     }
 
-    /** 
-     * Change Password 
-     * 
-     * @return \Illuminate\Http\Response 
-     */
-    // public function editProfile(Request $request) 
-    // {   
-
-    //     $user = Auth::user(); 
-    //     $validator = Validator::make($request->all(), [ 
-    //         'first_name' => 'required', 
-    //         'last_name' => 'required', 
-    //         // 'profile_pic' => 'required_without_all:user_docs',
-    //         // 'user_docs' => 'required_without_all:profile_pic',
-    //     ]);
-    //     if ($validator->fails()) { 
-    //         $error = $validator->messages()->first();
-    //         return response()->json(['status'=>false,'message'=> $error], 200); 
-    //     }
-    //         $requestData = $request->all();
-    //         $name = $user_docs = '';
-    //         if($files=$request->file('profile_pic')){  
-    //             $name = time().$files->getClientOriginalName();  
-    //             $files->move(public_path() .'/uploads/',$name);  
-    //         }   
-    //         if($files1=$request->file('user_docs')){  
-    //             $user_docs = time().'docs'.$files1->getClientOriginalName();  
-    //             $files1->move(public_path() .'/uploads/',$user_docs);  
-    //         } 
-
-    //             $userObj = User::findOrFail($user->id);
-    //             $userObj->first_name = $requestData['first_name']; 
-    //             $userObj->last_name = $requestData['last_name'];
-    //             $userObj->email = $requestData['email'];
-    //             if($name != ''){
-    //                 $userObj->profile_pic = $name;    
-    //             }
-    //             if($user_docs != ''){
-    //                 $userObj->user_docs = $user_docs;    
-    //             }
-    //             $userObj->save();
-    //             $success =  User::findOrFail($user->id);
-    //     return response()->json(['data'=> $success, 'status'=>true, 'message'=> 'Your profile Successfully changed'], $this->successStatus); 
-    // }
+    
 
     /** 
      * get organization details api 
@@ -288,8 +241,6 @@ class SuperAdminController extends Controller
     {
         $userObj = new User();
         $user = $userObj->getOrganizationById($id);
-        // $user = User::find($id);
-        // $user->Organization;
         return response()->json([
             'status' => true, 'message' => 'organization Details Get Successfully',
             'data' => $user
@@ -298,8 +249,6 @@ class SuperAdminController extends Controller
 
     public function updateorg(Request $request)
     {
-        // print_r($request->all());
-        // exit;
         $validator = Validator::make($request->all(), [
             'organization_name' => 'required',
             'contact_number' => 'required|min:6',
@@ -310,7 +259,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            // $error = $validator->messages()->first();
+
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
@@ -322,11 +271,6 @@ class SuperAdminController extends Controller
             $org = Organization::where(['user_id' =>  $requestData['user_id']])->update([
                 "organization_name" => $requestData['organization_name'],
                 "contact_person_name" => $requestData['contact_person_name'],
-                // "contact_number" => $requestData['contact_number'],
-                // "address_line_1" => $requestData['address_line_1'],
-                // "address_line_2" => $requestData['address_line_2'],
-                // "city" => $requestData['city'],
-                // "postcode" => $requestData['postcode'],
             ]);
             return response()->json(['status' => true, 'message' => 'Organization detail updated successfully.', 'data' => $requestData], $this->successStatus);
         } else {
@@ -336,8 +280,6 @@ class SuperAdminController extends Controller
 
     public function updates(Request $request)
     {
-        // print_r($request->all());
-        // exit;
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -348,7 +290,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            // $error = $validator->messages()->first();
+
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
