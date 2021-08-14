@@ -107,7 +107,7 @@ class SpecialitiesController extends Controller
             $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
         }
         $speciality =  $query->latest('specialities.created_at')->paginate($perPage);
-        $count =  $query->latest('specialities.created_at')->count();
+        $count =  $query->latest('specialities.created_at')->paginate($perPage)->count();
         if ($count > 0) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
         } else {
