@@ -76,7 +76,7 @@ Route::prefix('organization')->group(function () {
     });
 
     Route::prefix('user')->group(function () {
-        Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'create']);
+        Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'signup']);
         Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin']);
         Route::post('/reset-password', [App\Http\Controllers\API\Signees\UserController::class, 'resetPassword']);
         Route::middleware(['auth:api'])->group(function () {
