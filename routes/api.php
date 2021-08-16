@@ -73,17 +73,21 @@ Route::prefix('organization')->group(function () {
         Route::post('/edit-booking', [App\Http\Controllers\API\Organization\BookingController::class, 'edit']);
         Route::get('/get-booking/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'show']);
         Route::get('/booking-by-status/{status}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus']);
-    });
 
-    Route::prefix('user')->group(function () {
-        Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'signup']);
-        Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin']);
-        Route::post('/reset-password', [App\Http\Controllers\API\Signees\UserController::class, 'resetPassword']);
-        Route::middleware(['auth:api'])->group(function () {
-            Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails']);
-            Route::get('/get-user-list', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist']);
-            Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword']);
+
+        /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
+        
+        Route::prefix('user')->group(function () {
+            Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'signup']);
+            Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin']);
+            Route::post('/reset-password', [App\Http\Controllers\API\Signees\UserController::class, 'resetPassword']);
+            Route::middleware(['auth:api'])->group(function () {
+                Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails']);
+                Route::get('/get-user-list', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist']);
+                Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword']);
+            });
         });
+
     });
 });
 
