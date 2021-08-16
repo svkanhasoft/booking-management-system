@@ -85,6 +85,7 @@ Route::prefix('organization')->group(function () {
                 Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails']);
                 Route::get('/get-user-list', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist']);
                 Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword']);
+                Route::post('/edit-user', [App\Http\Controllers\API\Organization\UserController::class, 'update']);
             });
         });
 

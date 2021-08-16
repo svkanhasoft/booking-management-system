@@ -13,6 +13,7 @@ use DB;
 use App\Models\Organization;
 use App\Models\OrganizationUserDetail;
 use App\Models\Role;
+use Config;
 
 class User extends Authenticatable
 {
@@ -77,6 +78,7 @@ class User extends Authenticatable
         $query->Join('designations',  'designations.id', '=', 'oud.designation_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
+        //$query->where('users.parent_id', $userId);
         $query->where('users.id', $userId);
         $userDetais = $query->get();
         return $userDetais;
@@ -84,6 +86,7 @@ class User extends Authenticatable
 
     public function fetchStaflist($userId = null)
     {
+        $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -113,7 +116,7 @@ class User extends Authenticatable
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->where('users.parent_id', $userId);
         $query->where('users.role', "STAFF");
-        $userDetais = $query->paginate(15);
+        $userDetais = $query->paginate($perPage);
         return $userDetais;
     }
 

@@ -225,4 +225,34 @@ class UserController extends Controller
             return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
         }
     }
+
+    /** 
+     * update user/staff 
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "email" => 'required|unique:users',
+            "first_name" => 'required',
+            "last_name" => 'required',
+            "contact_number" => 'required',
+            "role_id" => 'required',
+            "user_id" => 'required'
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $requestData = $request->all();
+        //print_r($requestData);exit();
+        $user = User::findOrFail($requestData['user_id']);
+        $addResult = $user->update($requestData);
+        if ($addResult) {
+            return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' => $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, user update failed!', 'status' => false], 200);
+        }
+    }
 }
