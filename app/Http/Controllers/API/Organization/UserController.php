@@ -234,11 +234,6 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "email" => 'required|unique:users',
-            "first_name" => 'required',
-            "last_name" => 'required',
-            "contact_number" => 'required',
-            "role_id" => 'required',
             "user_id" => 'required'
         ]);
         if ($validator->fails()) {
