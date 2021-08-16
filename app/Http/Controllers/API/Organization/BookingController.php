@@ -160,4 +160,33 @@ class BookingController extends Controller
         }
     }
     
+    /**
+     * change booking status.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+    public function changeBookingStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+            'booking_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+
+        $objBooking = Booking::find($request->post('booking_id'));
+        $objBooking['status'] = $request->post('status');
+        $res = $objBooking->save();
+       // echo $res;exit();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+        }
+
+    }
 }

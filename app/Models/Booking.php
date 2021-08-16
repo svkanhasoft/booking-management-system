@@ -28,7 +28,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id','rate'];
+    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id', 'status','rate'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     public function getBooking($bookingId = null)

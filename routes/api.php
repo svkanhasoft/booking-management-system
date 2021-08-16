@@ -73,6 +73,7 @@ Route::prefix('organization')->group(function () {
         Route::post('/edit-booking', [App\Http\Controllers\API\Organization\BookingController::class, 'edit']);
         Route::get('/get-booking/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'show']);
         Route::get('/booking-by-status/{status}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus']);
+        Route::post('/change-booking-status', [App\Http\Controllers\API\Organization\BookingController::class, 'changeBookingStatus']);
 
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
