@@ -10,7 +10,7 @@ use App\Http\Requests;
 use App\Models\User;
 use Hash;
 use App\Models\Role;
-
+use Illuminate\Validation\Rule;
 class RoleController extends Controller
 {   
     public $successStatus = 200;
@@ -37,19 +37,20 @@ class RoleController extends Controller
     public function create(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            'role_name' => 'required|unique:roles,user_id,' . $this->userId,
+            // 'role_name' => ['required','unique:roles,user_id,' . $this->userId]
+                'role_name' =>  [
+                'required', 
+                Rule::unique('roles')
+                    ->where('user_id', $this->userId)
+            ]
         ]);
-        if ($validator->fails()) {
+        
+        if ($validator->fails()) {  
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
         $requestData['user_id'] = $this->userId;
-        $role = Role::where('role_name', '=', $request->post('role_name'))->first();
-        if($role)
-        {
-            return response()->json(['message' => 'Role already exists', 'status' => false], 200);
-        }
         $roleCreated = Role::create($requestData);
         if ($roleCreated) {
             return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $roleCreated], $this->successStatus);
@@ -89,6 +90,13 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'role_id' => 'required',
             'role_name' => 'required|unique:roles,role_name,'.$requestData["role_id"],
+            //'role_id' => 'required',
+            // 'role_name' =>  [
+            //     'required', 
+            //     Rule::unique('roles')
+            //             ->where('role_name', $requestData['role_name'])
+            //             ->where('user_id', $this->userId)
+            //    ]
 
         ]);
         if ($validator->fails()) {
@@ -96,10 +104,7 @@ class RoleController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         
-        $role = Role::findOrFail($requestData["role_id"]);
-        // if (Role::where('role_name', '=', $request->post('role_name'))->exists()) {
-        //     return response()->json(['message' => 'Role already exists', 'status' => false], 200);
-        //  }
+        $role = Role::findOrFail($requestData["id"]);
         $roleUpdated = $role->update($requestData);
         if ($roleUpdated) {
             return response()->json(['status' => true, 'message' => 'Role update Successfully.', 'data' => $role], $this->successStatus);
