@@ -45,6 +45,11 @@ class RoleController extends Controller
         }
         $requestData = $request->all();
         $requestData['user_id'] = $this->userId;
+        $role = Role::where('role_name', '=', $request->post('role_name'))->first();
+        if($role)
+        {
+            return response()->json(['message' => 'Role already exists', 'status' => false], 200);
+        }
         $roleCreated = Role::create($requestData);
         if ($roleCreated) {
             return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $roleCreated], $this->successStatus);
@@ -92,6 +97,9 @@ class RoleController extends Controller
         }
         
         $role = Role::findOrFail($requestData["role_id"]);
+        // if (Role::where('role_name', '=', $request->post('role_name'))->exists()) {
+        //     return response()->json(['message' => 'Role already exists', 'status' => false], 200);
+        //  }
         $roleUpdated = $role->update($requestData);
         if ($roleUpdated) {
             return response()->json(['status' => true, 'message' => 'Role update Successfully.', 'data' => $role], $this->successStatus);
