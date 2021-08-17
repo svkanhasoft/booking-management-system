@@ -29,7 +29,7 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/edit-designation', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'edit']);
         Route::get('/get-designation/{id?}', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'show']);
         Route::delete('/delete-designation/{id?}', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'destroy']);
-        Route::get('/get-designation-list', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'list']);
+        // Route::get('/get-designation-list', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'list']);
         Route::get('/get-organization-detail/{id?}', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'getOrgdetails']);
         Route::post('/update-org', [App\Http\Controllers\API\SuperAdmin\SuperAdminController::class, 'updateorg']);
         Route::post('/signup', [App\Http\Controllers\API\Organization\OrganizationController::class, 'signup']);
@@ -44,6 +44,7 @@ Route::prefix('organization')->group(function () {
     Route::post('/otp-verify', [App\Http\Controllers\API\Organization\OrganizationController::class, 'otpVerify']);
     //Route::post('/reset-password', [App\Http\Controllers\API\Signees\OrganizationController::class, 'resetPassword']);
     Route::middleware(['auth:api'])->group(function () {
+        Route::get('/get-designation-list', [App\Http\Controllers\API\SuperAdmin\DesignationController::class, 'list']);
         Route::post('/update', [App\Http\Controllers\API\Organization\OrganizationController::class, 'update']);
         Route::post('/change-password', [App\Http\Controllers\API\Organization\OrganizationController::class, 'changePassword']);
         Route::get('/get-detail', [App\Http\Controllers\API\Organization\OrganizationController::class, 'details']);
