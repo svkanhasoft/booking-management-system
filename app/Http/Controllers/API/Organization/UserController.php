@@ -167,6 +167,21 @@ class UserController extends Controller
             return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
         }
     }
+    /** 
+     * Get User list
+     * 
+     * @return \Illuminate\Http\Response 
+     */
+    public function getuserById($userId)
+    {
+        $UserObj = new User();
+        $user = $UserObj->getStafById($userId);
+        if (!empty($user)) {
+            return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+        }
+    }
 
 
     /** 

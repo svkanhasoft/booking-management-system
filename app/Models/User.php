@@ -120,6 +120,23 @@ class User extends Authenticatable
         return $userDetais;
     }
 
+    public function getStafById($userId = null)
+    {
+        $query = User::select(
+            'users.first_name', 
+            'users.last_name', 'users.email', 'users.email_verified_at', 'users.role', 'users.status', 
+            'users.password_change', 'users.postcode', 'users.city', 'users.address_line_2', 
+            'users.address_line_1', 'users.contact_number', 'users.last_login_date', 'users.parent_id',
+            'oud.*',
+        );
+        $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
+        $query->leftJoin('roles',  'roles.id', '=', 'oud.role_id');
+        $query->where('users.id', $userId);
+        $query->where('users.role', "STAFF");
+        $userDetais = $query->first();
+        return $userDetais;
+    }
+
     public function getSigneeDetails($userId = null)
     {
 
