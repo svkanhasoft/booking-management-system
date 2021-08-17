@@ -129,6 +129,7 @@ class User extends Authenticatable
             'users.address_line_1', 'users.contact_number', 'users.last_login_date', 'users.parent_id',
             'oud.*',
             'designations.designation_name',
+            'roles.role_name',
         );
         $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
         $query->leftJoin('roles',  'roles.id', '=', 'oud.role_id');
