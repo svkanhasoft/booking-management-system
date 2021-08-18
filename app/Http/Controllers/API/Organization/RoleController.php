@@ -37,12 +37,7 @@ class RoleController extends Controller
     public function create(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            // 'role_name' => ['required','unique:roles,user_id,' . $this->userId]
-                'role_name' =>  [
-                'required', 
-                Rule::unique('roles')
-                    ->where('user_id', $this->userId)
-            ]
+            'role_name' => 'unique:roles,role_name,NULL,id,user_id,'.$this->userId
         ]);
         
         if ($validator->fails()) {  
@@ -88,22 +83,13 @@ class RoleController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            'role_id' => 'required',
-            'role_name' => 'required|unique:roles,role_name,'.$requestData["role_id"],
-            //'role_id' => 'required',
-            // 'role_name' =>  [
-            //     'required', 
-            //     Rule::unique('roles')
-            //             ->where('role_name', $requestData['role_name'])
-            //             ->where('user_id', $this->userId)
-            //    ]
-
+            'id' => 'required',
+            'role_name' => 'unique:roles,role_name,'.$requestData['id'].'NULL,id,user_id,'.$this->userId
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        
         $role = Role::findOrFail($requestData["id"]);
         $roleUpdated = $role->update($requestData);
         if ($roleUpdated) {
