@@ -249,20 +249,27 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "user_id" => 'required'
+            "id" => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-        //print_r($requestData);exit();
-        $user = User::findOrFail($requestData['user_id']);
+        $user = User::findOrFail($requestData['id']);
         $addResult = $user->update($requestData);
         if ($addResult) {
-            return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' => $user], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, user update failed!', 'status' => false], 200);
+            $oudDetails = OrganizationUserDetail::where('user_id', $requestData['id'])->first();
+            $oud = OrganizationUserDetail::findOrFail($oudDetails['id']);
+            $oudResult = $oud->update($requestData);
+            if($oudResult)
+            {
+                return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' => $user], $this->successStatus);
+            } 
+            else 
+            {
+                return response()->json(['message' => 'Sorry, user update failed!', 'status' => false], 200);
+            }
         }
     }
 }
