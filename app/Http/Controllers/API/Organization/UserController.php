@@ -248,23 +248,32 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+        $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            "id" => 'required'
+            "id" => 'required',
+            'email' => 'unique:users,email,'.$requestData['id'].'NULL,id',
+             "first_name" => 'required',
+             "last_name" => 'required',
+             "contact_number" => 'required',
+             "role_id" => 'required',
+             "designation_id" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
+        
         $user = User::findOrFail($requestData['id']);
         $addResult = $user->update($requestData);
         if ($addResult) {
-            $oudDetails = OrganizationUserDetail::where('user_id', $requestData['id'])->first();
-            $oud = OrganizationUserDetail::findOrFail($oudDetails['id']);
+            $oudData = OrganizationUserDetail::where('user_id', $requestData['id'])->first();
+            $oud = OrganizationUserDetail::findOrFail($oudData['id']);
             $oudResult = $oud->update($requestData);
+            $UserObj = new User();
+            $userData = $UserObj->getStafById($user['id']);
             if($oudResult)
             {
-                return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' => $user], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' => $userData], $this->successStatus);
             } 
             else 
             {
