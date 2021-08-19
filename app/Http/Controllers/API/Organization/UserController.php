@@ -281,4 +281,17 @@ class UserController extends Controller
             }
         }
     }
+
+    public function destroy($userId)
+    {
+        OrganizationUserDetail::where('user_id', $userId)->delete();
+        $userDelete = User::where('id', $userId)->delete();
+        if($userDelete)
+        {
+            return response()->json(['status' => true, 'message' => 'User deleted successfully.'], $this->successStatus);
+        }
+        else{
+            return response()->json(['status' => false, 'message' => 'Sorry, User not deleted.'], $this->successStatus);
+        }
+    }
 }
