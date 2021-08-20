@@ -85,7 +85,7 @@ Route::prefix('organization')->group(function () {
             Route::post('/reset-password', [App\Http\Controllers\API\Signees\UserController::class, 'resetPassword']);
             Route::middleware(['auth:api'])->group(function () {
                 Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails']);
-                Route::get('/get-user-list', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist']);
+                Route::get('/get-user-list/{search?}', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist']);
                 Route::get('/get-user/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'getuserById']);
                 Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword']);
                 Route::post('/edit-user', [App\Http\Controllers\API\Organization\UserController::class, 'update']);

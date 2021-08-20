@@ -14,6 +14,7 @@ use App\Models\Organization;
 use App\Models\OrganizationUserDetail;
 use App\Models\Role;
 use Config;
+use Illuminate\Http\Request;
 
 class User extends Authenticatable
 {
@@ -84,8 +85,10 @@ class User extends Authenticatable
         return $userDetais;
     }
 
-    public function fetchStaflist($userId = null)
+    public function fetchStaflist(Request $request, $userId = null)
     {
+        $keyword = $request->get('search');
+        //print_r($keyword);exit();
         $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             'users.id',
@@ -114,10 +117,20 @@ class User extends Authenticatable
         $query->Join('designations',  'designations.id', '=', 'oud.designation_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
+        if (!empty($keyword)) {
+            $query->where(function ($query2) use ($keyword) {
+                $query2->where('users.email', 'like',  "%$keyword%")
+                    ->orWhere('users.first_name', 'like',  "%$keyword%")
+                    ->orWhere('users.last_name',  'LIKE', "%$keyword%")
+                    ->orWhere('users.email',  'LIKE', "%$keyword%")
+                    ->orWhere('roles.role_name',  'LIKE', "%$keyword%")
+                    ->orWhere('designations.designation_name',  'LIKE', "%$keyword%");
+            });
+        }
         $query->where('users.parent_id', $userId);
         $query->where('users.role', "STAFF");
-        $userDetais = $query->paginate($perPage);
-        return $userDetais;
+        $res =  $query->latest('users.created_at')->paginate($perPage);
+        return $res;
     }
 
     public function getStafById($userId = null)
