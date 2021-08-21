@@ -16,7 +16,7 @@ class CreateBookingMatchesTable extends Migration
             $table->increments('id');
 
             $table->unsignedInteger('organization_id');
-            $table->unsignedInteger('candidate_id');
+            $table->unsignedInteger('signee_id');
             $table->unsignedInteger('booking_id');
             $table->unsignedInteger('trust_id');
             $table->integer('match_count')->default(0);
@@ -27,7 +27,7 @@ class CreateBookingMatchesTable extends Migration
             $table->timestamps();
 
             $table->foreign('organization_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('candidate_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('signee_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('trust_id')->references('id')->on('trusts')->onDelete('cascade');
             $table->foreign('shift_id')->references('id')->on('organization_shift')->onDelete('cascade');
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');

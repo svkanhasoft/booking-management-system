@@ -10,6 +10,7 @@ use App\Http\Requests;
 use App\Models\User;
 use Hash;
 use App\Models\Booking;
+use App\Models\BookingMatch;
 use App\Models\BookingSpeciality;
 
 class BookingController extends Controller
@@ -159,7 +160,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         }
     }
-    
+
     /**
      * change booking status.
      *
@@ -181,12 +182,36 @@ class BookingController extends Controller
         $objBooking = Booking::find($request->post('booking_id'));
         $objBooking['status'] = $request->post('status');
         $res = $objBooking->save();
-       // echo $res;exit();
+        // echo $res;exit();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
         }
+    }
 
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+    public function getMetchByBookingId($bookingId)
+    {
+        $objBooking = new Booking();
+        $booking = $objBooking->getMetchByBookingId($bookingId);
+        // print_r($booking);
+        // exit;
+        $objBookingMatch = new BookingMatch();
+        $bookingMatch = $objBookingMatch->addBookingMatch($booking,$bookingId);
+        // print_r($bookingMatch);
+        // exit;
+        if ($bookingMatch) {
+            return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        }
     }
 }

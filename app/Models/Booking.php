@@ -28,7 +28,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id', 'status','rate'];
+    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id', 'status', 'rate'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     public function getBooking($bookingId = null)
@@ -90,13 +90,22 @@ class Booking extends Model
 
             $subArray[$key] = $booking;
             $subQuery = BookingSpeciality::select(
-                'users.id','booking_specialities.booking_id','specialities.speciality_name',
-                'signees_detail.candidate_id','signees_detail.phone_number',
-                'signees_detail.mobile_number','users.address_line_1',
+                'users.id',
+                'booking_specialities.booking_id',
+                'specialities.speciality_name',
+                'signees_detail.candidate_id',
+                'signees_detail.phone_number',
+                'signees_detail.mobile_number',
+                'users.address_line_1',
                 'users.address_line_2',
-                'users.city','users.postcode','signees_detail.date_of_birth',
-                'signees_detail.nationality','signees_detail.candidate_referred_from',
-                'signees_detail.date_registered','signees_detail.cv','signees_detail.nmc_dmc_pin',
+                'users.city',
+                'users.postcode',
+                'signees_detail.date_of_birth',
+                'signees_detail.nationality',
+                'signees_detail.candidate_referred_from',
+                'signees_detail.date_registered',
+                'signees_detail.cv',
+                'signees_detail.nmc_dmc_pin',
                 DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
                 DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
                 DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality'),
@@ -108,10 +117,46 @@ class Booking extends Model
             $subQuery->Join('signees_detail',  'signees_detail.user_id', '=', 'users.id');
             $subQuery->where('booking_specialities.booking_id', $booking['id']);
             $subQuery->groupBy('users.id');
-            $subQuery->orderBy('signeeBookingCount','DESC');
+            $subQuery->orderBy('signeeBookingCount', 'DESC');
             $res = $subQuery->get()->toArray();
             $subArray[$key]['user'] = $res;
         }
         return $subArray;
+    }
+
+    public function getMetchByBookingId($matchiId = null)
+    {
+
+        $subQuery = Booking::select(
+            // // $subQuery = BookingSpeciality::select(
+            'users.id as signeeId',
+            'bookings.id as booking_id',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.role',
+            'bookings.user_id as organization_id',
+            'bookings.*',
+            DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+            DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityCount'),
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+
+        $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->where('users.role', 'SIGNEE');
+        $subQuery->where('bookings.id', $matchiId);
+        $subQuery->groupBy('users.id');
+        // $subQuery->groupBy('specialities.id');
+        $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $res = $subQuery->get()->toArray();
+        // $subQuery->join('kg_shops', function ($join) {
+        //     $join->on('kg_shops.id', '=', 'kg_feeds.shop_id');
+        // });
+        return $res;
     }
 }
