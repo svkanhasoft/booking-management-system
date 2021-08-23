@@ -72,7 +72,8 @@ Route::prefix('organization')->group(function () {
         Route::DELETE('/delete-shift/{id?}', [App\Http\Controllers\API\Organization\OrganizationShiftController::class, 'destroy']);
         Route::post('/add-booking', [App\Http\Controllers\API\Organization\BookingController::class, 'add']);
         Route::post('/edit-booking', [App\Http\Controllers\API\Organization\BookingController::class, 'edit']);
-        Route::post('/add-match/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'getMetchByBookingId']);
+        Route::get('/add-match/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'getMetchByBookingId']);
+        Route::get('/update-match/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'updateMatchBySignee']);
         Route::get('/get-booking/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'show']);
         Route::get('/booking-by-status/{status}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus']);
         Route::post('/change-booking-status', [App\Http\Controllers\API\Organization\BookingController::class, 'changeBookingStatus']);

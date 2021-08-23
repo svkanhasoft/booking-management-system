@@ -192,7 +192,7 @@ class BookingController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * add signee by match with speciality.
      *
      * @param  int  $id
      *
@@ -208,6 +208,26 @@ class BookingController extends Controller
         $bookingMatch = $objBookingMatch->addBookingMatch($booking,$bookingId);
         // print_r($bookingMatch);
         // exit;
+        if ($bookingMatch) {
+            return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        }
+    }
+
+    /**
+     * Display the update Match By Signee user Id.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+    public function updateMatchBySignee($signeeId)
+    {
+        $objBookingSignee = new Booking();
+        $booking = $objBookingSignee->editMetchBySigneeId($signeeId);
+        $objBookingMatch = new BookingMatch();
+        $bookingMatch = $objBookingMatch->editBookingMatchByUser($booking,$signeeId);
         if ($bookingMatch) {
             return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
         } else {

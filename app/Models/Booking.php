@@ -108,7 +108,7 @@ class Booking extends Model
                 'signees_detail.nmc_dmc_pin',
                 DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
                 DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
-                DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality'),
+                DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
                 DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
             );
             $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
@@ -139,8 +139,8 @@ class Booking extends Model
             'bookings.*',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
-            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityCount'),
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality'),
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
@@ -150,6 +150,9 @@ class Booking extends Model
         $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $matchiId);
+        $subQuery->whereNull('signee_speciality.deleted_at');
+        $subQuery->whereNull('booking_specialities.deleted_at');
+        $subQuery->whereNull('bookings.deleted_at');
         $subQuery->groupBy('users.id');
         // $subQuery->groupBy('specialities.id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
@@ -157,6 +160,37 @@ class Booking extends Model
         // $subQuery->join('kg_shops', function ($join) {
         //     $join->on('kg_shops.id', '=', 'kg_feeds.shop_id');
         // });
+        return $res;
+    }
+
+    public function editMetchBySigneeId($signeeId = null)
+    {
+
+        $subQuery = Booking::select(
+            'users.id as signeeId',
+            'bookings.id as booking_id',
+            'users.role',
+            'bookings.user_id as organization_id',
+            'bookings.*',
+            DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+            DB::raw('COUNT(signee_speciality.speciality_id)  as signeeBookingCount'),
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT(booking_specialities.id SEPARATOR ", ") AS bookingSpecialityId'),
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        
+        $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->where('users.id', $signeeId);
+        $subQuery->whereNull('signee_speciality.deleted_at');
+        $subQuery->whereNull('booking_specialities.deleted_at');
+        $subQuery->whereNull('bookings.deleted_at');
+        $subQuery->groupBy('bookings.id');
+        $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $res = $subQuery->get()->toArray();
         return $res;
     }
 }
