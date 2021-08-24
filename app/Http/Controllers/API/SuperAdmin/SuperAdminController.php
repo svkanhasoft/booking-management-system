@@ -88,7 +88,8 @@ class SuperAdminController extends Controller
             $user['token'] =  $user->createToken('MyApp')->accessToken;
 
             User::where(['id' => $user->id])->update([
-                'last_login_date' => date('Y-m-d H:i:s')
+                'last_login_date' => date('Y-m-d H:i:s'),
+                'password_change' => 1
             ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
