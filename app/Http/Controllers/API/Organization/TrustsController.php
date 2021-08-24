@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Organization;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\Hospital;
 use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Trust;
@@ -43,8 +44,11 @@ class TrustsController extends Controller
             "last_name" => 'required',
             "contact_email_address" => 'required',
             "phone_number" => 'required',
+            'hospital' => 'required:hospital,[
+                ward => required:ward,[]
+            ]',
             'traning' => 'required:traning,[]',
-            'ward' => 'required:ward,[]',
+            // 'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -52,15 +56,38 @@ class TrustsController extends Controller
         }
 
         $requestData = $request->all();
+       // print_r($requestData['hospital'][1]);exit();
         $requestData['password'] = Hash::make($request->post('portal_password'));
         $requestData['user_id'] = $this->userId;
         $trustResult = Trust::create($requestData);
+        
+        $objHospital = new Hospital();
+        $hospitalResult = $objHospital->addHospital($requestData['hospital'], $trustResult['id'], false);
+        $hospitals = Hospital::where('trust_id', $trustResult['id'])->get();
+      //  print_r($hospital);exit();
+
+
+        $i=0;
         $objWard = new Ward();
-        $wardResult = $objWard->addWard($requestData['ward'], $trustResult['id'], false);
+        foreach($requestData['hospital'][$i] as $ward)
+        {
+            foreach($hospitals as $hospital)
+            {
+                $wardResult = $objWard->addWard($requestData['hospital'][$i]['ward'], $trustResult['id'], $hospital->id ,false);
+                $i++;
+            }
+           break;
+        }
+        // $objWard = new Ward();
+        //$wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $trustResult['id'], false);
+
         $objTraning = new Traning();
         $specialityResult = $objTraning->addTraning($requestData['traning'], $trustResult['id'], false);
+
         if ($specialityResult) {
-            return response()->json(['status' => true, 'message' => 'Trust added successfully.', 'data' => $specialityResult], $this->successStatus);
+            $data = new Trust();
+            $trustDetails = $data->getTrustById($trustResult['id']);
+            return response()->json(['status' => true, 'message' => 'Trust added successfully.', 'data' => $trustResult], $this->successStatus);
         } else {
             return response()->json(['message' => 'Trust added failed.', 'status' => false], 200);
         }
@@ -83,24 +110,83 @@ class TrustsController extends Controller
             "last_name" => 'required',
             "contact_email_address" => 'required',
             "phone_number" => 'required',
+            'hospital' => 'required:hospital,[
+                ward => required:ward,[]
+            ]',
             'traning' => 'required:traning,[]',
-            'ward' => 'required:ward,[]',
+            //'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
+       // print_r($requestData);exit();
         $requestData['password'] = Hash::make($request->post('portal_password'));
         $trustResult = Trust::findOrFail($requestData['id']);
         $trustResult->update($requestData);
 
-        $objWard = new Ward();
-        $wardResult = $objWard->addWard($requestData['ward'], $requestData['id'], true);
-        $objTraning = new Traning();
-        $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
-        if ($specialityResult) {
-            return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $specialityResult], $this->successStatus);
+        //Update Hospital
+        $hospitals = Hospital::where('trust_id', $requestData['id'])->get();
+       // print_r($hospitals);exit();
+        $i=0;
+        foreach($requestData['hospital'][$i] as $hos)
+        {
+            foreach($hospitals as $row)
+            {
+                $updateHospital = Hospital::findOrFail($hospitals[$i]['id']);
+                $updateData = $updateHospital->update($requestData['hospital'][$i]);
+                $i++;
+            }
+            break;
+        }
+
+
+
+
+
+        //Update Ward
+        //$ward = Ward::where('trust_id', $requestData['id'])->get();
+       // print_r($ward);exit();
+        
+        $i=0;
+        foreach($requestData['hospital'][$i]['ward'] as $hos)
+        {   
+            //$hospital = Hospital::where('id', $requestData['hospital'][$i]['id'])->get(); // get hospital
+            $ward = Ward::where('hospital_id', '=', $requestData['hospital'][$i]['id'])->get(); // get ward of hospital_id
+            print_r($ward);exit();
+            if($ward[$i]['hospital_id'] == $requestData['hospital'][$i]['id'])
+            {   
+                $wardUpdate = ward::findOrFail($ward[$i]['id']);
+                //print_r($ward[$i]['id']);exit();
+                $updateData = $wardUpdate->update($requestData['hospital'][$i]['ward']); 
+            }
+            $i++;
+        } 
+        
+
+
+
+
+
+        //Update Training
+        $traning = Traning::where('trust_id', $requestData['id'])->get();
+       // print_r($traning[0]['id']);exit();
+
+        for($i=0; $i < count($requestData['traning']); $i++)
+        {
+            $update = Traning::findOrFail($traning[$i]['id']);
+            $updateTraning = $update->update($requestData['traning'][$i]);
+        }
+
+        // $objWard = new Ward();
+        // $wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $requestData['id'], true);
+        // $objTraning = new Traning();
+        // $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
+        if ($trustResult) {
+            $trustData = new Trust();
+            $trustDetails = $trustData->getTrustById($trustResult['id']);
+            return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $trustDetails], $this->successStatus);
         } else {
             return response()->json(['message' => 'Trust update failed.', 'status' => false], 200);
         }

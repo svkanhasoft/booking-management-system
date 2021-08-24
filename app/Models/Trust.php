@@ -37,4 +37,25 @@ class Trust extends Model
     {
         return $this->hasMany(Traning::class, 'trust_id');
     }
+    public function hospital()
+    {
+        return $this->hasMany(Hospital::class);
+    }
+
+    public function getTrustById($trustId)
+    {
+        $query = Trust::select(
+            'trusts.*',
+            'ward.ward_name',
+            'ward.ward_type',
+            'ward.ward_number',
+            'traning.traning_name',
+            'hospitals.hospital_name'
+        );
+        $query->leftJoin('ward',  'ward.trust_id', '=', 'trusts.id');
+        $query->leftJoin('traning',  'traning.trust_id', '=', 'trusts.id');
+        $query->leftJoin('hospitals',  'hospitals.trust_id', '=', 'trusts.id');
+        $query->where('trusts.id', $trustId);
+        return $query->get();
+    }
 }

@@ -27,7 +27,7 @@ class Traning extends Model
      *
      * @var array
      */
-    protected $fillable = ['trust_id', 'traning_name'];
+    protected $fillable = ['id','trust_id', 'traning_name'];
     protected $hidden = ['pseudo','deleted_at','updated_at', 'created_at'];
     function addTraning($postData, $trustId,$isDelete = false){
         if($isDelete == true){

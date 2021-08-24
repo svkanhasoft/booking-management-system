@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
 
-class Ward extends Model
+class Hospital extends Model
 {
     use SoftDeletes;
     /**
@@ -13,7 +14,7 @@ class Ward extends Model
      *
      * @var string
      */
-    protected $table = 'ward';
+    protected $table = 'hospitals';
 
     /**
     * The database primary key value.
@@ -27,26 +28,22 @@ class Ward extends Model
      *
      * @var array
      */
-    protected $fillable = ['trust_id', 'ward_name', 'ward_type', 'ward_number', 'hospital_id'];
-    protected $hidden = ['pseudo','deleted_at','updated_at', 'created_at'];
+    protected $fillable = ['id', 'hospital_name', 'trust_id'];
 
-    function addWard($postData, $trustId, $hospital_id, $isDelete = false){
+    function addHospital($postData, $trustId, $isDelete = false){
         if($isDelete == true){
-           Ward::where(['trust_id' => $trustId])->delete();
-        }
-
+            Hospital::where(['trust_id' => $trustId])->delete();
+         }
         foreach($postData as $key => $val){
             $val['trust_id'] = $trustId;
-            $val['hospital_id'] = $hospital_id;
-            Ward::create($val);
+            Hospital::create($val);
             unset($val);
         }
         return true;
     }
-    
+
     public function post()
     {
         return $this->belongsTo(Trust::class);
     }
-    
 }
