@@ -126,66 +126,63 @@ class TrustsController extends Controller
         $trustResult = Trust::findOrFail($requestData['id']);
         $trustResult->update($requestData);
 
-        //Update Hospital
-        $hospitals = Hospital::where('trust_id', $requestData['id'])->get();
-       // print_r($hospitals);exit();
-        $i=0;
-        foreach($requestData['hospital'][$i] as $hos)
-        {
-            foreach($hospitals as $row)
-            {
-                $updateHospital = Hospital::findOrFail($hospitals[$i]['id']);
-                $updateData = $updateHospital->update($requestData['hospital'][$i]);
-                $i++;
-            }
-            break;
-        }
+        $objHospital = new Hospital();
+        $objHospital->addUpdateHospital($requestData);
+
+    //     //Update Hospital
+    //     $hospitals = Hospital::where('trust_id', $requestData['id'])->get();
+    //    // print_r($hospitals);exit();
+    //     $i=0;
+    //     foreach($requestData['hospital'][$i] as $hos)
+    //     {
+    //         foreach($hospitals as $row)
+    //         {
+    //             $updateHospital = Hospital::findOrFail($hospitals[$i]['id']);
+    //             $updateData = $updateHospital->update($requestData['hospital'][$i]);
+    //             $i++;
+    //         }
+    //         break;
+    //     }
 
 
-
-
-
-        //Update Ward
-        //$ward = Ward::where('trust_id', $requestData['id'])->get();
-       // print_r($ward);exit();
+    //     //Update Ward
+    //     //$ward = Ward::where('trust_id', $requestData['id'])->get();
+    //    // print_r($ward);exit();
         
-        $i=0;
-        foreach($requestData['hospital'][$i]['ward'] as $hos)
-        {   
-            //$hospital = Hospital::where('id', $requestData['hospital'][$i]['id'])->get(); // get hospital
-            $ward = Ward::where('hospital_id', '=', $requestData['hospital'][$i]['id'])->get(); // get ward of hospital_id
-            print_r($ward);exit();
-            if($ward[$i]['hospital_id'] == $requestData['hospital'][$i]['id'])
-            {   
-                $wardUpdate = ward::findOrFail($ward[$i]['id']);
-                //print_r($ward[$i]['id']);exit();
-                $updateData = $wardUpdate->update($requestData['hospital'][$i]['ward']); 
-            }
-            $i++;
-        } 
+    //     $i=0;
+    //     foreach($requestData['hospital'][$i]['ward'] as $hos)
+    //     {   
+    //         //$hospital = Hospital::where('id', $requestData['hospital'][$i]['id'])->get(); // get hospital
+    //         $ward = Ward::where('hospital_id', '=', $requestData['hospital'][$i]['id'])->get(); // get ward of hospital_id
+    //         print_r($ward);exit();
+    //         if($ward[$i]['hospital_id'] == $requestData['hospital'][$i]['id'])
+    //         {   
+    //             $wardUpdate = ward::findOrFail($ward[$i]['id']);
+    //             //print_r($ward[$i]['id']);exit();
+    //             $updateData = $wardUpdate->update($requestData['hospital'][$i]['ward']); 
+    //         }
+    //         $i++;
+    //     } 
         
 
 
+    //     //Update Training
+    //     $traning = Traning::where('trust_id', $requestData['id'])->get();
+    //    // print_r($traning[0]['id']);exit();
 
+    //     for($i=0; $i < count($requestData['traning']); $i++)
+    //     {
+    //         $update = Traning::findOrFail($traning[$i]['id']);
+    //         $updateTraning = $update->update($requestData['traning'][$i]);
+    //     }
 
-
-        //Update Training
-        $traning = Traning::where('trust_id', $requestData['id'])->get();
-       // print_r($traning[0]['id']);exit();
-
-        for($i=0; $i < count($requestData['traning']); $i++)
-        {
-            $update = Traning::findOrFail($traning[$i]['id']);
-            $updateTraning = $update->update($requestData['traning'][$i]);
-        }
-
-        // $objWard = new Ward();
-        // $wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $requestData['id'], true);
-        // $objTraning = new Traning();
-        // $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
+    //     // $objWard = new Ward();
+    //     // $wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $requestData['id'], true);
+    //     // $objTraning = new Traning();
+    //     // $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
         if ($trustResult) {
             $trustData = new Trust();
-            $trustDetails = $trustData->getTrustById($trustResult['id']);
+            $trustDetails = $trustData->getTrustById($requestData['id']);
             return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $trustDetails], $this->successStatus);
         } else {
             return response()->json(['message' => 'Trust update failed.', 'status' => false], 200);
@@ -237,6 +234,7 @@ class TrustsController extends Controller
         // exit;
         Ward::where('trust_id', $trustId)->delete();
         Traning::where('trust_id', $trustId)->delete();
+        Hospital::where('trust_id', $trustId)->delete();
         $result = Trust::where('id', $trustId)->delete();
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Trust Delete successfully.'], $this->successStatus);

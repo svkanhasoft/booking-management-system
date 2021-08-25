@@ -17,10 +17,10 @@ class Hospital extends Model
     protected $table = 'hospitals';
 
     /**
-    * The database primary key value.
-    *
-    * @var string
-    */
+     * The database primary key value.
+     *
+     * @var string
+     */
     protected $primaryKey = 'id';
 
     /**
@@ -30,11 +30,12 @@ class Hospital extends Model
      */
     protected $fillable = ['id', 'hospital_name', 'trust_id'];
 
-    function addHospital($postData, $trustId, $isDelete = false){
-        if($isDelete == true){
+    function addHospital($postData, $trustId, $isDelete = false)
+    {
+        if ($isDelete == true) {
             Hospital::where(['trust_id' => $trustId])->delete();
-         }
-        foreach($postData as $key => $val){
+        }
+        foreach ($postData as $key => $val) {
             $val['trust_id'] = $trustId;
             Hospital::create($val);
             unset($val);
@@ -45,5 +46,21 @@ class Hospital extends Model
     public function post()
     {
         return $this->belongsTo(Trust::class);
+    }
+
+    public function addUpdateHospital($postData)
+    {
+        // dd($postData['hospital']);
+        foreach ($postData['hospital'] as $keys => $values) {
+            // dd($values);
+            // exit;
+            $objHospital = Hospital::where(['id' => $values['hospital_id'], 'trust_id' => $postData['id']])->firstOrNew();
+            $objHospital->hospital_name = $values['hospital_name'];
+            $objHospital->save();
+            $objHospital = '';
+
+            $objWard = new Ward();
+            $wardResult = $objWard->addOrUpdateWard($values,$postData['id']);
+        }
     }
 }
