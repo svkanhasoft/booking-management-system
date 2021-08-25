@@ -29,7 +29,8 @@ class Hospital extends Model
      * @var array
      */
     protected $fillable = ['id', 'hospital_name', 'trust_id'];
-
+    protected $hidden = ['pseudo', 'deleted_at', 'updated_at', 'created_at'];
+    
     function addHospital($postData, $trustId, $isDelete = false)
     {
         if ($isDelete == true) {
