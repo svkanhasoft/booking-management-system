@@ -75,9 +75,12 @@ Route::prefix('organization')->group(function () {
         Route::get('/add-match/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'getMetchByBookingId']);
         Route::get('/update-match/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'updateMatchBySignee']);
         Route::get('/get-booking/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'show']);
-        Route::get('/booking-by-status/{status}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus']);
+        Route::get('/booking-by-status/{search?}/{status?}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus']);
         Route::post('/change-booking-status', [App\Http\Controllers\API\Organization\BookingController::class, 'changeBookingStatus']);
-
+        Route::get('/get-shift-type/{id?}', [App\Http\Controllers\API\Organization\ShiftTypeController::class, 'show']);
+        Route::get('/get-all-shift-type', [App\Http\Controllers\API\Organization\ShiftTypeController::class, 'showAll']);
+        Route::get('/get-ward-type/{id?}', [App\Http\Controllers\API\Organization\WardTypeController::class, 'show']);
+        Route::get('/get-all-ward-type', [App\Http\Controllers\API\Organization\WardTypeController::class, 'showAll']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
         

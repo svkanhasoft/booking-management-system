@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ShiftType extends Model
+class WardType extends Model
 {
+    use HasFactory;
     use SoftDeletes;
+
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'shift_type';
+    protected $table = 'ward_type';
 
     /**
     * The database primary key value.
@@ -27,8 +30,6 @@ class ShiftType extends Model
      *
      * @var array
      */
-    protected $fillable = ['shift_type'];
+    protected $fillable = ['ward_type'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
-
-    
 }

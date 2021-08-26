@@ -14,7 +14,7 @@ class AddShiftTypeIdBookingsTable extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->unsignedInteger('shift_type_id')->nullable()->after('grade_id');
+            $table->unsignedInteger('shift_type_id')->after('grade_id')->nullable();
             $table->foreign('shift_type_id')->references('id')->on('shift_type')->onDelete('cascade');
         });
     }

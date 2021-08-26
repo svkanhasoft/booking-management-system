@@ -46,6 +46,7 @@ class BookingController extends Controller
             'grade_id' => 'required',
             'date' => 'required',
             'shift_id' => 'required',
+            'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
         ]);
         if ($validator->fails()) {
@@ -149,10 +150,10 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function bookingStatus($status)
+    public function bookingStatus(Request $request, $status = null)
     {
         $objBooking = new Booking();
-        $booking = $objBooking->getBookingByFilter($status);
+        $booking = $objBooking->getBookingByFilter($request, $status);
 
         if (count($booking) > 0) {
             return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);

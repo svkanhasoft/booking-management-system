@@ -16,11 +16,16 @@ class CreateWardsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('trust_id');
             $table->string('ward_name');
+            $table->unsignedInteger('ward_type_id')->nullable();
             // $table->string('ward_type');
-            $table->enum('ward_type', ['Hospital', 'GP Clinic'])->default('Hospital');
+            $table->string('ward_type');
             $table->integer('ward_number');
             $table->softDeletes();
             $table->timestamps();
+
+            
+
+            $table->foreign('ward_type_id')->references('id')->on('ward_type')->onDelete('cascade');
             $table->foreign('trust_id')->references('id')->on('trusts')->onDelete('cascade');
         });
     }

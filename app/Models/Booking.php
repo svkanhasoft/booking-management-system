@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
+use Illuminate\Http\Request;
 
 class Booking extends Model
 {
@@ -28,7 +29,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'date', 'grade_id', 'status', 'rate'];
+    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     public function getBooking($bookingId = null)
@@ -67,8 +68,10 @@ class Booking extends Model
         return $query->get();
     }
 
-    public function getBookingByFilter($status = null)
+    public function getBookingByFilter(Request $request, $status = null)
     {
+        $keyword = $request->get('search');
+        $status = $request->get('status');
         $query = Booking::select(
             'bookings.*',
             'ward.ward_name',
@@ -81,6 +84,20 @@ class Booking extends Model
         $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
+
+        if (!empty($status)) {
+            $query->Where('bookings.status',  "$status");
+        }
+
+        if (!empty($keyword)) {
+            $query->where(function ($query2) use ($status, $keyword) {
+                $query2->where('trusts.name', 'LIKE',  "%$keyword%")
+                    ->orWhere('ward.ward_name', 'LIKE',  "%$keyword%")
+                    ->orWhere('bookings.reference_id', 'LIKE',  "%$keyword%")
+                    ->orWhere('bookings.status', 'LIKE',  "%$keyword%");
+            });
+        }
+
         $query->where('bookings.status', $status);
         $bookingList = $query->get();
         //  print_r($bookingList);
@@ -115,6 +132,7 @@ class Booking extends Model
             $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
             $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
             $subQuery->Join('signees_detail',  'signees_detail.user_id', '=', 'users.id');
+
             $subQuery->where('booking_specialities.booking_id', $booking['id']);
             $subQuery->groupBy('users.id');
             $subQuery->orderBy('signeeBookingCount', 'DESC');
