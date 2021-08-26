@@ -51,11 +51,11 @@ class Ward extends Model
         foreach ($postData['ward'] as $keys => $values) {
             // dd($values);
             // exit;
-            $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['hospital_id'], 'ward_name' => $values['ward_name'], 'ward_type' => $values['ward_type']])->firstOrNew();
+            $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['hospital_id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
             $objWards->ward_name = $values['ward_name'];
             $objWards->hospital_id =  $postData['hospital_id'];
             $objWards->trust_id = $trustId;
-            $objWards->ward_type = $values['ward_type'];
+            $objWards->ward_type_id = $values['ward_type_id'];
             $objWards->ward_number = $values['ward_number'];
             $objWards->save();
             $objWards = '';
