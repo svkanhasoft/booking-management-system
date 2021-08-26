@@ -143,8 +143,8 @@ class TrustsController extends Controller
         if ($trustId > 0) {
 
             $trustObj = new Trust();
-            $trust = $trustObj->getTrustById($trustId);
-            print_r($trust);exit(); 
+            $result = $trustObj->getTrustById($trustId);
+            // print_r($trust);exit(); 
             
             // $result = [];
             // $result = Trust::find($trustId);
@@ -152,7 +152,6 @@ class TrustsController extends Controller
             // $result->hospital;
             // $result->ward;
             // $result->training;
-
 
             return response()->json(['status' => true, 'message' => 'Trust detail get successfully.', 'data' => $result], $this->successStatus);
         } else {
