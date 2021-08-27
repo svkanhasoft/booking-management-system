@@ -48,9 +48,9 @@ class WardTypeController extends Controller
      */
     public function show($id)
     {
-        $shift = WardType::where('id', $id)->first();
-        if ($shift) {
-            return response()->json(['status' => true, 'message' => 'Ward type get Successfully', 'data' => $shift], $this->successStatus);
+        $ward = WardType::where('id', $id)->first();
+        if ($ward) {
+            return response()->json(['status' => true, 'message' => 'Ward type get Successfully', 'data' => $ward], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
         }
@@ -58,9 +58,9 @@ class WardTypeController extends Controller
 
     public function showAll()
     {
-        $shiftTypeList = WardType::all()->toArray();
-        if ($shiftTypeList) {
-            return response()->json(['status' => true, 'message' => 'Ward type get Successfully', 'data' => $shiftTypeList], $this->successStatus);
+        $wardTypeList = WardType::select('id as ward_type_id', 'ward_type')->get()->toArray();
+        if ($wardTypeList) {
+            return response()->json(['status' => true, 'message' => 'Ward type get Successfully', 'data' => $wardTypeList], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
         }
