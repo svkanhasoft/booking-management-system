@@ -36,6 +36,7 @@ class BookingMatch extends Model
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);
             // exit;
+            $this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
                 'signee_id' =>  $values['signeeId'],
@@ -58,9 +59,9 @@ class BookingMatch extends Model
 
     public function editBookingMatchByUser($bookingArray, $bookingId)
     {
-        
+
         $signeeidArray = array_column($bookingArray, 'signeeId');
-        $objBookingMatchDelete = BookingMatch::where('booking_id', '=' , $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
+        $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);
             // exit;
@@ -80,5 +81,26 @@ class BookingMatch extends Model
             $objBookingMatch = '';
         }
         return true;
+    }
+
+    public function sendMatchEmail($result)
+    {
+        if (isset($result) && !empty($result)) {
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'addMatch',
+                'subject' => 'Booking Management System: Your match found',
+                'data' => $result,
+            ];
+            $emailRes = \Mail::to($result['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('shaileshv.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+            return true;
+        } else {
+            return true;
+        }
     }
 }

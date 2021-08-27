@@ -147,6 +147,7 @@ class Booking extends Model
 
         $subQuery = Booking::select(
             // // $subQuery = BookingSpeciality::select(
+            'users.email',
             'users.id as signeeId',
             'bookings.id as booking_id',
             'users.address_line_1',

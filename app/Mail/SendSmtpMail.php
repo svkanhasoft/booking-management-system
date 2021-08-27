@@ -37,6 +37,8 @@ class SendSmtpMail extends Mailable
             return $this->subject($this->details['subject'])->view('emails.forgot-mail');
         } else if ($this->details['mailTitle'] == 'register') {
             return $this->subject($this->details['subject'])->view('emails.register-mail');
+        } else if ($this->details['mailTitle'] == 'addMatch') {
+            return $this->subject($this->details['subject'])->view('emails.add-match-mail');
         }
     }
 }

@@ -59,6 +59,13 @@ class BookingController extends Controller
         if ($bookingCreated) {
             $objBookingSpeciality = new BookingSpeciality();
             $objBookingSpeciality->addSpeciality($requestData['speciality'], $bookingCreated['id'], false);
+            
+            $objBooking = new Booking();
+            $bookings = $objBooking->getMetchByBookingId($bookingCreated['id']);
+            
+            $objBookingMatch = new BookingMatch();
+            $bookingMatch = $objBookingMatch->addBookingMatch($bookings,$bookingCreated['id']);
+            
             return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 200);
@@ -190,7 +197,6 @@ class BookingController extends Controller
             return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
         }
     }
-
 
     /**
      * add signee by match with speciality.
