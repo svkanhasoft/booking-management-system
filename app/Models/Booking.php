@@ -212,4 +212,41 @@ class Booking extends Model
         $res = $subQuery->get()->toArray();
         return $res;
     }
+
+    public function getSigneeByIdAndBookingId($bookingId = null, $signeeId = null)
+    {
+        $subQuery = Booking::select(
+            // // $subQuery = BookingSpeciality::select(
+            'users.id as signeeId',
+            'bookings.id as booking_id',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.role',
+            'bookings.user_id as organization_id',
+            'bookings.*',
+            DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+            DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+
+        $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->where('users.role', 'SIGNEE');
+        $subQuery->where('bookings.id', $bookingId);
+        $subQuery->where('users.id', $signeeId);
+        $subQuery->whereNull('signee_speciality.deleted_at');
+        $subQuery->whereNull('booking_specialities.deleted_at');
+        $subQuery->whereNull('bookings.deleted_at');
+        $subQuery->groupBy('users.id');
+
+        $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $res = $subQuery->get()->toArray();
+
+        return $res;
+    }
 }

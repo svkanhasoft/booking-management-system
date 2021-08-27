@@ -81,7 +81,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-all-shift-type', [App\Http\Controllers\API\Organization\ShiftTypeController::class, 'showAll']);
         Route::get('/get-ward-type/{id?}', [App\Http\Controllers\API\Organization\WardTypeController::class, 'show']);
         Route::get('/get-all-ward-type', [App\Http\Controllers\API\Organization\WardTypeController::class, 'showAll']);
-
+        Route::get('/get-signee-detail', [App\Http\Controllers\API\Organization\BookingController::class, 'getSigneeByIdAndBookingId']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
         
         Route::prefix('user')->group(function () {
