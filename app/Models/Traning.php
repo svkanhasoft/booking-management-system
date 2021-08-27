@@ -27,7 +27,7 @@ class Traning extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','trust_id', 'traning_name'];
+    protected $fillable = ['id','trust_id', 'training_name'];
     protected $hidden = ['pseudo','deleted_at','updated_at', 'created_at'];
     function addTraning($postData, $trustId,$isDelete = false){
         if($isDelete == true){
@@ -47,7 +47,7 @@ class Traning extends Model
             //  print_r($values['id']);
             //  exit();
             $objTraning = Traning::where(['id' => $values['id']])->firstOrNew();
-            $objTraning->traning_name = $values['traning_name'];
+            $objTraning->training_name = $values['training_name'];
             $objTraning->save();
             $objTraning = '';
         }

@@ -55,7 +55,7 @@ class Hospital extends Model
         foreach ($postData['hospital'] as $keys => $values) {
             // dd($values);
             // exit;
-            $objHospital = Hospital::where(['id' => $values['hospital_id'], 'trust_id' => $postData['id']])->firstOrNew();
+            $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
             $objHospital->hospital_name = $values['hospital_name'];
             $objHospital->save();
             $objHospital = '';
