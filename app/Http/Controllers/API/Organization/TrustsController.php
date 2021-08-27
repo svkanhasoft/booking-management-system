@@ -131,7 +131,7 @@ class TrustsController extends Controller
         // $objTraning->updateTraning($requestData);
 
         $objTraning = new Traning();
-        $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
+        $specialityResult = $objTraning->addTraning($requestData['training'], $requestData['id'], true);
 
         if ($trustResult) {
             $trustData = new Trust();
