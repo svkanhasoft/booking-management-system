@@ -113,7 +113,7 @@ class TrustsController extends Controller
             'hospital' => 'required:hospital,[
                 ward => required:ward,[]
             ]',
-            'traning' => 'required:traning,[]',
+            //'traning' => 'required:traning,[]',
             //'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
@@ -121,13 +121,16 @@ class TrustsController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-       // print_r($requestData);exit();
+        //print_r($requestData);exit();
         $requestData['password'] = Hash::make($request->post('portal_password'));
         $trustResult = Trust::findOrFail($requestData['id']);
         $trustResult->update($requestData);
 
         $objHospital = new Hospital();
         $objHospital->addUpdateHospital($requestData);
+
+        // $objTraning = new Traning();
+        // $objTraning->updateTraning($requestData);
 
         if ($trustResult) {
             $trustData = new Trust();

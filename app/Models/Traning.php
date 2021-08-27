@@ -41,6 +41,18 @@ class Traning extends Model
         return true;
     }
 
+    // public function updateTraning($postData)
+    // {
+    //     foreach ($postData['traning'] as $keys => $values) {
+    //         // dd($values);
+    //         // exit;
+    //         $objTraning = Traning::where(['id' => $postData['id']])->firstOrNew();
+    //         $objTraning->traning_name = $values['traning_name'];
+    //         $objTraning->save();
+    //         $objTraning = '';
+    //     }
+    // }
+
     public function post()
     {
         return $this->belongsTo(Trust::class);
