@@ -43,7 +43,7 @@ class Traning extends Model
 
     public function updateTraning($postData)
     {
-        foreach ($postData['traning'] as $keys => $values) {
+        foreach ($postData['training'] as $keys => $values) {
             //  print_r($values['id']);
             //  exit();
             $objTraning = Traning::where(['id' => $values['id']])->firstOrNew();
