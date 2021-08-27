@@ -63,7 +63,8 @@ class OrganizationController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'organization_name' => 'required',
+            // 'organization_name' => 'required',
+            'organization_name' => 'unique:organizations,organization_name',
             'contact_person_name' => 'required',
             'contact_number' => 'required',
             'address_line_1' => 'required',
