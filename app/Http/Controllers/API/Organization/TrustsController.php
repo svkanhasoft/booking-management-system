@@ -129,8 +129,8 @@ class TrustsController extends Controller
         $objHospital = new Hospital();
         $objHospital->addUpdateHospital($requestData);
 
-        // $objTraning = new Traning();
-        // $objTraning->updateTraning($requestData);
+        $objTraning = new Traning();
+        $objTraning->updateTraning($requestData);
 
         if ($trustResult) {
             $trustData = new Trust();
