@@ -254,4 +254,20 @@ class BookingController extends Controller
             return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 200);
         }
     }
+
+    public function getBookingAndSigneeByBookingId($bookingId)
+    {
+        //echo $bookingId;
+        $objBooking = new Booking();
+        $booking = $objBooking->getBookingAndSigneeByBookingId($bookingId);
+
+        // $objBooking = new Booking();
+        // $bookingNew = $objBooking->getMetchByBookingId($bookingId);
+
+        if ($booking) {
+            return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $booking], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        }
+    }
 }
