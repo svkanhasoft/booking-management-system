@@ -16,7 +16,7 @@ class CreateWardsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('trust_id');
             $table->string('ward_name');
-            $table->unsignedInteger('ward_type_id')->nullable();
+            // $table->unsignedInteger('ward_type_id')->nullable();
             // $table->string('ward_type');
             $table->string('ward_type');
             $table->integer('ward_number');
@@ -24,8 +24,7 @@ class CreateWardsTable extends Migration
             $table->timestamps();
 
             
-
-            $table->foreign('ward_type_id')->references('id')->on('ward_type')->onDelete('cascade');
+            // $table->foreign('ward_type_id')->references('id')->on('ward_type')->onDelete('cascade');
             $table->foreign('trust_id')->references('id')->on('trusts')->onDelete('cascade');
         });
     }

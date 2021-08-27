@@ -47,7 +47,7 @@ class TrustsController extends Controller
             'hospital' => 'required:hospital,[
                 ward => required:ward,[]
             ]',
-            'traning' => 'required:traning,[]',
+            'training' => 'required:training,[]',
             // 'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
@@ -82,7 +82,7 @@ class TrustsController extends Controller
         //$wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $trustResult['id'], false);
 
         $objTraning = new Traning();
-        $specialityResult = $objTraning->addTraning($requestData['traning'], $trustResult['id'], false);
+        $specialityResult = $objTraning->addTraning($requestData['training'], $trustResult['id'], false);
 
         if ($specialityResult) {
             $data = new Trust();
@@ -113,7 +113,7 @@ class TrustsController extends Controller
             'hospital' => 'required:hospital,[
                 ward => required:ward,[]
             ]',
-            //'traning' => 'required:traning,[]',
+            'training' => 'required:training,[]',
             //'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
