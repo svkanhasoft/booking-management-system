@@ -57,7 +57,8 @@ class SpecialitiesController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "speciality_name" => 'required',
+            // "speciality_name" => 'required',
+            'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -125,15 +126,17 @@ class SpecialitiesController extends Controller
      */
     public function update(Request $request)
     {
+        $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            "speciality_name" => 'required',
+            // "speciality_name" => 'required',
+            'speciality_name' => 'unique:specialities,speciality_name,'.$requestData['speciality_id'].'NULL,id,user_id,'.$this->userId,
             "speciality_id" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
+        
         $speciality = Speciality::findOrFail($requestData['speciality_id']);
         $addResult =  $speciality->update($requestData);
         if ($addResult) {
