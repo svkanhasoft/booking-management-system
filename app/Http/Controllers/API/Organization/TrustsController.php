@@ -56,27 +56,25 @@ class TrustsController extends Controller
         }
 
         $requestData = $request->all();
-       // print_r($requestData['hospital'][1]);exit();
+        // print_r($requestData['hospital'][1]);exit();
         $requestData['password'] = Hash::make($request->post('portal_password'));
         $requestData['user_id'] = $this->userId;
         $trustResult = Trust::create($requestData);
-        
+
         $objHospital = new Hospital();
         $hospitalResult = $objHospital->addHospital($requestData['hospital'], $trustResult['id'], false);
         $hospitals = Hospital::where('trust_id', $trustResult['id'])->get();
-      //  print_r($hospital);exit();
+        //  print_r($hospital);exit();
 
 
-        $i=0;
+        $i = 0;
         $objWard = new Ward();
-        foreach($requestData['hospital'][$i] as $ward)
-        {
-            foreach($hospitals as $hospital)
-            {
-                $wardResult = $objWard->addWard($requestData['hospital'][$i]['ward'], $trustResult['id'], $hospital->id ,false);
+        foreach ($requestData['hospital'][$i] as $ward) {
+            foreach ($hospitals as $hospital) {
+                $wardResult = $objWard->addWard($requestData['hospital'][$i]['ward'], $trustResult['id'], $hospital->id, false);
                 $i++;
             }
-           break;
+            break;
         }
         // $objWard = new Ward();
         //$wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $trustResult['id'], false);
@@ -129,8 +127,11 @@ class TrustsController extends Controller
         $objHospital = new Hospital();
         $objHospital->addUpdateHospital($requestData);
 
+        // $objTraning = new Traning();
+        // $objTraning->updateTraning($requestData);
+
         $objTraning = new Traning();
-        $objTraning->updateTraning($requestData);
+        $specialityResult = $objTraning->addTraning($requestData['traning'], $requestData['id'], true);
 
         if ($trustResult) {
             $trustData = new Trust();
@@ -148,7 +149,7 @@ class TrustsController extends Controller
             $trustObj = new Trust();
             $result = $trustObj->getTrustById($trustId);
             // print_r($trust);exit(); 
-            
+
             // $result = [];
             // $result = Trust::find($trustId);
             //print_r($result);exit();
