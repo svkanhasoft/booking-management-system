@@ -30,7 +30,7 @@ class Hospital extends Model
      */
     protected $fillable = ['id', 'hospital_name', 'trust_id'];
     protected $hidden = ['pseudo', 'deleted_at', 'updated_at', 'created_at'];
-    
+
     function addHospital($postData, $trustId, $isDelete = false)
     {
         if ($isDelete == true) {
@@ -52,16 +52,18 @@ class Hospital extends Model
     public function addUpdateHospital($postData)
     {
         // dd($postData['hospital']);
-        foreach ($postData['hospital'] as $keys => $values) {
-            // dd($values);
-            // exit;
-            $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
-            $objHospital->hospital_name = $values['hospital_name'];
-            $objHospital->save();
-            $objHospital = '';
+        if (!empty($postData['hospital'])) {
+            foreach ($postData['hospital'] as $keys => $values) {
+                // dd($values);
+                // exit;
+                $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
+                $objHospital->hospital_name = $values['hospital_name'];
+                $objHospital->save();
+                $objHospital = '';
 
-            $objWard = new Ward();
-            $wardResult = $objWard->addOrUpdateWard($values,$postData['id']);
+                $objWard = new Ward();
+                $wardResult = $objWard->addOrUpdateWard($values, $postData['id']);
+            }
         }
     }
 }
