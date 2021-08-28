@@ -300,12 +300,11 @@ class BookingController extends Controller
     }
     public function hospitallist(Request $request,$trustId)
     {
-
         $ward = Hospital::where(['trust_id' => $trustId])->get();
         if (count($ward)) {
             return response()->json(['status' => true, 'message' => 'hospital get successfully', 'data' => $ward], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Ward not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, hospital not available!', 'status' => false], 200);
         }
     }
 }
