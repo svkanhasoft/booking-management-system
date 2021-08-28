@@ -46,7 +46,7 @@ class Traning extends Model
         foreach ($postData['training'] as $keys => $values) {
             //  print_r($values['id']);
             //  exit();
-            $objTraning = Traning::where(['id' => $values['id']])->firstOrNew();
+            $objTraning = Traning::where(['id' => $postData['id']])->firstOrNew();
             $objTraning->training_name = $values['training_name'];
             $objTraning->save();
             $objTraning = '';

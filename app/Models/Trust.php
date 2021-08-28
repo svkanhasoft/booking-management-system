@@ -51,7 +51,11 @@ class Trust extends Model
         $result->hospital;
         $result->training;
         foreach ($result->hospital as $key => $value) {
-            $wardResult = Ward::where('ward.hospital_id', $value['id'])->get();
+            // $wardResult = Ward::where('ward.hospital_id', $value['id'])->get();
+            // select('ward.*','ward_type.ward_type_name')->
+            $wardResult = Ward::select('ward.*','ward_type.ward_type')
+            ->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id')
+            ->where('ward.hospital_id', $value['id'])->get();
             $result->hospital[$key]['ward'] = $wardResult;
         }
         return $result;

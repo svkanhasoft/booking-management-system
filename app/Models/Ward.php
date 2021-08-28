@@ -28,7 +28,7 @@ class Ward extends Model
      *
      * @var array
      */
-    protected $fillable = ['trust_id', 'ward_name', 'ward_type_id', 'ward_number', 'hospital_id'];
+    protected $fillable = ['trust_id', 'ward_type_id', 'ward_number', 'hospital_id'];
     protected $hidden = ['pseudo', 'deleted_at', 'updated_at', 'created_at'];
 
     function addWard($postData, $trustId, $hospital_id, $isDelete = false)
