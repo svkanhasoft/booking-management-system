@@ -43,14 +43,16 @@ class Traning extends Model
 
     public function updateTraning($postData)
     {
+        $signeeidArray = array_column($postData['training'], 'id');
+        $objBookingMatchDelete = Traning::where('trust_id', '=', $postData['id'])->whereNotIn('id', $signeeidArray)->delete();
         foreach ($postData['training'] as $keys => $values) {
-            //  print_r($values['id']);
-            //  exit();
-            $objTraning = Traning::where(['id' => $postData['id']])->firstOrNew();
+            $objTraning = Traning::where(['id' => $values['id']])->firstOrNew();
             $objTraning->training_name = $values['training_name'];
+            $objTraning->trust_id = $postData['id'];
             $objTraning->save();
             $objTraning = '';
         }
+        return true;
     }
 
     public function post()
