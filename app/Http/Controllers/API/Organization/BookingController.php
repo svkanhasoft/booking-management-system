@@ -186,19 +186,22 @@ class BookingController extends Controller
         $validator = Validator::make($request->all(), [
             'status' => 'required',
             'signee_id' => 'required',
+            'booking_id' => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
-        $objBookingMatch = BookingMatch::where('signee_id', '=', $requestData['signee_id'])->first();
-        //print_r($objBookingMatch['id']);exit();
-        $objBookingMatch = BookingMatch::find($objBookingMatch['id']);
-        $objBookingMatch['booking_status'] = 'Active';
-        $res = $objBookingMatch->save();
-        // echo $res;exit();
-        if ($res) {
+        $booking = booking::findOrFail($requestData['booking_id']);
+        $bookingUpdate = $booking->update($requestData);
+        
+        $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'],'booking_id' => $requestData['booking_id']]);
+        $objBookingMatch->booking_status = "OPEN";
+        
+        $objBookingMatch->save();
+
+        if ($objBookingMatch) {
             return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
