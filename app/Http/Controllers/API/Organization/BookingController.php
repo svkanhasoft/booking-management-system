@@ -10,6 +10,7 @@ use App\Http\Requests;
 use App\Models\User;
 use Hash;
 use App\Models\Booking;
+use App\Models\Ward;
 use App\Models\BookingMatch;
 use App\Models\BookingSpeciality;
 
@@ -178,18 +179,22 @@ class BookingController extends Controller
      */
     public function changeBookingStatus(Request $request)
     {
+        $requestData = $request->all();
+        //print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             'status' => 'required',
-            'booking_id' => 'required',
+            'signee_id' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
-        $objBooking = Booking::find($request->post('booking_id'));
-        $objBooking['status'] = $request->post('status');
-        $res = $objBooking->save();
+        $objBookingMatch = BookingMatch::where('signee_id','=',$requestData['signee_id'])->first();
+        //print_r($objBookingMatch['id']);exit();
+        $objBookingMatch = BookingMatch::find($objBookingMatch['id']);
+        $objBookingMatch['booking_status'] = 'Active';
+        $res = $objBookingMatch->save();
         // echo $res;exit();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
@@ -268,6 +273,30 @@ class BookingController extends Controller
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $booking], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        }
+    }
+
+    public function getWardByHospitalAndTrust(Request $request)
+    {
+        //echo $hospitalId;
+        $hospitalId = $request->get('hospitalId');
+        $trustId = $request->get('trustId');
+        if($hospitalId == null)
+        {
+            $wardAll = Ward::where('trust_id', $trustId)->get();
+            if ($wardAll) {
+                return response()->json(['status' => true, 'message' => 'wards get successfully', 'data' => $wardAll], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Wards not available!', 'status' => false], 200);
+            }
+        }
+        else{
+            $ward = Ward::where(['hospital_id' => $hospitalId, 'trust_id' => $trustId])->get();
+            if ($ward) {
+                return response()->json(['status' => true, 'message' => 'Ward get successfully', 'data' => $ward], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Ward not available!', 'status' => false], 200);
+            }
         }
     }
 }
