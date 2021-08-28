@@ -85,6 +85,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-booking-user/{id?}', [App\Http\Controllers\API\Organization\BookingController::class, 'getBookingAndSigneeByBookingId']);
         Route::get('/get-hospitallist/{trustId?}', [App\Http\Controllers\API\Organization\BookingController::class, 'hospitallist']);
         Route::get('/get-ward-by-hospital', [App\Http\Controllers\API\Organization\BookingController::class, 'getWardByHospitalAndTrust']);
+        Route::get('/get-gradelist', [App\Http\Controllers\API\Organization\BookingController::class, 'gradelist']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
         

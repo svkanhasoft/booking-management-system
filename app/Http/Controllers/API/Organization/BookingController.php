@@ -11,6 +11,7 @@ use App\Models\User;
 use Hash;
 use App\Models\Booking;
 use App\Models\Ward;
+use App\Models\Grade;
 use App\Models\BookingMatch;
 use App\Models\BookingSpeciality;
 use App\Models\Hospital;
@@ -305,6 +306,15 @@ class BookingController extends Controller
             return response()->json(['status' => true, 'message' => 'hospital get successfully', 'data' => $ward], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, hospital not available!', 'status' => false], 200);
+        }
+    }
+    public function gradelist(Request $request)
+    {
+        $grade = Grade::all();
+        if (count($grade)) {
+            return response()->json(['status' => true, 'message' => 'grade get successfully', 'data' => $grade], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, grade not available!', 'status' => false], 200);
         }
     }
 }
