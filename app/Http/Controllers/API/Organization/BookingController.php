@@ -299,7 +299,7 @@ class BookingController extends Controller
             }
         }
     }
-    public function hospitallist(Request $request,$trustId)
+    public function hospitallist(Request $request, $trustId)
     {
         $ward = Hospital::where(['trust_id' => $trustId])->get();
         if (count($ward)) {

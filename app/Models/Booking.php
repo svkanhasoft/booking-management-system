@@ -70,24 +70,23 @@ class Booking extends Model
 
     public function getBookingByFilter(Request $request, $status = null)
     {
+       
         $keyword = $request->get('search');
         $status = $request->get('status');
         $query = Booking::select(
             'bookings.*',
-            'ward.ward_name',
+            // 'ward.ward_name',
             'trusts.name',
             'organization_shift.start_time',
             'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
-        $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        // $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        // $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
         $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
 
-        if (!empty($status)) {
-            $query->Where('bookings.status',  "$status");
-        }
 
         if (!empty($keyword)) {
             $query->where(function ($query2) use ($status, $keyword) {
@@ -99,6 +98,7 @@ class Booking extends Model
         }
 
         $query->where('bookings.status', $status);
+        $query->groupBy ('bookings.id');
         $bookingList = $query->get();
         //  print_r($bookingList);
         // exit;

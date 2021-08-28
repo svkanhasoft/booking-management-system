@@ -112,7 +112,8 @@ class OrganizationShiftController extends Controller
      */
     public function showAll()
     {
-        $shift = OrganizationShift::where('user_id', $this->userId)->get()->toArray();
+        $shift = OrganizationShift::select('id','start_time','end_time')->get()->toArray();
+        // $shift = OrganizationShift::where('user_id', $this->userId)->get()->toArray();
         if ($shift) {
             return response()->json(['status' => true, 'message' => 'Shift get Successfully', 'data' => $shift], $this->successStatus);
         } else {

@@ -36,7 +36,7 @@ class BookingMatch extends Model
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);
             // exit;
-            $this->sendMatchEmail($values);
+            // $this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
                 'signee_id' =>  $values['signeeId'],
