@@ -38,6 +38,9 @@ class Booking extends Model
             'bookings.*',
             'ward.ward_name',
             'trusts.name',
+            'grade.grade_name',
+            'hospitals.hospital_name',
+            'shift_type.shift_type',
             'organization_shift.start_time',
             'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
@@ -46,6 +49,9 @@ class Booking extends Model
         $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
+        $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
         $query->where('bookings.id', $bookingId);
         return $query->first();
     }
