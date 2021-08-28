@@ -260,11 +260,11 @@ class BookingController extends Controller
         }
     }
 
-    public function getBookingAndSigneeByBookingId($bookingId)
+    public function getBookingSignee($bookingId)
     {
         //echo $bookingId;
         $objBooking = new Booking();
-        $booking = $objBooking->getBookingAndSigneeByBookingId($bookingId);
+        $booking = $objBooking->getBookingSignee($bookingId);
 
         // $objBooking = new Booking();
         // $bookingNew = $objBooking->getMetchByBookingId($bookingId);

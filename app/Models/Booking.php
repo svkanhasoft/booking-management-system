@@ -250,7 +250,7 @@ class Booking extends Model
         return $res;
     }
 
-    public function getBookingAndSigneeByBookingId($bookingId = null)
+    public function getBookingSignee($bookingId = null)
     {
         $query = Booking::select(
             'bookings.*',
