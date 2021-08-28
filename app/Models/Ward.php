@@ -28,8 +28,8 @@ class Ward extends Model
      *
      * @var array
      */
-    protected $fillable = ['trust_id', 'ward_type_id','ward_name', 'ward_number', 'hospital_id'];
-    protected $hidden = [ 'deleted_at', 'updated_at', 'created_at'];
+    protected $fillable = ['trust_id', 'ward_type_id', 'ward_name', 'ward_number', 'hospital_id'];
+    protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
 
     function addWard($postData, $trustId, $hospital_id, $isDelete = false)
     {
@@ -48,11 +48,13 @@ class Ward extends Model
 
     function addOrUpdateWard($postData, $trustId)
     {
-        if(!empty($postData['ward'])){
+        $wardidArray = array_column($postData['ward'], 'id');
+        $objBookingMatchDelete = Ward::where('trust_id', '=', $postData['id'])->whereNotIn('id', $wardidArray)->delete();
+
+        if (!empty($postData['ward'])) {
             foreach ($postData['ward'] as $keys => $values) {
-                // dd($values);
-                // exit;
-                $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
+                // $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
+                $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
                 $objWards->ward_name = $values['ward_name'];
                 $objWards->hospital_id =  $postData['id'];
                 $objWards->trust_id = $trustId;
@@ -62,7 +64,6 @@ class Ward extends Model
                 $objWards = '';
             }
         }
-        
     }
 
     public function post()
