@@ -29,7 +29,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate'];
+    protected $fillable = ['user_id', 'hospital_id','reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     public function getBooking($bookingId = null)
@@ -75,16 +75,19 @@ class Booking extends Model
         $status = $request->get('status');
         $query = Booking::select(
             'bookings.*',
-            // 'ward.ward_name',
+            'ward.ward_name',
             'trusts.name',
+            'grade.grade_name',
+            'shift_type.shift_type',
             'organization_shift.start_time',
             'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
-        // $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
-        // $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
         $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
+        $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
 
 
