@@ -49,6 +49,7 @@ class BookingController extends Controller
             'grade_id' => 'required',
             'date' => 'required',
             'shift_id' => 'required',
+            'hospital_id' => 'required',
             'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
         ]);
@@ -114,6 +115,7 @@ class BookingController extends Controller
             'ward_id' => 'required',
             'grade_id' => 'required',
             'date' => 'required',
+            'hospital_id' => 'required',
             'shift_id' => 'required',
             'speciality' => 'required:speciality,[]',
         ]);
@@ -145,6 +147,7 @@ class BookingController extends Controller
     public function destroy($id)
     {
         $shift = Booking::where(['user_id' => $this->userId, 'id' => $id])->delete();
+        $shift = BookingMatch::where(['booking_id' => $id])->delete();
         $booking = BookingSpeciality::where(['booking_id' => $id])->delete();
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'Booking deleted!'], $this->successStatus);

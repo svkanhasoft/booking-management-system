@@ -77,6 +77,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-booking/{id}', [App\Http\Controllers\API\Organization\BookingController::class, 'show']);
         Route::get('/booking-by-status/{search?}/{status?}', [App\Http\Controllers\API\Organization\BookingController::class, 'bookingStatus']);
         Route::post('/change-booking-status', [App\Http\Controllers\API\Organization\BookingController::class, 'changeBookingStatus']);
+        Route::delete('/delete-booking/{id?}', [App\Http\Controllers\API\Organization\BookingController::class, 'destroy']);
         Route::get('/get-shift-type/{id?}', [App\Http\Controllers\API\Organization\ShiftTypeController::class, 'show']);
         Route::get('/get-all-shift-type', [App\Http\Controllers\API\Organization\ShiftTypeController::class, 'showAll']);
         Route::get('/get-ward-type/{id?}', [App\Http\Controllers\API\Organization\WardTypeController::class, 'show']);

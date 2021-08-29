@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
 use Illuminate\Http\Request;
-
+use Config;
 class Booking extends Model
 {
     use SoftDeletes;
@@ -76,7 +76,7 @@ class Booking extends Model
 
     public function getBookingByFilter(Request $request, $status = null)
     {
-       
+        $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
         $status = $request->get('status');
         $query = Booking::select(
@@ -108,7 +108,8 @@ class Booking extends Model
 
         $query->where('bookings.status', $status);
         $query->groupBy ('bookings.id');
-        $bookingList = $query->get();
+        $bookingList = $query->latest()->paginate($perPage);;
+        // $bookingList = $query->get();
         //  print_r($bookingList);
         // exit;
         $subArray = [];

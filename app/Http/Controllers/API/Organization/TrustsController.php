@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\Ward;
 use App\Models\Traning;
 use Validator;
-
+use Config;
 class TrustsController extends Controller
 {
     public $successStatus = 200;
@@ -144,6 +144,7 @@ class TrustsController extends Controller
 
     function getTrustDetail($trustId = null, Request $request)
     {
+        $perPage = Config::get('constants.pagination.perPage');
         if ($trustId > 0) {
 
             $trustObj = new Trust();
@@ -180,7 +181,8 @@ class TrustsController extends Controller
                 $query->orWhere('client',  'LIKE', "%$keyword%");
                 $query->orWhere('department',  'LIKE', "%$keyword%");
             }
-            $result = $query->get();
+            $result =  $query->latest()->paginate($perPage);
+            // $result = $query->get();
             if (count($result) > 0) {
                 return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
             } else {
