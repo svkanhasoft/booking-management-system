@@ -54,15 +54,24 @@ class Hospital extends Model
         // dd($postData['hospital']);
         if (!empty($postData['hospital'])) {
             foreach ($postData['hospital'] as $keys => $values) {
-                // dd($values);
-                // exit;
-                $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
-                $objHospital->hospital_name = $values['hospital_name'];
-                $objHospital->save();
-                $objHospital = '';
+                // dd($values); exit;
+                if (isset($values['id'])) {
+                    $hospitalId = $values['id'];
+                    $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
+                    $objHospital->hospital_name = $values['hospital_name'];
+                    $objHospital->save();
+                    $objHospital = '';
+                } else {
+                    $objHospital = new Hospital();
+                    $objHospital->hospital_name = $values['hospital_name'];
+                    $objHospital->trust_id = $postData['id'];
+                    $objHospital->save();
+                    $hospitalId =  $objHospital['id'];
+                    // $objHospital = '';
+                }
 
                 $objWard = new Ward();
-                $wardResult = $objWard->addOrUpdateWard($values, $postData['id']);
+                $wardResult = $objWard->addOrUpdateWard($values, $postData['id'], $hospitalId);
             }
         }
     }

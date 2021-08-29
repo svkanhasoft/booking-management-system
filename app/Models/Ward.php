@@ -46,21 +46,25 @@ class Ward extends Model
         return true;
     }
 
-    function addOrUpdateWard($postData, $trustId)
+    function addOrUpdateWard($postData, $trustId, $hospitalId)
     {
         $wardidArray = array_column($postData['ward'], 'id');
-        $objBookingMatchDelete = Ward::where('trust_id', '=', $postData['id'])->whereNotIn('id', $wardidArray)->delete();
-
+        // dd($wardidArray);
+        // exit;
+        // echo $postData['id'];exit;
+        $objBookingMatchDelete = Ward::where('trust_id', '=', $trustId)
+            ->whereNotIn('id', $wardidArray)->delete();
+        // dd( $objBookingMatchDelete);
         if (!empty($postData['ward'])) {
             foreach ($postData['ward'] as $keys => $values) {
                 // $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
-                if (isset($values['id'])) {
+                if (isset($values['id']) && $values['id'] > 0) {
                     $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
                 } else {
                     $objWards = new Ward();
                 }
                 $objWards->ward_name = $values['ward_name'];
-                $objWards->hospital_id =  $postData['id'];
+                $objWards->hospital_id =  $hospitalId;
                 $objWards->trust_id = $trustId;
                 $objWards->ward_type_id = $values['ward_type_id'];
                 $objWards->ward_number = $values['ward_number'];
