@@ -54,7 +54,11 @@ class Ward extends Model
         if (!empty($postData['ward'])) {
             foreach ($postData['ward'] as $keys => $values) {
                 // $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
-                $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
+                if (isset($values['id'])) {
+                    $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
+                } else {
+                    $objWards = new Ward();
+                }
                 $objWards->ward_name = $values['ward_name'];
                 $objWards->hospital_id =  $postData['id'];
                 $objWards->trust_id = $trustId;

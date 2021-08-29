@@ -16,10 +16,10 @@ class Traning extends Model
     protected $table = 'traning';
 
     /**
-    * The database primary key value.
-    *
-    * @var string
-    */
+     * The database primary key value.
+     *
+     * @var string
+     */
     protected $primaryKey = 'id';
 
     /**
@@ -27,13 +27,14 @@ class Traning extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','trust_id', 'training_name'];
-    protected $hidden = ['pseudo','deleted_at','updated_at', 'created_at'];
-    function addTraning($postData, $trustId,$isDelete = false){
-        if($isDelete == true){
+    protected $fillable = ['id', 'trust_id', 'training_name'];
+    protected $hidden = ['pseudo', 'deleted_at', 'updated_at', 'created_at'];
+    function addTraning($postData, $trustId, $isDelete = false)
+    {
+        if ($isDelete == true) {
             Traning::where(['trust_id' => $trustId])->delete();
-         }
-        foreach($postData as $key => $val){
+        }
+        foreach ($postData as $key => $val) {
             $val['trust_id'] = $trustId;
             Traning::create($val);
             unset($val);
@@ -46,7 +47,11 @@ class Traning extends Model
         $signeeidArray = array_column($postData['training'], 'id');
         $objBookingMatchDelete = Traning::where('trust_id', '=', $postData['id'])->whereNotIn('id', $signeeidArray)->delete();
         foreach ($postData['training'] as $keys => $values) {
-            $objTraning = Traning::where(['id' => $values['id']])->firstOrNew();
+            if (isset($values['id'])) {
+                $objTraning = Traning::where(['id' => $values['id']])->firstOrNew();
+            } else {
+                $objTraning = new Traning();
+            }
             $objTraning->training_name = $values['training_name'];
             $objTraning->trust_id = $postData['id'];
             $objTraning->save();
