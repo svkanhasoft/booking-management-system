@@ -59,6 +59,7 @@ class Hospital extends Model
                     $hospitalId = $values['id'];
                     $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
                     $objHospital->hospital_name = $values['hospital_name'];
+                    $objHospital->trust_id = $postData['id'];
                     $objHospital->save();
                     $objHospital = '';
                 } else {

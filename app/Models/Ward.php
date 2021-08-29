@@ -52,10 +52,10 @@ class Ward extends Model
         // dd($wardidArray);
         // exit;
         // echo $postData['id'];exit;
-        $objBookingMatchDelete = Ward::where('trust_id', '=', $trustId)
-            ->whereNotIn('id', $wardidArray)->delete();
-        // dd( $objBookingMatchDelete);
+       
         if (!empty($postData['ward'])) {
+            $objBookingMatchDelete = Ward::where('trust_id', '=', $trustId)
+            ->where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
             foreach ($postData['ward'] as $keys => $values) {
                 // $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
                 if (isset($values['id']) && $values['id'] > 0) {
