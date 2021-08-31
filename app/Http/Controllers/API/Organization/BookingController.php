@@ -111,11 +111,12 @@ class BookingController extends Controller
         $validator = Validator::make($request->all(), [
             // 'reference_id' => 'required',
             'trust_id' => 'required',
-            'booking_id' => 'required',
+            'id' => 'required',
             'ward_id' => 'required',
             'grade_id' => 'required',
             'date' => 'required',
             'hospital_id' => 'required',
+            'shift_type_id' => 'required',
             'shift_id' => 'required',
             'speciality' => 'required:speciality,[]',
         ]);
@@ -124,11 +125,11 @@ class BookingController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
-        $shift = Booking::findOrFail($requestData["booking_id"]);
+        $shift = Booking::findOrFail($requestData["id"]);
         $shiftUpdated = $shift->update($requestData);
         if ($shiftUpdated) {
             $objBookingSpeciality = new BookingSpeciality();
-            $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["booking_id"], true);
+            $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
             return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $shift], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
