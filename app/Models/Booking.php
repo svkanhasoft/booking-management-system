@@ -108,9 +108,9 @@ class Booking extends Model
         }
 
         $query->where('bookings.status', $status);
+        $query->where('bookings.user_id',Auth::user()->id);
         $query->whereNull('bookings.deleted_at');
         $query->groupBy ('bookings.id');
-        $query->groupBy ('bookings.user_id',Auth::user()->id);
         $bookingList = $query->latest()->paginate($perPage);
         return $bookingList;
         // $bookingList = $query->get();
