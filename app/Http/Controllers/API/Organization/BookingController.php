@@ -109,7 +109,7 @@ class BookingController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            'reference_id' => 'required',
+            // 'reference_id' => 'required',
             'trust_id' => 'required',
             'booking_id' => 'required',
             'ward_id' => 'required',

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
 use Illuminate\Http\Request;
 use Config;
+use Auth;
 class Booking extends Model
 {
     use SoftDeletes;
@@ -109,6 +110,7 @@ class Booking extends Model
         $query->where('bookings.status', $status);
         $query->whereNull('bookings.deleted_at');
         $query->groupBy ('bookings.id');
+        $query->groupBy ('bookings.user_id',Auth::user()->id);
         $bookingList = $query->latest()->paginate($perPage);
         return $bookingList;
         // $bookingList = $query->get();
