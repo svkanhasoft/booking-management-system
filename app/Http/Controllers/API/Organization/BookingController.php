@@ -54,7 +54,7 @@ class BookingController extends Controller
             'speciality' => 'required:speciality,[]',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
@@ -120,7 +120,7 @@ class BookingController extends Controller
             'speciality' => 'required:speciality,[]',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 

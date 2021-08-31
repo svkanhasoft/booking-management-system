@@ -51,7 +51,7 @@ class TrustsController extends Controller
             // 'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
@@ -115,7 +115,7 @@ class TrustsController extends Controller
             //'ward' => 'required:ward,[]',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
