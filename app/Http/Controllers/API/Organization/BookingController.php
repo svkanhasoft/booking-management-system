@@ -324,4 +324,15 @@ class BookingController extends Controller
             return response()->json(['message' => 'Sorry, grade not available!', 'status' => false], 200);
         }
     }
+
+    public function reference(Request $request)
+    {
+        $time = [];
+        $time['reference_id'] = date("YmdHis");
+        if ($time) {
+            return response()->json(['status' => true, 'message' => 'reference get successfully', 'data' => $time], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, reference not available!', 'status' => false], 200);
+        }
+    }
 }
