@@ -34,14 +34,16 @@ class Ward extends Model
     function addWard($postData, $trustId, $hospital_id, $isDelete = false)
     {
         if ($isDelete == true) {
-            Ward::where(['trust_id' => $trustId])->delete();
+            // Ward::where(['trust_id' => $trustId])->delete();
         }
 
         foreach ($postData as $key => $val) {
-            $val['trust_id'] = $trustId;
-            $val['hospital_id'] = $hospital_id;
-            Ward::create($val);
-            unset($val);
+            if (isset($val['ward_name']) && !empty($val['ward_number'])) {
+                $val['trust_id'] = $trustId;
+                $val['hospital_id'] = $hospital_id;
+                Ward::create($val);
+                unset($val);
+            }
         }
         return true;
     }
@@ -52,24 +54,26 @@ class Ward extends Model
         // dd($wardidArray);
         // exit;
         // echo $postData['id'];exit;
-       
+
         if (!empty($postData['ward'])) {
             $objBookingMatchDelete = Ward::where('trust_id', '=', $trustId)
-            ->where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
+                ->where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
             foreach ($postData['ward'] as $keys => $values) {
                 // $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
-                if (isset($values['id']) && $values['id'] > 0) {
-                    $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
-                } else {
-                    $objWards = new Ward();
+                if (isset($values['ward_name']) && !empty($values['ward_number'])) {
+                    if (isset($values['id']) && $values['id'] > 0) {
+                        $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
+                    } else {
+                        $objWards = new Ward();
+                    }
+                    $objWards->ward_name = $values['ward_name'];
+                    $objWards->hospital_id =  $hospitalId;
+                    $objWards->trust_id = $trustId;
+                    $objWards->ward_type_id = $values['ward_type_id'];
+                    $objWards->ward_number = $values['ward_number'];
+                    $objWards->save();
+                    $objWards = '';
                 }
-                $objWards->ward_name = $values['ward_name'];
-                $objWards->hospital_id =  $hospitalId;
-                $objWards->trust_id = $trustId;
-                $objWards->ward_type_id = $values['ward_type_id'];
-                $objWards->ward_number = $values['ward_number'];
-                $objWards->save();
-                $objWards = '';
             }
         }
     }
