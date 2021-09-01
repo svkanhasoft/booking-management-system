@@ -136,6 +136,59 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+
+    
+
+    public function updates(Request $request)
+    {
+        echo "Hiiiii ";
+        exit;
+        // $validator = Validator::make($request->all(), [
+        //     "trust_id" => 'required',
+             
+        // ]);
+        // if ($validator->fails()) {
+        //     $error = $validator->messages();
+        //     return response()->json(['status' => false, 'message' => $error], 200);
+        // }
+
+        // $validator = Validator::make($request->all(), [
+        //     // 'reference_id' => 'required',
+        //     'trust_id' => 'required',
+        //     'id' => 'required',
+        //     'ward_id' => 'required',
+        //     'grade_id' => 'required',
+        //     'date' => 'required',
+        //     'hospital_id' => 'required',
+        //     'shift_type_id' => 'required',
+        //     'shift_id' => 'required',
+        //     'speciality' => 'required:speciality,[]',
+        // ]);
+        // if ($validator->fails()) {
+        //     $error = $validator->messages();
+        //     return response()->json(['status' => false, 'message' => $error], 200);
+        // }
+        $requestData = $request->all();
+        dd($requestData);
+        exit;
+        $shift = Booking::findOrFail($requestData["id"]);
+        $shiftUpdated = $shift->update($requestData);
+        if ($shiftUpdated) {
+            $objBookingSpeciality = new BookingSpeciality();
+            $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
+            return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $shift], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
+        }
+    }
+
 
 
     /**
@@ -199,10 +252,10 @@ class BookingController extends Controller
 
         $booking = booking::findOrFail($requestData['booking_id']);
         $bookingUpdate = $booking->update($requestData);
-        
-        $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'],'booking_id' => $requestData['booking_id']]);
+
+        $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
         $objBookingMatch->booking_status = "OPEN";
-        
+
         $objBookingMatch->save();
 
         if ($objBookingMatch) {
@@ -306,6 +359,7 @@ class BookingController extends Controller
             }
         }
     }
+
     public function hospitallist(Request $request, $trustId)
     {
         $ward = Hospital::where(['trust_id' => $trustId])->get();
@@ -315,6 +369,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'Sorry, hospital not available!', 'status' => false], 200);
         }
     }
+
     public function gradelist(Request $request)
     {
         $grade = Grade::all();
@@ -328,7 +383,7 @@ class BookingController extends Controller
     public function reference(Request $request)
     {
         $time = [];
-        $time['reference_id'] = date("YmdHis");
+        $time['reference_id'] = date("ymdHis");
         if ($time) {
             return response()->json(['status' => true, 'message' => 'reference get successfully', 'data' => $time], $this->successStatus);
         } else {
