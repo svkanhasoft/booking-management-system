@@ -148,8 +148,7 @@ class BookingController extends Controller
 
     public function updates(Request $request)
     {
-        echo "Hiiiii ";
-        exit;
+        
         // $validator = Validator::make($request->all(), [
         //     "trust_id" => 'required',
              
@@ -159,25 +158,27 @@ class BookingController extends Controller
         //     return response()->json(['status' => false, 'message' => $error], 200);
         // }
 
-        // $validator = Validator::make($request->all(), [
-        //     // 'reference_id' => 'required',
-        //     'trust_id' => 'required',
-        //     'id' => 'required',
-        //     'ward_id' => 'required',
-        //     'grade_id' => 'required',
-        //     'date' => 'required',
-        //     'hospital_id' => 'required',
-        //     'shift_type_id' => 'required',
-        //     'shift_id' => 'required',
-        //     'speciality' => 'required:speciality,[]',
-        // ]);
-        // if ($validator->fails()) {
-        //     $error = $validator->messages();
-        //     return response()->json(['status' => false, 'message' => $error], 200);
-        // }
-        $requestData = $request->all();
-        dd($requestData);
+        $validator = Validator::make($request->all(), [
+            // 'reference_id' => 'required',
+            'trust_id' => 'required',
+            'id' => 'required',
+            'ward_id' => 'required',
+            'grade_id' => 'required',
+            'date' => 'required',
+            'hospital_id' => 'required',
+            'shift_type_id' => 'required',
+            'shift_id' => 'required',
+            'speciality' => 'required:speciality,[]',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        echo "Hiiiii ";
         exit;
+        $requestData = $request->all();
+        // dd($requestData);
+        // exit;
         $shift = Booking::findOrFail($requestData["id"]);
         $shiftUpdated = $shift->update($requestData);
         if ($shiftUpdated) {
