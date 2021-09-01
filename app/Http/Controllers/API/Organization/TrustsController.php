@@ -13,6 +13,7 @@ use App\Models\Ward;
 use App\Models\Traning;
 use Validator;
 use Config;
+
 class TrustsController extends Controller
 {
     public $successStatus = 200;
@@ -54,40 +55,42 @@ class TrustsController extends Controller
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
+        try {
+            $requestData = $request->all();
+            // print_r($requestData['hospital'][1]);exit();
+            $requestData['password'] = Hash::make($request->post('portal_password'));
+            $requestData['user_id'] = $this->userId;
+            $trustResult = Trust::create($requestData);
 
-        $requestData = $request->all();
-        // print_r($requestData['hospital'][1]);exit();
-        $requestData['password'] = Hash::make($request->post('portal_password'));
-        $requestData['user_id'] = $this->userId;
-        $trustResult = Trust::create($requestData);
-
-        $objHospital = new Hospital();
-        $hospitalResult = $objHospital->addHospital($requestData['hospital'], $trustResult['id'], false);
-        $hospitals = Hospital::where('trust_id', $trustResult['id'])->get();
-        //  print_r($hospital);exit();
+            $objHospital = new Hospital();
+            $hospitalResult = $objHospital->addHospital($requestData['hospital'], $trustResult['id'], false);
+            $hospitals = Hospital::where('trust_id', $trustResult['id'])->get();
+            //  print_r($hospital);exit();
 
 
-        $i = 0;
-        $objWard = new Ward();
-        foreach ($requestData['hospital'][$i] as $ward) {
-            foreach ($hospitals as $hospital) {
-                $wardResult = $objWard->addWard($requestData['hospital'][$i]['ward'], $trustResult['id'], $hospital->id, false);
-                $i++;
+            $i = 0;
+            $objWard = new Ward();
+            foreach ($requestData['hospital'][$i] as $ward) {
+                foreach ($hospitals as $hospital) {
+                    $wardResult = $objWard->addWard($requestData['hospital'][$i]['ward'], $trustResult['id'], $hospital->id, false);
+                    $i++;
+                }
+                break;
             }
-            break;
-        }
-        // $objWard = new Ward();
-        //$wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $trustResult['id'], false);
+            // $objWard = new Ward();
+            //$wardResult = $objWard->addWard($requestData['hospital'][0]['ward'], $trustResult['id'], false);
+            $objTraning = new Traning();
+            $specialityResult = $objTraning->addTraning($requestData['training'], $trustResult['id'], false);
 
-        $objTraning = new Traning();
-        $specialityResult = $objTraning->addTraning($requestData['training'], $trustResult['id'], false);
-
-        if ($specialityResult) {
-            $data = new Trust();
-            $trustDetails = $data->getTrustById($trustResult['id']);
-            return response()->json(['status' => true, 'message' => 'Trust added successfully.', 'data' => $trustResult], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Trust added failed.', 'status' => false], 200);
+            if ($specialityResult) {
+                $data = new Trust();
+                $trustDetails = $data->getTrustById($trustResult['id']);
+                return response()->json(['status' => true, 'message' => 'Trust added successfully.', 'data' => $trustResult], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Trust added failed.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -118,27 +121,31 @@ class TrustsController extends Controller
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
-        //print_r($requestData);exit();
-        $requestData['password'] = Hash::make($request->post('portal_password'));
-        $trustResult = Trust::findOrFail($requestData['id']);
-        $trustResult->update($requestData);
+        try {
+            $requestData = $request->all();
+            //print_r($requestData);exit();
+            $requestData['password'] = Hash::make($request->post('portal_password'));
+            $trustResult = Trust::findOrFail($requestData['id']);
+            $trustResult->update($requestData);
 
-        $objHospital = new Hospital();
-        $objHospital->addUpdateHospital($requestData);
+            $objHospital = new Hospital();
+            $objHospital->addUpdateHospital($requestData);
 
-        $objTraning = new Traning();
-        $objTraning->updateTraning($requestData);
+            $objTraning = new Traning();
+            $objTraning->updateTraning($requestData);
 
-        // $objTraning = new Traning();
-        // $specialityResult = $objTraning->addTraning($requestData['training'], $requestData['id'], true);
+            // $objTraning = new Traning();
+            // $specialityResult = $objTraning->addTraning($requestData['training'], $requestData['id'], true);
 
-        if ($trustResult) {
-            $trustData = new Trust();
-            $trustDetails = $trustData->getTrustById($requestData['id']);
-            return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $trustDetails], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Trust update failed.', 'status' => false], 200);
+            if ($trustResult) {
+                $trustData = new Trust();
+                $trustDetails = $trustData->getTrustById($requestData['id']);
+                return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $trustDetails], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Trust update failed.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 

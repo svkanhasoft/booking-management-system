@@ -57,22 +57,26 @@ class BookingController extends Controller
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
-        $requestData['user_id'] = $this->userId;
-        $bookingCreated = Booking::create($requestData);
-        if ($bookingCreated) {
-            $objBookingSpeciality = new BookingSpeciality();
-            $objBookingSpeciality->addSpeciality($requestData['speciality'], $bookingCreated['id'], false);
+        try {
+            $requestData = $request->all();
+            $requestData['user_id'] = $this->userId;
+            $bookingCreated = Booking::create($requestData);
+            if ($bookingCreated) {
+                $objBookingSpeciality = new BookingSpeciality();
+                $objBookingSpeciality->addSpeciality($requestData['speciality'], $bookingCreated['id'], false);
 
-            $objBooking = new Booking();
-            $bookings = $objBooking->getMetchByBookingId($bookingCreated['id']);
+                $objBooking = new Booking();
+                $bookings = $objBooking->getMetchByBookingId($bookingCreated['id']);
 
-            $objBookingMatch = new BookingMatch();
-            $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $bookingCreated['id']);
+                $objBookingMatch = new BookingMatch();
+                $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $bookingCreated['id']);
 
-            return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 200);
+                return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -124,15 +128,18 @@ class BookingController extends Controller
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
-        $shift = Booking::findOrFail($requestData["id"]);
-        $shiftUpdated = $shift->update($requestData);
-        if ($shiftUpdated) {
-            $objBookingSpeciality = new BookingSpeciality();
-            $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
-            return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $shift], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
+        try {
+            $shift = Booking::findOrFail($requestData["id"]);
+            $shiftUpdated = $shift->update($requestData);
+            if ($shiftUpdated) {
+                $objBookingSpeciality = new BookingSpeciality();
+                $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
+                return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $shift], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -143,54 +150,6 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-
-    
-
-    public function updates(Request $request)
-    {
-        
-        // $validator = Validator::make($request->all(), [
-        //     "trust_id" => 'required',
-             
-        // ]);
-        // if ($validator->fails()) {
-        //     $error = $validator->messages();
-        //     return response()->json(['status' => false, 'message' => $error], 200);
-        // }
-
-        $validator = Validator::make($request->all(), [
-            // 'reference_id' => 'required',
-            'trust_id' => 'required',
-            'id' => 'required',
-            'ward_id' => 'required',
-            'grade_id' => 'required',
-            'date' => 'required',
-            'hospital_id' => 'required',
-            'shift_type_id' => 'required',
-            'shift_id' => 'required',
-            'speciality' => 'required:speciality,[]',
-        ]);
-        if ($validator->fails()) {
-            $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 200);
-        }
-        echo "Hiiiii ";
-        exit;
-        $requestData = $request->all();
-        // dd($requestData);
-        // exit;
-        $shift = Booking::findOrFail($requestData["id"]);
-        $shiftUpdated = $shift->update($requestData);
-        if ($shiftUpdated) {
-            $objBookingSpeciality = new BookingSpeciality();
-            $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
-            return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $shift], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
-        }
-    }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -279,14 +238,18 @@ class BookingController extends Controller
         $booking = $objBooking->getMetchByBookingId($bookingId);
         // print_r($booking);
         // exit;
-        $objBookingMatch = new BookingMatch();
-        $bookingMatch = $objBookingMatch->addBookingMatch($booking, $bookingId);
-        // print_r($bookingMatch);
-        // exit;
-        if ($bookingMatch) {
-            return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        try {
+            $objBookingMatch = new BookingMatch();
+            $bookingMatch = $objBookingMatch->addBookingMatch($booking, $bookingId);
+            // print_r($bookingMatch);
+            // exit;
+            if ($bookingMatch) {
+                return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -299,14 +262,18 @@ class BookingController extends Controller
      */
     public function updateMatchBySignee($signeeId)
     {
-        $objBookingSignee = new Booking();
-        $booking = $objBookingSignee->editMetchBySigneeId($signeeId);
-        $objBookingMatch = new BookingMatch();
-        $bookingMatch = $objBookingMatch->editBookingMatchByUser($booking, $signeeId);
-        if ($bookingMatch) {
-            return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        try {
+            $objBookingSignee = new Booking();
+            $booking = $objBookingSignee->editMetchBySigneeId($signeeId);
+            $objBookingMatch = new BookingMatch();
+            $bookingMatch = $objBookingMatch->editBookingMatchByUser($booking, $signeeId);
+            if ($bookingMatch) {
+                return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -337,6 +304,7 @@ class BookingController extends Controller
         } else {
             return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         }
+        
     }
 
     public function getWardByHospitalAndTrust(Request $request)

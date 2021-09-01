@@ -35,12 +35,14 @@ class BookingSpeciality extends Model
         if ($isDelete == true) {
             BookingSpeciality::where(['booking_id' => $bookingId])->delete();
         }
-        foreach ($postData as $key => $val) {
-            $objBookingSpeciality = new BookingSpeciality();
-            $objBookingSpeciality->speciality_id = $val;
-            $objBookingSpeciality->booking_id = $bookingId;
-            $objBookingSpeciality->save();
-            $objBookingSpeciality = "";
+        if (!empty($postData)) {
+            foreach ($postData as $key => $val) {
+                $objBookingSpeciality = new BookingSpeciality();
+                $objBookingSpeciality->speciality_id = $val;
+                $objBookingSpeciality->booking_id = $bookingId;
+                $objBookingSpeciality->save();
+                $objBookingSpeciality = "";
+            }
         }
         return true;
     }
