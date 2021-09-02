@@ -9,6 +9,9 @@ use Validator;
 use App\Http\Requests;
 use App\Models\User;
 use App\Models\OrganizationUserDetail;
+use App\Models\SigneesDetail;
+use App\Models\SigneeOrganization;
+
 use Hash;
 use App\Models\Role;
 
@@ -294,6 +297,62 @@ class UserController extends Controller
         }
         else{
             return response()->json(['status' => false, 'message' => 'Sorry, User not deleted.'], $this->successStatus);
+        }
+    }
+
+    public function addSignee(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "email" => 'required|unique:users',
+            "first_name" => 'required',
+            "last_name" => 'required',
+            "password" => 'required',
+            "mobile_number" => 'required',
+            "date_of_birth" => 'required',
+            "candidate_id" => 'required',
+            "address_line_1" => 'required',
+            "address_line_2" => 'required',
+            "address_line_3" => 'required',
+            "city" => 'required',
+            "zipcode" => 'required',
+            "candidate_referred_from" => 'required',
+            "nationality" => 'required',
+            "date_registered" => 'required'
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $requestData = $request->all();
+
+        // if ($request->hasFile('cv')) {
+        //     $files1 = $request->file('cv');
+        //     $name = time() . '_signee_' . $files1->getClientOriginalName();
+        //     $files1->move(public_path() . '/uploads/signee_docs/', $name);
+        //     $requestData['cv'] = $name;
+        // }
+
+        $requestData['password'] = Hash::make($request->post('password'));
+        $requestData['parent_id'] = $requestData['organization_id'];
+        $requestData['role'] = 'SIGNEE';
+        $userCreated = User::create($requestData);
+        if ($userCreated) {
+            $requestData['user_id'] = $userCreated['id'];
+            $orgResult = SigneesDetail::create($requestData);
+
+            // $objSpeciality = new SigneeSpecialitie();
+            // $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+
+            //$requestData['organization_id'] = $request->post('organization_id');
+            $requestData['user_id'] = $userCreated['id'];
+            $sing = SigneeOrganization::create($requestData);
+            if ($orgResult) {
+                $UserObj = new User();
+                $mailRes =  $UserObj->sendRegisterEmail($request);
+                return response()->json(['status' => true, 'message' => 'Signee added Successfully', 'data' => $userCreated], $this->successStatus);
+            }
+        } else {
+            return response()->json(['message' => 'Sorry, Signee added failed!', 'status' => false], 200);
         }
     }
 }

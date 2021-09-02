@@ -88,6 +88,8 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-ward-by-hospital', [App\Http\Controllers\API\Organization\BookingController::class, 'getWardByHospitalAndTrust']);
         Route::get('/get-gradelist', [App\Http\Controllers\API\Organization\BookingController::class, 'gradelist']);
         Route::get('/get-reference', [App\Http\Controllers\API\Organization\BookingController::class, 'reference']);
+        Route::post('/add-signee', [App\Http\Controllers\API\Organization\UserController::class, 'addSignee']);
+
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
         
