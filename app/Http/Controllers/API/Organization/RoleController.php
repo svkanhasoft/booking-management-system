@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Requests;
+use App\Models\OrganizationUserDetail;
 use App\Models\User;
 use Hash;
 use App\Models\Role;
@@ -142,11 +143,19 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $role = Role::where(['user_id' => $this->userId,'id'=> $id])->where('id', $id)->delete();
-        if ($role) {
-            return response()->json(['status' => true, 'message' => 'Role deleted!', 'data' => $role], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Role not deleted!', 'status' => false], 200);
+        $staff = OrganizationUserDetail::where(['role_id' => $id])->get();
+        if(count($staff) > 0)
+        {
+            return response()->json(['message' => 'Sorry, This role already assign to the staff', 'status' => false], 200);
+        }
+        else
+        {
+            $role = Role::where(['user_id' => $this->userId, 'id'=> $id])->where('id', $id)->delete();
+            if ($role) {
+                return response()->json(['status' => true, 'message' => 'Role deleted!', 'data' => $role], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Role not deleted!', 'status' => false], 200);
+            }
         }
     }
 }
