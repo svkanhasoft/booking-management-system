@@ -33,7 +33,7 @@ class TrustsController extends Controller
         $validator = Validator::make($request->all(), [
             "name" => 'required',
             "code" => 'required',
-            "preference_invoive_method" => 'required',
+            "preference_invoice_method" => 'required',
             "email_address" => 'required',
             "address_line_1" => 'required',
             "city" => 'required',
@@ -173,7 +173,7 @@ class TrustsController extends Controller
             if (!empty($keyword)) {
                 $query->Where('name',  'LIKE', "%$keyword%");
                 $query->orWhere('code',  'LIKE', "%$keyword%");
-                $query->orWhere('preference_invoive_method',  'LIKE', "%$keyword%");
+                $query->orWhere('preference_invoice_method',  'LIKE', "%$keyword%");
                 $query->orWhere('email_address',  'LIKE', "%$keyword%");
                 $query->orWhere('address_line_1',  'LIKE', "%$keyword%");
                 $query->orWhere('address_line_2',  'LIKE', "%$keyword%");
