@@ -174,6 +174,7 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
         $user = User::where('role', 'SIGNEE')->where('id', $this->userId)->first();
+        //print_r($user);exit();
         if (!empty($user)) {
             $userObj = User::find($this->userId);
             $userObj['password'] = Hash::make($request->post('password'));

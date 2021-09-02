@@ -99,8 +99,8 @@ Route::prefix('organization')->group(function () {
                 Route::get('/get-user-details', [App\Http\Controllers\API\Organization\UserController::class, 'getDetails']);
                 Route::get('/get-user-list/{search?}', [App\Http\Controllers\API\Organization\UserController::class, 'getuserlist']);
                 Route::get('/get-user/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'getuserById']);
-                Route::post('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword']);
-                Route::post('/edit-user', [App\Http\Controllers\API\Organization\UserController::class, 'update']);
+                Route::put('/user-change-password', [App\Http\Controllers\API\Organization\UserController::class, 'changePassword']);
+                Route::put('/edit-user', [App\Http\Controllers\API\Organization\UserController::class, 'update']);
                 Route::delete('/delete-user/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'destroy']);
             });
         });
@@ -124,3 +124,4 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability']);
     });
 });
+

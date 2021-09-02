@@ -96,10 +96,11 @@ class TrustsController extends Controller
 
     function update(Request $request)
     {
+        // echo "hi";exit();
         $validator = Validator::make($request->all(), [
             "name" => 'required',
             "code" => 'required',
-            "preference_invoive_method" => 'required',
+            "preference_invoice_method" => 'required',
             "email_address" => 'required',
             "address_line_1" => 'required',
             "city" => 'required',
