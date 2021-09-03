@@ -117,6 +117,13 @@ class TrustsController extends Controller
             ]',
             'training' => 'required:training,[]',
             //'ward' => 'required:ward,[]',
+          
+            'hospital.*.hospital_name' => 'required',
+            'hospital.*.ward' => 'required',
+            'hospital.*.ward.*.ward_name' => 'required',
+            'hospital.*.ward.*.ward_type' => 'required',
+            'hospital.*.ward.*.ward_number' => 'required',
+            'training.*.training_name' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
