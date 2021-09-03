@@ -99,7 +99,7 @@ class SpecialitiesController extends Controller
      */
     public function showAll(Request $request)
     {
-        $perPage = 5;
+        $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
         $query = Speciality::select("specialities.*",);
         $query->Where('specialities.user_id',  $this->userId);
