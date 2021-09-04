@@ -28,6 +28,7 @@ class Speciality extends Model
      * @var array
      */
     protected $fillable = ['user_id', 'speciality_name'];
+    protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     
 }
