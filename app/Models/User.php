@@ -346,7 +346,7 @@ class User extends Authenticatable
             'signees_detail.mobile_number',
             'signees_detail.phone_number',
             'signees_detail.candidate_referred_from',
-            DB::raw('candidate_referred_froms.name AS name'),
+            DB::raw('candidate_referred_froms.name AS candidate_referred_name'),
             'signees_detail.nmc_dmc_pin',
             DB::raw('date(users.created_at) AS date_registered'),
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
