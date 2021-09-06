@@ -111,7 +111,7 @@ class SpecialitiesController extends Controller
         $keyword = $request->get('search');
         $showPagination = $request->get('showPagination');
         $query = Speciality::select("specialities.*",);
-        $query->Where('specialities.user_id',  $this->userId);
+        $query->where('specialities.user_id',  $this->userId);
         if (!empty($keyword)) {
             // echo $keyword;exit;
             $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
@@ -132,6 +132,16 @@ class SpecialitiesController extends Controller
             return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
         }
         // }
+    }
+
+    public function AllSpeciality(Request $request)
+    {
+        $query = Speciality::where('user_id', $this->userId)->get()->toArray();
+        if (!empty($query)) {
+            return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, No Speciality Available!', 'status' => false], 200);
+        }
     }
 
     /**

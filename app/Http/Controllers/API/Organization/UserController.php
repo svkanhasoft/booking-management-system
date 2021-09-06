@@ -14,6 +14,8 @@ use App\Models\SigneeOrganization;
 
 use Hash;
 use App\Models\Role;
+use App\Models\SigneeSpecialitie;
+use App\Models\Speciality;
 
 class UserController extends Controller
 {
@@ -309,10 +311,9 @@ class UserController extends Controller
             "password" => 'required',
             "mobile_number" => 'required',
             "date_of_birth" => 'required',
-            "candidate_id" => 'required',
+            // "candidate_id" => "required",
+            "candidate_id" => 'unique:signees_detail,candidate_id',
             "address_line_1" => 'required',
-            "address_line_2" => 'required',
-            "address_line_3" => 'required',
             "city" => 'required',
             "zipcode" => 'required',
             "candidate_referred_from" => 'required',
@@ -324,7 +325,7 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-
+        //print_r($requestData);exit();
         // if ($request->hasFile('cv')) {
         //     $files1 = $request->file('cv');
         //     $name = time() . '_signee_' . $files1->getClientOriginalName();
@@ -333,18 +334,19 @@ class UserController extends Controller
         // }
 
         $requestData['password'] = Hash::make($request->post('password'));
-        $requestData['parent_id'] = $requestData['organization_id'];
+        $requestData['parent_id'] = $this->userId;
         $requestData['role'] = 'SIGNEE';
         $userCreated = User::create($requestData);
         if ($userCreated) {
             $requestData['user_id'] = $userCreated['id'];
             $orgResult = SigneesDetail::create($requestData);
 
-            // $objSpeciality = new SigneeSpecialitie();
-            // $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+            $objSpeciality = new SigneeSpecialitie();
+            $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
 
             //$requestData['organization_id'] = $request->post('organization_id');
             $requestData['user_id'] = $userCreated['id'];
+            $requestData['organization_id'] = $this->userId;
             $sing = SigneeOrganization::create($requestData);
             if ($orgResult) {
                 $UserObj = new User();
@@ -353,6 +355,99 @@ class UserController extends Controller
             }
         } else {
             return response()->json(['message' => 'Sorry, Signee added failed!', 'status' => false], 200);
+        }
+    }
+
+    public function viewSignee(Request $request)
+    {
+        $UserObj = new User();
+        $user = $UserObj->getSignee($this->userId);
+        //print_r($user);exit();
+        if(!empty($user))
+        {
+            return response()->json(['status' => true, 'message' => 'Signee Get Successfully', 'data' => $user], $this->successStatus);
+        }
+        else
+        {
+            return response()->json(['message' => 'Sorry, Something is Wrong!', 'status' => false], 200);
+        }
+    }
+
+    public function editSignee(Request $request)
+    {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            "id"=>'required',
+            "first_name" => 'required',
+            "last_name" => 'required',
+            "password" => 'nullable|min:6',
+            "mobile_number" => 'required',
+            "date_of_birth" => 'required',
+            // "candidate_id" => 'required',
+            //"candidate_id" => 'unique:signees_detail,candidate_id,'.$requestData['id'].',NULL,id',
+            "address_line_1" => 'required',
+            "city" => 'required',
+            "zipcode" => 'required',
+            "candidate_referred_from" => 'required',
+            "nationality" => 'required',
+            "date_registered" => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        
+       // print_r($requestData);exit();
+        if (!empty($request->post('password'))) {
+            $requestData['password'] = Hash::make($request->post('password'));
+        }
+        $signee = User::findOrFail($requestData['id']);;
+        $signeeUpdated = $signee->update($requestData);
+        if ($signeeUpdated) {
+            $signeeDetailResult = SigneesDetail::where('user_id', '=', $requestData['id'])->firstOrFail();
+            $result = $signeeDetailResult->update($requestData);
+            if ($result) {
+                $speciality = new Speciality();
+                $speciality->addOrUpdateSpeciality($requestData['speciality'], $requestData['id']);
+                 $user = User::find($this->userId)->SigneesDetail;
+                return response()->json(['status' => true, 'message' => 'Signee update Successfully', 'data' =>  $signee], $this->successStatus);
+            }
+        } else {
+            return response()->json(['message' => 'Sorry, Signee update failed!', 'status' => false], 200);
+        }
+    }
+
+    public function deleteSignee($id)
+    {
+        $userDelete = User::where('id', $id)->delete();
+        if($userDelete)
+        {
+            return response()->json(['status' => true, 'message' => 'Signee deleted successfully.'], $this->successStatus);
+        }
+        else{
+            return response()->json(['status' => false, 'message' => 'Sorry, Signee not deleted.'], $this->successStatus);
+        }
+    }
+
+    public function getCandidate(Request $request)
+    {
+        $time = [];
+        $time['candidate_id'] = date("ymdHis");
+        if ($time) {
+            return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $time], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
+        }
+    }
+
+    public function getSignee($id)
+    {
+        $userObj = new User();
+        $user = $userObj->getSigneeById($id);
+        if ($user) {
+            return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 200);
         }
     }
 }
