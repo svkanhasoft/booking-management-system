@@ -315,7 +315,7 @@ class UserController extends Controller
             "candidate_id" => 'unique:signees_detail,candidate_id',
             "address_line_1" => 'required',
             "city" => 'required',
-            "zipcode" => 'required',
+            "postcode" => 'required',
             "candidate_referred_from" => 'required',
             "nationality" => 'required',
             "date_registered" => 'required'
@@ -387,7 +387,7 @@ class UserController extends Controller
             //"candidate_id" => 'unique:signees_detail,candidate_id,'.$requestData['id'].',NULL,id',
             "address_line_1" => 'required',
             "city" => 'required',
-            "zipcode" => 'required',
+            "postcode" => 'required',
             "candidate_referred_from" => 'required',
             "nationality" => 'required',
             "date_registered" => 'required',
