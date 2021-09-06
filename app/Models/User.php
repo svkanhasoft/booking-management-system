@@ -285,6 +285,7 @@ class User extends Authenticatable
 
     public function getSignee($userId = null)
     {
+        $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -314,9 +315,9 @@ class User extends Authenticatable
         $query->whereNull('specialities.deleted_at');
         $query->whereNull('signees_detail.deleted_at');
         // $query->whereNull('bookings.deleted_at');
-        $userDetais = $query->get();
+        $userDetails = $query->latest('users.created_at')->paginate($perPage);
         // print_r($userDetais);
         // exit;
-        return $userDetais;
+        return $userDetails;
     }
 }

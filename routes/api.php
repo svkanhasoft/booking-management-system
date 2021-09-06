@@ -91,7 +91,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-reference', [App\Http\Controllers\API\Organization\BookingController::class, 'reference']);
         Route::post('/add-signee', [App\Http\Controllers\API\Organization\UserController::class, 'addSignee']);
         Route::get('/get-signee', [App\Http\Controllers\API\Organization\UserController::class, 'viewSignee']);
-        Route::post('/edit-signee', [App\Http\Controllers\API\Organization\UserController::class, 'editSignee']);
+        Route::put('/edit-signee', [App\Http\Controllers\API\Organization\UserController::class, 'editSignee']);
         Route::delete('/delete-signee/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'deleteSignee']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */

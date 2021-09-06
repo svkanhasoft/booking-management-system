@@ -342,8 +342,8 @@ class UserController extends Controller
             $requestData['user_id'] = $userCreated['id'];
             $orgResult = SigneesDetail::create($requestData);
 
-            // $objSpeciality = new SigneeSpecialitie();
-            // $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+            $objSpeciality = new SigneeSpecialitie();
+            $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
 
             //$requestData['organization_id'] = $request->post('organization_id');
             $requestData['user_id'] = $userCreated['id'];
@@ -391,7 +391,6 @@ class UserController extends Controller
             "candidate_referred_from" => 'required',
             "nationality" => 'required',
             "date_registered" => 'required',
-            'speciality' => 'required:speciality,[]',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
