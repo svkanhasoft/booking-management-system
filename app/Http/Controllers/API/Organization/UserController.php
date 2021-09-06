@@ -325,7 +325,7 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-
+        //print_r($requestData);exit();
         // if ($request->hasFile('cv')) {
         //     $files1 = $request->file('cv');
         //     $name = time() . '_signee_' . $files1->getClientOriginalName();
@@ -334,7 +334,7 @@ class UserController extends Controller
         // }
 
         $requestData['password'] = Hash::make($request->post('password'));
-        $requestData['parent_id'] = $requestData['organization_id'];
+        $requestData['parent_id'] = $this->userId;
         $requestData['role'] = 'SIGNEE';
         $userCreated = User::create($requestData);
         if ($userCreated) {
@@ -346,6 +346,7 @@ class UserController extends Controller
 
             //$requestData['organization_id'] = $request->post('organization_id');
             $requestData['user_id'] = $userCreated['id'];
+            $requestData['organization_id'] = $this->userId;
             $sing = SigneeOrganization::create($requestData);
             if ($orgResult) {
                 $UserObj = new User();
