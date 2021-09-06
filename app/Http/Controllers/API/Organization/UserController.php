@@ -439,4 +439,15 @@ class UserController extends Controller
             return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
         }
     }
+
+    public function getSignee($id)
+    {
+        $userObj = new User();
+        $user = $userObj->getSigneeById($id);
+        if ($user) {
+            return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 200);
+        }
+    }
 }

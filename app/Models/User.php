@@ -320,4 +320,81 @@ class User extends Authenticatable
         // exit;
         return $userDetails;
     }
+
+    public function getSigneeById($userId = null)
+    {
+        $query = User::select(
+            'users.id',
+            'users.first_name',
+            'users.last_name',
+            'users.email',
+            'oud.contact_number',
+            'oud.designation_id',
+            'users.parent_id',
+            'parentUser.first_name as org_first_name',
+            'parentUser.last_name as org_last_name',
+            'parentUser.last_name as org_last_name',
+            'parentUser.email  as org_email',
+            'organizations.organization_name',
+            'organizations.contact_person_name',
+            'users.contact_number',
+            'users.address_line_1',
+            'users.address_line_2',
+            'signees_detail.candidate_id',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.postcode',
+            'signees_detail.nationality',
+            'signees_detail.date_of_birth',
+            'signees_detail.mobile_number',
+            'signees_detail.phone_number',
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+        );
+        $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
+        $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
+        $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
+        $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
+        $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
+        $query->where('users.id', $userId);
+        $userDetais = $query->first();
+        return $userDetais;
+
+
+        // //$perPage = Config::get('constants.pagination.perPage');
+        // $query = User::select(
+        //     'users.id',
+        //     'users.first_name',
+        //     'users.last_name',
+        //     'users.email',
+        //     'users.parent_id',
+        //     'signees_detail.candidate_id',
+        //     'signees_detail.phone_number',
+        //     'signees_detail.mobile_number',
+        //     'signees_detail.date_of_birth',
+        //     'signees_detail.nationality',
+        //     'signees_detail.candidate_referred_from',
+        //     'signees_detail.nmc_dmc_pin',
+        //     'signee_organization.status',
+        //     // 'signee_speciality.speciality_id',
+        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+        // );
+        // $query->Join('signee_organization', 'signee_organization.user_id', '=', 'users.id');
+        // $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
+        // $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
+        // $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        // // $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
+        // $query->groupBy('signee_speciality.user_id');
+        // $query->where('signee_organization.organization_id', $userId);
+        // $query->where('users.role', "SIGNEE");
+        // $query->whereNull('signee_speciality.deleted_at');
+        // $query->whereNull('specialities.deleted_at');
+        // $query->whereNull('signees_detail.deleted_at');
+        // // $query->whereNull('bookings.deleted_at');
+        // $userDetais = $query->first();
+        // return $userDetais;
+        // // print_r($userDetais);
+        // // exit;
+    }
 }
