@@ -300,25 +300,20 @@ class User extends Authenticatable
             'signees_detail.candidate_referred_from',
             'signees_detail.nmc_dmc_pin',
             'signee_organization.status',
-            // 'signee_speciality.speciality_id',
+            'signee_speciality.speciality_id',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->Join('signee_organization', 'signee_organization.user_id', '=', 'users.id');
         $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
         $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
-        // $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
-        $query->groupBy('signee_speciality.user_id');
+        
         $query->where('signee_organization.organization_id', $userId);
         $query->where('users.role', "SIGNEE");
-        $query->whereNull('signee_speciality.deleted_at');
-        $query->whereNull('specialities.deleted_at');
-        $query->whereNull('signees_detail.deleted_at');
-        // $query->whereNull('bookings.deleted_at');
-        $userDetails = $query->latest('users.created_at')->paginate($perPage);
-        // print_r($userDetais);
-        // exit;
-        return $userDetails;
+        $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
+        $query->groupBy('signee_organization.user_id');
+        // $query->groupBy('signee_speciality.user_id');
+        return $query->latest('users.created_at')->paginate($perPage);
     }
 
     public function getSigneeById($userId = null)
