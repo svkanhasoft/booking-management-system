@@ -419,7 +419,11 @@ class UserController extends Controller
 
     public function deleteSignee($id)
     {
-        $userDelete = User::where('id', $id)->delete();
+        $userDelete = User::destroy($id);
+        SigneesDetail::where('user_id', $id)->delete();
+        SigneeOrganization::where('user_id', $id)->delete();
+        SigneeSpecialitie::where('user_id', $id)->delete();
+
         if($userDelete)
         {
             return response()->json(['status' => true, 'message' => 'Signee deleted successfully.'], $this->successStatus);
