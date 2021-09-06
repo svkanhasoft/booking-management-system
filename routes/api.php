@@ -93,6 +93,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-signee', [App\Http\Controllers\API\Organization\UserController::class, 'viewSignee']);
         Route::put('/edit-signee', [App\Http\Controllers\API\Organization\UserController::class, 'editSignee']);
         Route::delete('/delete-signee/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'deleteSignee']);
+        Route::get('/get-candidate', [App\Http\Controllers\API\Organization\UserController::class, 'getCandidate']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
         

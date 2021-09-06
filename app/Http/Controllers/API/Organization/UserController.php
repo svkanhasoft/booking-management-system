@@ -429,4 +429,15 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => 'Sorry, Signee not deleted.'], $this->successStatus);
         }
     }
+
+    public function getCandidate(Request $request)
+    {
+        $time = [];
+        $time['candidate_id'] = date("ymdHis");
+        if ($time) {
+            return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $time], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
+        }
+    }
 }
