@@ -37,6 +37,10 @@ class RoleController extends Controller
      */
     public function create(Request $request)
     { 
+        $res = Role::withTrashed()->whereNotNull('deleted_at')->where(['role_name' => $request->all('role_name'), 'user_id' => $this->userId])->restore();
+        if ($res == 1) {
+            return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $request->all()], $this->successStatus);
+        }
         $validator = Validator::make($request->all(), [
             'role_name' => 'unique:roles,role_name,NULL,id,user_id,'.$this->userId
         ]);

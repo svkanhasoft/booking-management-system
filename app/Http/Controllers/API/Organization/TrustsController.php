@@ -34,22 +34,29 @@ class TrustsController extends Controller
             "name" => 'required',
             "code" => 'required',
             "preference_invoice_method" => 'required',
-            "email_address" => 'required',
+            "email_address" => 'required|email',
             "address_line_1" => 'required',
             "city" => 'required',
             "post_code" => 'required',
-            "trust_portal_url" => 'required',
-            "portal_email" => 'required',
+            "trust_portal_url" => 'required|url',
+            "portal_email" => 'required|email',
             "portal_password" => 'required',
             "first_name" => 'required',
             "last_name" => 'required',
-            "contact_email_address" => 'required',
-            "phone_number" => 'required',
+            "contact_email_address" => 'required|email',
+            "phone_number" => 'required|numeric',
             'hospital' => 'required:hospital,[
                 ward => required:ward,[]
             ]',
             'training' => 'required:training,[]',
             // 'ward' => 'required:ward,[]',
+
+            'hospital.*.hospital_name' => 'required',
+            'hospital.*.ward' => 'required',
+            'hospital.*.ward.*.ward_name' => 'required',
+            'hospital.*.ward.*.ward_type_id' => 'required',
+            'hospital.*.ward.*.ward_number' => 'required|numeric',
+            'training.*.training_name' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
@@ -101,17 +108,17 @@ class TrustsController extends Controller
             "name" => 'required',
             "code" => 'required',
             "preference_invoice_method" => 'required',
-            "email_address" => 'required',
+            "email_address" => 'required|email',
             "address_line_1" => 'required',
             "city" => 'required',
             "post_code" => 'required',
-            "trust_portal_url" => 'required',
-            "portal_email" => 'required',
+            "trust_portal_url" => 'required|url',
+            "portal_email" => 'required|email',
             "portal_password" => 'required',
             "first_name" => 'required',
             "last_name" => 'required',
-            "contact_email_address" => 'required',
-            "phone_number" => 'required',
+            "contact_email_address" => 'required|email',
+            "phone_number" => 'required|numeric',
             'hospital' => 'required:hospital,[
                 ward => required:ward,[]
             ]',
@@ -121,8 +128,8 @@ class TrustsController extends Controller
             'hospital.*.hospital_name' => 'required',
             'hospital.*.ward' => 'required',
             'hospital.*.ward.*.ward_name' => 'required',
-            'hospital.*.ward.*.ward_type' => 'required',
-            'hospital.*.ward.*.ward_number' => 'required',
+            'hospital.*.ward.*.ward_type_id' => 'required',
+            'hospital.*.ward.*.ward_number' => '|numeric',
             'training.*.training_name' => 'required',
         ]);
         if ($validator->fails()) {
@@ -179,22 +186,6 @@ class TrustsController extends Controller
             $query = Trust::where('user_id', $this->userId);
             if (!empty($keyword)) {
                 $query->Where('name',  'LIKE', "%$keyword%");
-                $query->orWhere('code',  'LIKE', "%$keyword%");
-                $query->orWhere('preference_invoice_method',  'LIKE', "%$keyword%");
-                $query->orWhere('email_address',  'LIKE', "%$keyword%");
-                $query->orWhere('address_line_1',  'LIKE', "%$keyword%");
-                $query->orWhere('address_line_2',  'LIKE', "%$keyword%");
-                $query->orWhere('address_line_3',  'LIKE', "%$keyword%");
-                $query->orWhere('city',  'LIKE', "%$keyword%");
-                $query->orWhere('post_code',  'LIKE', "%$keyword%");
-                $query->orWhere('trust_portal_url',  'LIKE', "%$keyword%");
-                $query->orWhere('portal_email',  'LIKE', "%$keyword%");
-                $query->orWhere('first_name',  'LIKE', "%$keyword%");
-                $query->orWhere('last_name',  'LIKE', "%$keyword%");
-                $query->orWhere('contact_email_address',  'LIKE', "%$keyword%");
-                $query->orWhere('phone_number',  'LIKE', "%$keyword%");
-                $query->orWhere('client',  'LIKE', "%$keyword%");
-                $query->orWhere('department',  'LIKE', "%$keyword%");
             }
             $result =  $query->latest()->paginate($perPage);
             // $result = $query->get();

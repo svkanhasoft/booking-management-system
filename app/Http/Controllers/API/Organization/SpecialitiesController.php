@@ -56,9 +56,17 @@ class SpecialitiesController extends Controller
      */
     public function create(Request $request)
     {
+
+        $res = Speciality::withTrashed()->whereNotNull('deleted_at')->where(['speciality_name' => $request->all('speciality_name'), 'user_id' => $this->userId])->restore();
+        // $res = Speciality::withTrashed()->where(['speciality_name' => $request->all('speciality_name'),'user_id' => $this->userId])->restore();
+        if ($res == 1) {
+            return response()->json(['status' => true, 'message' => 'Speciality added Successfully', 'data' => $request->all()], $this->successStatus);
+        }
         $validator = Validator::make($request->all(), [
             // "speciality_name" => 'required',
-            'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId
+            'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,' . $this->userId
+            // 'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId,'deleted_at,NULL'
+
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -99,7 +107,7 @@ class SpecialitiesController extends Controller
      */
     public function showAll(Request $request)
     {
-        $perPage = 5;
+        $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
         $query = Speciality::select("specialities.*",);
         $query->Where('specialities.user_id',  $this->userId);
@@ -107,9 +115,8 @@ class SpecialitiesController extends Controller
             // echo $keyword;exit;
             $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
         }
-        $speciality =  $query->latest('specialities.created_at')->paginate($perPage);
-        $count =  $query->latest('specialities.created_at')->paginate($perPage)->count();
-        if ($count > 0) {
+        $speciality =  $query->latest('specialities.created_at')->get();
+        if (!empty($speciality)) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
@@ -129,14 +136,14 @@ class SpecialitiesController extends Controller
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             // "speciality_name" => 'required',
-            'speciality_name' => 'unique:specialities,speciality_name,'.$requestData['speciality_id'].'NULL,id,user_id,'.$this->userId,
+            'speciality_name' => 'unique:specialities,speciality_name,' . $requestData['speciality_id'] . 'NULL,id,user_id,' . $this->userId,
             "speciality_id" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        
+
         $speciality = Speciality::findOrFail($requestData['speciality_id']);
         $addResult =  $speciality->update($requestData);
         if ($addResult) {
