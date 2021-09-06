@@ -311,10 +311,10 @@ class UserController extends Controller
             "password" => 'required',
             "mobile_number" => 'required',
             "date_of_birth" => 'required',
-            "candidate_id" => 'required',
+            // "candidate_id" => "required",
+            "candidate_id" => 'unique:signees_detail,candidate_id',
             "address_line_1" => 'required',
             "address_line_2" => 'required',
-            "address_line_3" => 'required',
             "city" => 'required',
             "zipcode" => 'required',
             "candidate_referred_from" => 'required',
@@ -375,6 +375,7 @@ class UserController extends Controller
 
     public function editSignee(Request $request)
     {
+        $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             "id"=>'required',
             "first_name" => 'required',
@@ -382,10 +383,10 @@ class UserController extends Controller
             "password" => 'nullable|min:6',
             "mobile_number" => 'required',
             "date_of_birth" => 'required',
-            "candidate_id" => 'required',
+            // "candidate_id" => 'required',
+            //"candidate_id" => 'unique:signees_detail,candidate_id,'.$requestData['id'].',NULL,id',
             "address_line_1" => 'required',
             "address_line_2" => 'required',
-            "address_line_3" => 'required',
             "city" => 'required',
             "zipcode" => 'required',
             "candidate_referred_from" => 'required',
@@ -396,7 +397,7 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
+        
        // print_r($requestData);exit();
         if (!empty($request->post('password'))) {
             $requestData['password'] = Hash::make($request->post('password'));
