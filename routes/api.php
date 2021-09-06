@@ -61,6 +61,7 @@ Route::prefix('organization')->group(function () {
         Route::delete('/delete-speciality/{id?}', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'destroy']);
         Route::get('/get-speciality/{id?}', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'show']);
         Route::get('/get-all-speciality/{search?}', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'showAll']);
+        Route::get('/all-speciality', [App\Http\Controllers\API\Organization\SpecialitiesController::class, 'AllSpeciality']);
         Route::post('/add-trust', [App\Http\Controllers\API\Organization\TrustsController::class, 'add']);
         Route::post('/update-trust', [App\Http\Controllers\API\Organization\TrustsController::class, 'update']);
         Route::get('/get-trust/{id?}', [App\Http\Controllers\API\Organization\TrustsController::class, 'getTrustDetail']);
