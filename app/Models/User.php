@@ -297,7 +297,8 @@ class User extends Authenticatable
             'signees_detail.mobile_number',
             'signees_detail.date_of_birth',
             'signees_detail.nationality',
-            'signees_detail.candidate_referred_from',
+            //'signees_detail.candidate_referred_from',
+            DB::raw('candidate_referred_froms.name AS candidate_referred_from'),
             'signees_detail.nmc_dmc_pin',
             'signee_organization.status',
             'signee_speciality.speciality_id',
@@ -307,7 +308,7 @@ class User extends Authenticatable
         $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
         $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
-        
+        $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->where('signee_organization.organization_id', $userId);
         $query->where('users.role', "SIGNEE");
         $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
@@ -344,11 +345,16 @@ class User extends Authenticatable
             'signees_detail.date_of_birth',
             'signees_detail.mobile_number',
             'signees_detail.phone_number',
+            //'signees_detail.candidate_referred_from',
+            'signees_detail.nmc_dmc_pin',
+            DB::raw('date(users.created_at) AS date_registered'),
+            DB::raw('candidate_referred_froms.name AS candidate_referred_from'),
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
         $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
