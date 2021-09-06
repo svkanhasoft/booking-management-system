@@ -25,9 +25,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password','remember_token',
-        'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'password_change', 'password_change','last_login_date', 'is_deleted', 
-        'parent_id','postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number'
+        'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
+        'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'password_change', 'password_change', 'last_login_date', 'is_deleted',
+        'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number'
     ];
 
     /**
@@ -136,10 +136,20 @@ class User extends Authenticatable
     public function getStafById($userId = null)
     {
         $query = User::select(
-            'users.first_name', 
-            'users.last_name', 'users.email', 'users.email_verified_at', 'users.role', 'users.status', 
-            'users.password_change', 'users.postcode', 'users.city', 'users.address_line_2', 
-            'users.address_line_1', 'users.contact_number', 'users.last_login_date', 'users.parent_id',
+            'users.first_name',
+            'users.last_name',
+            'users.email',
+            'users.email_verified_at',
+            'users.role',
+            'users.status',
+            'users.password_change',
+            'users.postcode',
+            'users.city',
+            'users.address_line_2',
+            'users.address_line_1',
+            'users.contact_number',
+            'users.last_login_date',
+            'users.parent_id',
             'oud.*',
             'designations.designation_name',
             'roles.role_name',
@@ -270,6 +280,43 @@ class User extends Authenticatable
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.id');
         $query->where('users.id', $userId);
         $userDetais = $query->first();
+        return $userDetais;
+    }
+
+    public function getSignee($userId = null)
+    {
+        $query = User::select(
+            'users.id',
+            'users.first_name',
+            'users.last_name',
+            'users.email',
+            'users.parent_id',
+            'signees_detail.candidate_id',
+            'signees_detail.phone_number',
+            'signees_detail.mobile_number',
+            'signees_detail.date_of_birth',
+            'signees_detail.nationality',
+            'signees_detail.candidate_referred_from',
+            'signees_detail.nmc_dmc_pin',
+            'signee_organization.status',
+            // 'signee_speciality.speciality_id',
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+        );
+        $query->Join('signee_organization', 'signee_organization.user_id', '=', 'users.id');
+        $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
+        $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
+        $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        // $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
+        $query->groupBy('signee_speciality.user_id');
+        $query->where('signee_organization.organization_id', $userId);
+        $query->where('users.role', "SIGNEE");
+        $query->whereNull('signee_speciality.deleted_at');
+        $query->whereNull('specialities.deleted_at');
+        $query->whereNull('signees_detail.deleted_at');
+        // $query->whereNull('bookings.deleted_at');
+        $userDetais = $query->get();
+        // print_r($userDetais);
+        // exit;
         return $userDetais;
     }
 }
