@@ -41,7 +41,7 @@ class Speciality extends Model
                 $res = SigneeSpecialitie::withTrashed()->where(['speciality_id' => $values, 'user_id' => $userId])->restore();
                 $objSpeciality = SigneeSpecialitie::where(['speciality_id' => $values, 'user_id' => $userId])->firstOrNew();
                 //print_r($objSpeciality);exit();
-                $objSpeciality->speciality_id = $values;
+                $objSpeciality->speciality_id = $values['id'];
                 $objSpeciality->user_id = $userId;
                 $objSpeciality->save();
                 $objSpeciality = '';

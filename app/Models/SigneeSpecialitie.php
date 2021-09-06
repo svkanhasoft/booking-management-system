@@ -35,8 +35,9 @@ class SigneeSpecialitie extends Model
             SigneeSpecialitie::where(['user_id' => $userId])->delete();
         }
         foreach ($postData as $key => $val) {
+          //  print_r($val);exit();
             $objSigneeSpecialitie = new SigneeSpecialitie();
-            $objSigneeSpecialitie->speciality_id = $val;
+            $objSigneeSpecialitie->speciality_id = $val['id'];
             $objSigneeSpecialitie->user_id = $userId;
             $objSigneeSpecialitie->save();
             $objSigneeSpecialitie = "";
