@@ -127,3 +127,5 @@ Route::prefix('signee')->group(function () {
     });
 });
 
+Route::get('/test/{id}', [App\Http\Controllers\API\TestController::class, 'test']);
+
