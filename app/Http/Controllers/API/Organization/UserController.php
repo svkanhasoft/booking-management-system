@@ -358,7 +358,7 @@ class UserController extends Controller
         }
     }
 
-    public function viewSignee(Request $request)
+    public function viewSignee(Request $request)    //get all signee by organisation
     {
         $UserObj = new User();
         $user = $UserObj->getSignee($this->userId);
@@ -440,7 +440,7 @@ class UserController extends Controller
         }
     }
 
-    public function getSignee($id)
+    public function getSignee($id)  //get signee by id from org
     {
         $userObj = new User();
         $user = $userObj->getSigneeById($id);

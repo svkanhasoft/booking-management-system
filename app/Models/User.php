@@ -345,10 +345,10 @@ class User extends Authenticatable
             'signees_detail.date_of_birth',
             'signees_detail.mobile_number',
             'signees_detail.phone_number',
-            //'signees_detail.candidate_referred_from',
+            'signees_detail.candidate_referred_from',
+            DB::raw('candidate_referred_froms.name AS name'),
             'signees_detail.nmc_dmc_pin',
             DB::raw('date(users.created_at) AS date_registered'),
-            DB::raw('candidate_referred_froms.name AS candidate_referred_from'),
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
