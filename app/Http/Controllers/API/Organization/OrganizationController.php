@@ -143,7 +143,7 @@ class OrganizationController extends Controller
                 return response()->json(['status' => false, 'message' => 'Sorry, logout failed'], 200);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' => $e], 200);
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 200);
         }
     }
 
@@ -200,18 +200,22 @@ class OrganizationController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        if (!(Hash::check($request->old_password, Auth::user()->password))) {
-            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
-        }
-        $user = User::where('id', $this->userId)->first();
-        // $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
-        if (!empty($user)) {
-            $userObj = User::find($user['id']);
-            $userObj['password'] = Hash::make($request->post('password'));
-            $userObj->save();
-            return response()->json(['status' => true, 'message' => 'Password Successfully changed'], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 200);
+        try {
+            if (!(Hash::check($request->old_password, Auth::user()->password))) {
+                return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
+            }
+            $user = User::where('id', $this->userId)->first();
+            // $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
+            if (!empty($user)) {
+                $userObj = User::find($user['id']);
+                $userObj['password'] = Hash::make($request->post('password'));
+                $userObj->save();
+                return response()->json(['status' => true, 'message' => 'Password Successfully changed'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
     /** 
@@ -229,13 +233,17 @@ class OrganizationController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $userObj = User::find($request->post('user_id'));
-        $userObj['status'] = $request->post('status');
-        $res =  $userObj->save();
-        if ($res) {
-            return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+        try {
+            $userObj = User::find($request->post('user_id'));
+            $userObj['status'] = $request->post('status');
+            $res =  $userObj->save();
+            if ($res) {
+                return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -256,25 +264,28 @@ class OrganizationController extends Controller
         }
         $keyword = $request->get('keyword');
         $perPage = Config::get('constants.pagination.perPage');
+        try {
+            $query = User::select("users.*");
+            $query->leftjoin('organization_user_details as oud', 'oud.user_id', '=', 'users.id');
+            $query->leftjoin('roles',  'roles.id', '=', 'oud.role_id');
+            $query->leftjoin('designations',  'designations.id', '=', 'oud.designation_id');
+            $query->Where('users.status',  "Active");
 
-        $query = User::select("users.*");
-        $query->leftjoin('organization_user_details as oud', 'oud.user_id', '=', 'users.id');
-        $query->leftjoin('roles',  'roles.id', '=', 'oud.role_id');
-        $query->leftjoin('designations',  'designations.id', '=', 'oud.designation_id');
-        $query->Where('users.status',  "Active");
-
-        $query->Where('users.first_name',  'LIKE', "%$keyword%");
-        $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
-        $query->orWhere('users.email',  'LIKE', "%$keyword%");
-        $query->orWhere('oud.contact_number',  'LIKE', "%$keyword%");
-        $query->orWhere('designations.designation_name',  'LIKE', "%$keyword%");
-        $query->orWhere('roles.role_name',  'LIKE', "%$keyword%");
-        $query->groupBy('users.id');
-        $res =  $query->latest('users.created_at')->paginate($perPage);
-        if ($res) {
-            return response()->json(['status' => true, 'message' => 'Status changed successfully', 'data' => $res], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+            $query->Where('users.first_name',  'LIKE', "%$keyword%");
+            $query->orWhere('users.last_name',  'LIKE', "%$keyword%");
+            $query->orWhere('users.email',  'LIKE', "%$keyword%");
+            $query->orWhere('oud.contact_number',  'LIKE', "%$keyword%");
+            $query->orWhere('designations.designation_name',  'LIKE', "%$keyword%");
+            $query->orWhere('roles.role_name',  'LIKE', "%$keyword%");
+            $query->groupBy('users.id');
+            $res =  $query->latest('users.created_at')->paginate($perPage);
+            if ($res) {
+                return response()->json(['status' => true, 'message' => 'Status changed successfully', 'data' => $res], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -290,36 +301,39 @@ class OrganizationController extends Controller
         $keyword = $request->get('search');
         $status = $request->get('status');
         $perPage = Config::get('constants.pagination.perPage');
+        try {
+            $qr = User::select(
+                "users.*",
+                'org.organization_name',
+                'org.contact_person_name',
+            )->join('organizations as org', 'org.user_id', '=', 'users.id');
+            if (!empty($status)) {
+                $qr->Where('users.status',  "$status");
+            }
+            if (!empty($keyword)) {
+                $qr->where(function ($query2) use ($status, $keyword) {
+                    $query2->where('users.email', 'like',  "%$keyword%")
+                        ->orWhere('org.organization_name', 'like',  "%$keyword%")
+                        ->orWhere('org.contact_person_name',  'LIKE', "%$keyword%")
+                        ->orWhere('users.contact_number',  'LIKE', "%$keyword%")
+                        ->orWhere('users.address_line_1',  'LIKE', "%$keyword%")
+                        ->orWhere('users.address_line_2',  'LIKE', "%$keyword%")
+                        ->orWhere('users.city',  'LIKE', "%$keyword%")
+                        ->orWhere('users.postcode',  'LIKE', "%$keyword%");
+                });
+            }
+            $res =  $qr->latest('users.created_at')->paginate($perPage);
+            $count =  $qr->latest('users.created_at')->paginate($perPage)->count();
 
-        $qr = User::select(
-            "users.*",
-            'org.organization_name',
-            'org.contact_person_name',
-        )->join('organizations as org', 'org.user_id', '=', 'users.id');
-        if (!empty($status)) {
-            $qr->Where('users.status',  "$status");
-        }
-        if (!empty($keyword)) {
-            $qr->where(function ($query2) use ($status, $keyword) {
-                $query2->where('users.email', 'like',  "%$keyword%")
-                    ->orWhere('org.organization_name', 'like',  "%$keyword%")
-                    ->orWhere('org.contact_person_name',  'LIKE', "%$keyword%")
-                    ->orWhere('users.contact_number',  'LIKE', "%$keyword%")
-                    ->orWhere('users.address_line_1',  'LIKE', "%$keyword%")
-                    ->orWhere('users.address_line_2',  'LIKE', "%$keyword%")
-                    ->orWhere('users.city',  'LIKE', "%$keyword%")
-                    ->orWhere('users.postcode',  'LIKE', "%$keyword%");
-            });
-        }
-        $res =  $qr->latest('users.created_at')->paginate($perPage);
-        $count =  $qr->latest('users.created_at')->paginate($perPage)->count();
 
-        
-        if ($count > 0) {
-            // if ($res) {
-            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+            if ($count > 0) {
+                // if ($res) {
+                return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -335,7 +349,7 @@ class OrganizationController extends Controller
             'confirm_password' => 'required|same:password',
             'decode_id' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
@@ -379,24 +393,22 @@ class OrganizationController extends Controller
             // $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
-        $requestData = $request->all();
-        $role = User::findOrFail(Auth::user()->id);
-        $roleUpdated = $role->update($requestData);
-        if (!empty($roleUpdated)) {
+        try {
             $requestData = $request->all();
-            $org = Organization::where(['user_id' => Auth::user()->id])->update([
-                "organization_name" => $requestData['organization_name'],
-                "contact_person_name" => $requestData['contact_person_name'],
-                // "contact_number" => $requestData['contact_number'],
-                // "address_line_1" => $requestData['address_line_1'],
-                // "address_line_2" => $requestData['address_line_2'],
-                // "city" => $requestData['city'],
-                // "postcode" => $requestData['postcode'],
-            ]);
-            return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
-        } else {
-            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            $role = User::findOrFail(Auth::user()->id);
+            $roleUpdated = $role->update($requestData);
+            if (!empty($roleUpdated)) {
+                $requestData = $request->all();
+                $org = Organization::where(['user_id' => Auth::user()->id])->update([
+                    "organization_name" => $requestData['organization_name'],
+                    "contact_person_name" => $requestData['contact_person_name'],
+                ]);
+                return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
+            } else {
+                return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 }

@@ -76,4 +76,17 @@ class Hospital extends Model
             }
         }
     }
+
+    public function trust()
+    {
+        return $this->belongsTo(Trust::class);
+    }
+    
+    public function ward()
+    {
+        // return  $this->belongsToMany( Ward::class, Hospital::class );
+        return $this->hasMany(Ward::class , 'hospital_id');
+        
+    }
+   
 }

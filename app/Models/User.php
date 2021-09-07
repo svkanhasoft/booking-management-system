@@ -137,6 +137,7 @@ class User extends Authenticatable
     public function getStafById($userId = null)
     {
         $query = User::select(
+            'users.id',
             'users.first_name',
             'users.last_name',
             'users.email',
@@ -151,7 +152,10 @@ class User extends Authenticatable
             'users.contact_number',
             'users.last_login_date',
             'users.parent_id',
-            'oud.*',
+            'oud.contact_number',
+            'oud.user_id',
+            'oud.role_id',
+            'oud.designation_id',
             'designations.designation_name',
             'roles.role_name',
         );
