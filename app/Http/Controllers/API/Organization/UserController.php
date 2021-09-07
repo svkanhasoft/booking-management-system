@@ -324,7 +324,7 @@ class UserController extends Controller
             "date_registered" => 'required'
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages();
+            $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
