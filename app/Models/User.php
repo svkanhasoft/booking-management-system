@@ -25,11 +25,12 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
+        'user_id','name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
         'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'password_change', 'password_change', 'last_login_date', 'is_deleted',
         'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number'
     ];
 
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -316,6 +317,11 @@ class User extends Authenticatable
         // $query->groupBy('signee_speciality.user_id');
         return $query->latest('users.created_at')->paginate($perPage);
     }
+    
+    public function speciality()
+    {
+        return $this->hasMany(Speciality::class, 'user_id');
+    }
 
     public function getSigneeById($userId = null)
     {
@@ -349,18 +355,34 @@ class User extends Authenticatable
             DB::raw('candidate_referred_froms.name AS candidate_referred_name'),
             'signees_detail.nmc_dmc_pin',
             DB::raw('date(users.created_at) AS date_registered'),
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            //DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
         $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
-        $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        //$query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->where('users.id', $userId);
         $userDetais = $query->first();
-        return $userDetais;
+        
+
+        $query2 = SigneeSpecialitie::select(
+            'specialities.id',
+            'specialities.speciality_name',
+        );
+        $query2->Join('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query2->where('signee_speciality.user_id', $userId);
+
+        $result = [];
+        $userSpec = $query2->get();
+        $result = $userDetais;
+        $result->speciality = $userSpec;
+        //$result = $userSpec;
+        //$result = array_push($userDetais, $userSpec);
+        
+        return $result;
 
 
         // //$perPage = Config::get('constants.pagination.perPage');
@@ -398,4 +420,10 @@ class User extends Authenticatable
         // // print_r($userDetais);
         // // exit;
     }
+
+    // public function getUserSpec($userId = null)
+    // {
+    //     $signeeSpec = SigneeSpecialitie::where('user_id', $userId)->get();
+    //     return $signeeSpec->toArray();
+    // }
 }
