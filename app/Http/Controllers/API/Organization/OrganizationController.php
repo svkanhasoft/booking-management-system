@@ -203,13 +203,13 @@ class OrganizationController extends Controller
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
             return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
-        $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
-        // $user = User::where('role', 'ORGANIZATION')->where('email', $request->all('email'))->first();
+        $user = User::where('id', $this->userId)->first();
+        // $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
         if (!empty($user)) {
             $userObj = User::find($user['id']);
             $userObj['password'] = Hash::make($request->post('password'));
             $userObj->save();
-            return response()->json(['status' => true, 'message' => 'Password Successfully changed, please login'], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Password Successfully changed'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 200);
         }
