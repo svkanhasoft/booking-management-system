@@ -13,7 +13,7 @@ class OrganizationUserDetail extends Model
      *
      * @var string
      */
-    protected $table = 'organization_staff_details';
+    protected $table = 'organization_user_details';
 
     /**
     * The database primary key value.

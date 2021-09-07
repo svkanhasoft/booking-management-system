@@ -13,9 +13,9 @@ class AddRenameOrganizationUserDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::table('organization_user_details', function (Blueprint $table) {
-            Schema::rename('organization_user_details', 'organization_staff_details');
-        });
+        // Schema::table('organization_user_details', function (Blueprint $table) {
+        //     Schema::rename('organization_user_details', 'organization_staff_details');
+        // });
     }
 
     /**

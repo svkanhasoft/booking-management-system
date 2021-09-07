@@ -52,7 +52,6 @@ class User extends Authenticatable
 
     public function getOrganizationDetails($userId = null)
     {
-
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -75,7 +74,7 @@ class User extends Authenticatable
             'users.address_line_1',
             'users.address_line_2',
         );
-        $query->Join('organization_staff_details as oud',  'oud.user_id', '=', 'users.id');
+        $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
         $query->Join('roles',  'roles.id', '=', 'oud.role_id');
         $query->Join('designations',  'designations.id', '=', 'oud.designation_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
@@ -113,7 +112,7 @@ class User extends Authenticatable
             'users.address_line_1',
             'users.address_line_2',
         );
-        $query->Join('organization_staff_details as oud',  'oud.user_id', '=', 'users.id');
+        $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
         $query->leftJoin('roles',  'roles.id', '=', 'oud.role_id');
         $query->Join('designations',  'designations.id', '=', 'oud.designation_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
@@ -158,7 +157,7 @@ class User extends Authenticatable
             'designations.designation_name',
             'roles.role_name',
         );
-        $query->Join('organization_staff_details as oud',  'oud.user_id', '=', 'users.id');
+        $query->Join('organization_user_details as oud',  'oud.user_id', '=', 'users.id');
         $query->leftJoin('roles',  'roles.id', '=', 'oud.role_id');
         $query->leftJoin('designations',  'designations.id', '=', 'oud.designation_id');
         $query->where('users.id', $userId);
@@ -199,7 +198,7 @@ class User extends Authenticatable
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
-        $query->leftJoin('organization_staff_details as oud',  'oud.user_id', '=', 'users.parent_id');
+        $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->where('users.id', $userId);
         $userDetais = $query->first();
@@ -365,7 +364,7 @@ class User extends Authenticatable
         //$query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
-        $query->leftJoin('organization_staff_details as oud',  'oud.user_id', '=', 'users.parent_id');
+        $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->where('users.id', $userId);
         $userDetais = $query->first();
