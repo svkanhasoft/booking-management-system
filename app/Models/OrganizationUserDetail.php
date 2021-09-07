@@ -13,7 +13,7 @@ class OrganizationUserDetail extends Model
      *
      * @var string
      */
-    protected $table = 'organization_user_details';
+    protected $table = 'organization_staff_details';
 
     /**
     * The database primary key value.
@@ -27,7 +27,7 @@ class OrganizationUserDetail extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'contact_number', 'role_id', 'designation_id', 'created_by', 'updated_by'];
+    protected $fillable = ['user_id', 'role_id', 'designation_id', 'created_by', 'updated_by'];
 
     
 }
