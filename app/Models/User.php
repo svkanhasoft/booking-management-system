@@ -153,7 +153,6 @@ class User extends Authenticatable
             'users.last_login_date',
             'users.parent_id',
             'oud.contact_number',
-            'oud.user_id',
             'oud.role_id',
             'oud.designation_id',
             'designations.designation_name',
