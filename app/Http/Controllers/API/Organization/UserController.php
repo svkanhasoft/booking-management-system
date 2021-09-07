@@ -302,6 +302,9 @@ class UserController extends Controller
         }
     }
 
+
+//////////////////// Signee CRUD By Organisation ///////////////////////
+
     public function addSignee(Request $request)
     {
         $validator = Validator::make($request->all(), [

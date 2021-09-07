@@ -383,47 +383,5 @@ class User extends Authenticatable
         //$result = array_push($userDetais, $userSpec);
         
         return $result;
-
-
-        // //$perPage = Config::get('constants.pagination.perPage');
-        // $query = User::select(
-        //     'users.id',
-        //     'users.first_name',
-        //     'users.last_name',
-        //     'users.email',
-        //     'users.parent_id',
-        //     'signees_detail.candidate_id',
-        //     'signees_detail.phone_number',
-        //     'signees_detail.mobile_number',
-        //     'signees_detail.date_of_birth',
-        //     'signees_detail.nationality',
-        //     'signees_detail.candidate_referred_from',
-        //     'signees_detail.nmc_dmc_pin',
-        //     'signee_organization.status',
-        //     // 'signee_speciality.speciality_id',
-        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-        // );
-        // $query->Join('signee_organization', 'signee_organization.user_id', '=', 'users.id');
-        // $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
-        // $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
-        // $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
-        // // $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
-        // $query->groupBy('signee_speciality.user_id');
-        // $query->where('signee_organization.organization_id', $userId);
-        // $query->where('users.role', "SIGNEE");
-        // $query->whereNull('signee_speciality.deleted_at');
-        // $query->whereNull('specialities.deleted_at');
-        // $query->whereNull('signees_detail.deleted_at');
-        // // $query->whereNull('bookings.deleted_at');
-        // $userDetais = $query->first();
-        // return $userDetais;
-        // // print_r($userDetais);
-        // // exit;
     }
-
-    // public function getUserSpec($userId = null)
-    // {
-    //     $signeeSpec = SigneeSpecialitie::where('user_id', $userId)->get();
-    //     return $signeeSpec->toArray();
-    // }
 }
