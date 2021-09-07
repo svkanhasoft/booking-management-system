@@ -164,12 +164,16 @@ class UserController extends Controller
      */
     public function getuserlist(Request $request)
     {
-        $UserObj = new User();
-        $user = $UserObj->fetchStaflist($request, $this->userId);
-        if (!empty($user)) {
-            return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+        try {
+            $UserObj = new User();
+            $user = $UserObj->fetchStaflist($request, $this->userId);
+            if (!empty($user)) {
+                return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -180,12 +184,18 @@ class UserController extends Controller
      */
     public function getuserById($userId)
     {
-        $UserObj = new User();
-        $user = $UserObj->getStafById($userId);
-        if (!empty($user)) {
-            return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+        try {
+
+
+            $UserObj = new User();
+            $user = $UserObj->getStafById($userId);
+            if (!empty($user)) {
+                return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -205,15 +215,19 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $user = User::where('role', 'STAFF')->where('id', $this->userId)->first();
-        //print_r($this->userId);exit();
-        if (!empty($user)) {
-            $userObj = User::find($this->userId);
-            $userObj['password'] = Hash::make($request->post('password'));
-            $userObj->save();
-            return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 200);
+        try {
+            $user = User::where('role', 'STAFF')->where('id', $this->userId)->first();
+            //print_r($this->userId);exit();
+            if (!empty($user)) {
+                $userObj = User::find($this->userId);
+                $userObj['password'] = Hash::make($request->post('password'));
+                $userObj->save();
+                return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -233,18 +247,22 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $user = Auth::user();
-        $input = $request->all();
-        $decodeId = base64_decode($input['decode_id']);
+        try {
+            $user = Auth::user();
+            $input = $request->all();
+            $decodeId = base64_decode($input['decode_id']);
 
-        $userObj = User::find($decodeId);
-        $userObj['password'] = Hash::make($input['password']);
-        $userObj['password_change'] = 1;
-        $res = $userObj->save();
-        if ($res) {
-            return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+            $userObj = User::find($decodeId);
+            $userObj['password'] = Hash::make($input['password']);
+            $userObj['password_change'] = 1;
+            $res = $userObj->save();
+            if ($res) {
+                return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
