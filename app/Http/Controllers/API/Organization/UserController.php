@@ -321,7 +321,7 @@ class UserController extends Controller
             "date_registered" => 'required'
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
@@ -376,6 +376,7 @@ class UserController extends Controller
     public function editSignee(Request $request)
     {
         $requestData = $request->all();
+        //print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             "id"=>'required',
             "first_name" => 'required',
@@ -393,7 +394,7 @@ class UserController extends Controller
             "date_registered" => 'required',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         

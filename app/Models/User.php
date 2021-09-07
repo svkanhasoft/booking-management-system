@@ -358,7 +358,7 @@ class User extends Authenticatable
             //DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
-        $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
+        //$query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
         //$query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
