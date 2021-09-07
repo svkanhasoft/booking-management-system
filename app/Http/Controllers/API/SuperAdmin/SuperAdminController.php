@@ -231,7 +231,7 @@ class SuperAdminController extends Controller
         }
     }
 
-    
+
 
     /** 
      * get organization details api 
@@ -260,22 +260,26 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
-        $requestData = $request->all();
-        $role = User::findOrFail($requestData['user_id']);
-        $roleUpdated = $role->update($requestData);
-        if (!empty($roleUpdated)) {
+        try {
             $requestData = $request->all();
-            $org = Organization::where(['user_id' =>  $requestData['user_id']])->update([
-                "organization_name" => $requestData['organization_name'],
-                "contact_person_name" => $requestData['contact_person_name'],
-            ]);
-            return response()->json(['status' => true, 'message' => 'Organization detail updated successfully.', 'data' => $requestData], $this->successStatus);
-        } else {
-            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            $userId = $requestData['user_id'];
+            unset($requestData['user_id']);
+            $role = User::findOrFail($userId);
+            $roleUpdated = $role->update($requestData);
+            if (!empty($roleUpdated)) {
+                $requestData = $request->all();
+                $org = Organization::where(['user_id' =>  $userId])->update([
+                    "organization_name" => $requestData['organization_name'],
+                    "contact_person_name" => $requestData['contact_person_name'],
+                ]);
+                return response()->json(['status' => true, 'message' => 'Organization detail updated successfully.', 'data' => $requestData], $this->successStatus);
+            } else {
+                return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e], 200);
         }
     }
 
