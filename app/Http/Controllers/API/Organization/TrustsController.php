@@ -183,7 +183,15 @@ class TrustsController extends Controller
             return response()->json(['status' => true, 'message' => 'Trust detail get successfully.', 'data' => $result], $this->successStatus);
         } else {
             $keyword = $request->get('search');
-            $query = Trust::where('user_id', $this->userId);
+            // $query = Trust::where('user_id', $this->userId);
+            if(Auth::user()->role == 'ORGANIZATION'){
+                $query = Trust::where('user_id', $this->userId);
+            }else{
+                $query = Trust::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
+            }
+            if (!empty($keyword)) {
+                $query->Where('name',  'LIKE', "%$keyword%");
+            }
             if (!empty($keyword)) {
                 $query->Where('name',  'LIKE', "%$keyword%");
             }

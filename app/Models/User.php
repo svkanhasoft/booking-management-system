@@ -294,10 +294,11 @@ class User extends Authenticatable
             'users.first_name',
             'users.last_name',
             'users.email',
+            'users.contact_number',
             'users.parent_id',
             'signees_detail.candidate_id',
-            'signees_detail.phone_number',
-            'signees_detail.mobile_number',
+            // 'signees_detail.phone_number',
+            // 'signees_detail.mobile_number',
             'signees_detail.date_of_birth',
             'signees_detail.nationality',
             //'signees_detail.candidate_referred_from',
@@ -314,7 +315,8 @@ class User extends Authenticatable
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->where('signee_organization.organization_id', $userId);
         $query->where('users.role', "SIGNEE");
-        $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
+        $query->whereNull(['signee_speciality.deleted_at']);
+        // $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
         $query->groupBy('signee_organization.user_id');
         // $query->groupBy('signee_speciality.user_id');
         return $query->latest('users.created_at')->paginate($perPage);

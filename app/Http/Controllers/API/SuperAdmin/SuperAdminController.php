@@ -65,6 +65,7 @@ class SuperAdminController extends Controller
      * 
      * @return \Illuminate\Http\Response 
      */
+
     public function signinV2(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -76,6 +77,10 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
+        $checkRecord->stafdetails;
+        // $checkRecord->designation($checkRecord->stafdetails->designation_id);
+        // print_r($checkRecord);
+        // exit;
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
@@ -86,7 +91,9 @@ class SuperAdminController extends Controller
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
-
+            if($checkRecord->role == 'STAFF'){
+                $user['stafdetails'] =  $checkRecord->stafdetails;
+            }
             User::where(['id' => $user->id])->update([
                 'last_login_date' => date('Y-m-d H:i:s'),
                 'password_change' => 1
@@ -96,6 +103,38 @@ class SuperAdminController extends Controller
             return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
         }
     }
+
+    // public function signinV2(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'email' => 'required',
+    //         'password' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $error = $validator->messages()->first();
+    //         return response()->json(['status' => false, 'message' => $error], 200);
+    //     }
+    //     $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
+    //     if (empty($checkRecord)) {
+    //         return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+    //     }
+    //     if ($checkRecord->status !== 'Active') {
+    //         return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
+    //     }
+
+    //     if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+    //         $user = Auth::user();
+    //         $user['token'] =  $user->createToken('MyApp')->accessToken;
+
+    //         User::where(['id' => $user->id])->update([
+    //             'last_login_date' => date('Y-m-d H:i:s'),
+    //             'password_change' => 1
+    //         ]);
+    //         return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
+    //     } else {
+    //         return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+    //     }
+    // }
     /** 
      * Register api 
      * 
