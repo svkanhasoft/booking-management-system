@@ -326,12 +326,12 @@ class User extends Authenticatable
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->where('signee_organization.organization_id', $userId);
         $query->where('users.role', "SIGNEE");
-<<<<<<< HEAD
+
         $query->whereNull(['signee_speciality.deleted_at']);
         // $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
-=======
+
         $query->whereNull(['signee_speciality.deleted_at', 'specialities.deleted_at']);
->>>>>>> 5e2c9992e7367f2c7cf2503419d205de70473252
+
         $query->groupBy('signee_organization.user_id');
         // $query->groupBy('signee_speciality.user_id');
         return $query->latest('users.created_at')->paginate($perPage);
