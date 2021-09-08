@@ -25,12 +25,12 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'user_id','name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
+        'user_id', 'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
         'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'password_change', 'password_change', 'last_login_date', 'is_deleted',
         'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number'
     ];
 
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -209,6 +209,17 @@ class User extends Authenticatable
     {
         return $this->hasOne(SigneesDetail::class);
     }
+    public function stafdetails()
+    {
+        return  $this->hasOneThrough(OrganizationUserDetail::class, Designation::class,'id','designation_id');
+        // return $this->hasOne(OrganizationUserDetail::class);
+        // return  $this->belongsToMany(Designation::class, OrganizationUserDetail::class,'designation_id');
+    }
+    public function designation()
+    {
+        return  $this->hasOneThrough(OrganizationUserDetail::class, Designation::class,'id','designation_id');
+        // return $this->hasOne(Designation::class);
+    }
     public function Organization()
     {
         return $this->hasOne(Organization::class);
@@ -314,12 +325,12 @@ class User extends Authenticatable
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         $query->where('signee_organization.organization_id', $userId);
         $query->where('users.role', "SIGNEE");
-        $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
+        $query->whereNull(['signee_speciality.deleted_at', 'specialities.deleted_at']);
         $query->groupBy('signee_organization.user_id');
         // $query->groupBy('signee_speciality.user_id');
         return $query->latest('users.created_at')->paginate($perPage);
     }
-    
+
     public function speciality()
     {
         return $this->hasMany(Speciality::class, 'user_id');
@@ -368,7 +379,7 @@ class User extends Authenticatable
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->where('users.id', $userId);
         $userDetais = $query->first();
-        
+
 
         $query2 = SigneeSpecialitie::select(
             'specialities.id',
@@ -383,7 +394,7 @@ class User extends Authenticatable
         $result->speciality = $userSpec;
         //$result = $userSpec;
         //$result = array_push($userDetais, $userSpec);
-        
+
         return $result;
     }
 }
