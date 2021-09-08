@@ -28,21 +28,36 @@ class Ward extends Model
      *
      * @var array
      */
-    protected $fillable = ['ward_type_id', 'ward_name', 'ward_number', 'hospital_id'];
+    // protected $fillable = ['ward_type_id', 'ward_name', 'ward_number', 'hospital_id'];
+    // protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
+    protected $fillable = ['ward_type_id', 'ward_name','trust_id', 'ward_number', 'hospital_id'];
     protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
 
     function addWard($postData, $trustId, $hospital_id, $isDelete = false)
     {
-
         foreach ($postData as $key => $val) {
             if (isset($val['ward_name']) && !empty($val['ward_number'])) {
                 $val['hospital_id'] = $hospital_id;
+                $val['trust_id'] = $trustId;
                 Ward::create($val);
                 unset($val);
             }
         }
         return true;
     }
+
+    // function addWard($postData, $trustId, $hospital_id, $isDelete = false)
+    // {
+    //     print_r($postData);exit();
+    //     foreach ($postData as $key => $val) {
+    //         if (isset($val['ward_name']) && !empty($val['ward_number'])) {
+    //             $val['hospital_id'] = $hospital_id;
+    //             Ward::create($val);
+    //             unset($val);
+    //         }
+    //     }
+    //     return true;
+    // }
 
     function addOrUpdateWard($postData, $trustId, $hospitalId)
     {
