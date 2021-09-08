@@ -331,17 +331,6 @@ class UserController extends Controller
             "email" => 'required|unique:users',
             "first_name" => 'required',
             "last_name" => 'required',
-            "password" => 'required',
-            "mobile_number" => 'required',
-            "date_of_birth" => 'required',
-            // "candidate_id" => "required",
-            "candidate_id" => 'unique:signees_detail,candidate_id',
-            "address_line_1" => 'required',
-            "city" => 'required',
-            "postcode" => 'required',
-            "candidate_referred_from" => 'required',
-            "nationality" => 'required',
-            "date_registered" => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -398,24 +387,11 @@ class UserController extends Controller
 
     public function editSignee(Request $request)
     {
-
         $requestData = $request->all();
         //print_r($requestData);exit();
-        $validator = Validator::make($request->all(), [
-            "id" => 'required',
+        $validator = Validator::make($request->all(), [    
             "first_name" => 'required',
             "last_name" => 'required',
-            "password" => 'nullable|min:6',
-            "mobile_number" => 'required',
-            "date_of_birth" => 'required',
-            // "candidate_id" => 'required',
-            //"candidate_id" => 'unique:signees_detail,candidate_id,'.$requestData['id'].',NULL,id',
-            "address_line_1" => 'required',
-            "city" => 'required',
-            "postcode" => 'required',
-            "candidate_referred_from" => 'required',
-            "nationality" => 'required',
-            "date_registered" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
