@@ -97,7 +97,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-signee/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'getSignee']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
-        
+
         Route::prefix('user')->group(function () {
             Route::post('/signup-user', [App\Http\Controllers\API\Organization\UserController::class, 'signup']);
             Route::post('/signin-user', [App\Http\Controllers\API\Organization\UserController::class, 'signin']);
@@ -112,6 +112,10 @@ Route::prefix('organization')->group(function () {
             });
         });
     });
+});
+
+Route::prefix('staff')->middleware(['auth:api'])->group(function () {
+    Route::get('/staff-booking-list/{search?}/{status?}', [App\Http\Controllers\API\Staff\BookingController::class, 'staffBooking']);
 });
 
 Route::prefix('signee')->group(function () {
@@ -132,4 +136,3 @@ Route::prefix('signee')->group(function () {
 });
 
 Route::get('/test/{id}', [App\Http\Controllers\API\TestController::class, 'test']);
-
