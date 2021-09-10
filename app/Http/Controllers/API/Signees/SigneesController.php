@@ -323,4 +323,21 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, Candidate Referred From.', 'status' => false], 200);
         }
     }
+
+    public function getOrganisation()
+    {
+           //echo "hi";exit();
+            $query = User::select(
+                "users.*",
+                'org.organization_name'
+            );
+            $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+            $query->where('users.role', '=', 'ORGANIZATION');
+            $count =  $query->latest('users.created_at')->get();
+            if ($count) {
+                return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+            }
+    }
 }
