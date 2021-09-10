@@ -108,7 +108,18 @@ class Booking extends Model
         }
 
         $query->where('bookings.status', $status);
-        $query->where('bookings.user_id',Auth::user()->id);
+        // $query->where('bookings.user_id',Auth::user()->id);
+
+        if(Auth::user()->role == 'ORGANIZATION'){
+            $staff = User::select('id')->where('parent_id', Auth::user()->id)->get()->toArray();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            $query->whereIn('bookings.user_id',$staffIdArray);
+        }else{
+            // $query->where('bookings.user_id',Auth::user()->id);
+            $query->whereIn('bookings.user_id',array(Auth::user()->id,Auth::user()->parent_id));
+        }
+
         $query->whereNull('bookings.deleted_at');
         $query->groupBy ('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);

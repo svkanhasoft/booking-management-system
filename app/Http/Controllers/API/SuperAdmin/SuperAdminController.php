@@ -77,12 +77,11 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
-        $checkRecord->stafdetails;
         // $checkRecord->designation($checkRecord->stafdetails->designation_id);
         // print_r($checkRecord);
         // exit;
         if (empty($checkRecord)) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 400);
         }
         if ($checkRecord->status !== 'Active') {
             return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
@@ -92,7 +91,7 @@ class SuperAdminController extends Controller
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
             if($checkRecord->role == 'STAFF'){
-                $user['stafdetails'] =  $checkRecord->stafdetails;
+                $user['staffdetails'] =  $checkRecord->stafdetails;
             }
             User::where(['id' => $user->id])->update([
                 'last_login_date' => date('Y-m-d H:i:s'),

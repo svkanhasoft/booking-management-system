@@ -113,7 +113,16 @@ class RoleController extends Controller
      */
     public function showAll()
     {
-        $role = Role::whereIn('user_id', array($this->userId, 1))->get()->toArray();
+        if (Auth::user()->role == 'ORGANIZATION') {
+            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            $staffIdArray[] = 1;
+            $role = Role::whereIn('user_id', $staffIdArray);
+        } else {
+            $role = Role::whereIn('user_id', array(Auth::user()->id,1, Auth::user()->parent_id));
+        }
+        // $role = Role::whereIn('user_id', array($this->userId, 1))->get()->toArray();
         if ($role) {
             return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);
         } else {

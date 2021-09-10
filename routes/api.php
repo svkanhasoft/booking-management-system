@@ -95,6 +95,7 @@ Route::prefix('organization')->group(function () {
         Route::delete('/delete-signee/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'deleteSignee']);
         Route::get('/get-candidate', [App\Http\Controllers\API\Organization\UserController::class, 'getCandidate']);
         Route::get('/get-signee/{id}', [App\Http\Controllers\API\Organization\UserController::class, 'getSignee']);
+        
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
@@ -116,6 +117,7 @@ Route::prefix('organization')->group(function () {
 
 Route::prefix('staff')->middleware(['auth:api'])->group(function () {
     Route::get('/staff-booking-list/{search?}/{status?}', [App\Http\Controllers\API\Staff\BookingController::class, 'staffBooking']);
+    // Route::post('/add-staff-booking', [App\Http\Controllers\API\Staff\BookingController::class, 'add']);
 });
 
 Route::prefix('signee')->group(function () {
@@ -132,6 +134,7 @@ Route::prefix('signee')->group(function () {
         Route::post('/signee-delete', [App\Http\Controllers\API\Signees\SigneesController::class, 'delete']);
         Route::post('/availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'availability']);
         Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability']);
+        Route::post('/add-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'addPreferences']);
     });
 });
 

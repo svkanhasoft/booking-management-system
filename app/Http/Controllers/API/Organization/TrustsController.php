@@ -8,11 +8,13 @@ use App\Models\Hospital;
 use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Trust;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Ward;
 use App\Models\Traning;
 use Validator;
 use Config;
+use DB;
 
 class TrustsController extends Controller
 {
@@ -166,6 +168,7 @@ class TrustsController extends Controller
 
     function getTrustDetail($trustId = null, Request $request)
     {
+        //print_r(Auth::user()->parent_id);exit();
         $perPage = Config::get('constants.pagination.perPage');
         if ($trustId > 0) {
 
@@ -185,7 +188,10 @@ class TrustsController extends Controller
             $keyword = $request->get('search');
             // $query = Trust::where('user_id', $this->userId);
             if(Auth::user()->role == 'ORGANIZATION'){
-                $query = Trust::where('user_id', $this->userId);
+                $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
+                $staffIdArray = array_column($staff, 'id');
+                $staffIdArray[] = Auth::user()->id;
+                $query = Trust::whereIn('user_id', $staffIdArray);
             }else{
                 $query = Trust::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
             }
