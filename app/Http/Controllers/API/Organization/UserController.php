@@ -322,6 +322,36 @@ class UserController extends Controller
         }
     }
 
+    public function profileUpdate(Request $request)
+    {
+        //print_r($this->userId);exit();
+        $validator = Validator::make($request->all(), [
+            "first_name" => 'required',
+            "last_name" => 'required',
+            "contact_number" => 'required',
+            // "role_id" => 'required',
+            // "designation_id" => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        $requestData = $request->all();
+        if (!empty($request->post('password'))) {
+            $requestData['password'] = Hash::make($request->post('password'));
+        }
+        $user = User::findOrFail($this->userId);
+        $userCreated = $user->update($requestData);
+        if ($userCreated) {
+            return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' =>  $user], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, User update failed!', 'status' => false], 200);
+        }
+    }
+
+
+
+
 
     //////////////////// Signee CRUD By Organisation ///////////////////////
 
