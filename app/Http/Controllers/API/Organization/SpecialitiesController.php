@@ -109,24 +109,24 @@ class SpecialitiesController extends Controller
     {
         $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
-        $showPagination = $request->get('showPagination');
+        //$showPagination = $request->get('showPagination');
         $query = Speciality::select("specialities.*",);
         $query->where('specialities.user_id',  $this->userId);
         if (!empty($keyword)) {
             // echo $keyword;exit;
             $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
         }
-        // if ($showPagination == 0) {
-        //     $speciality =  $query->latest('specialities.created_at')->get();
-        //     if (!empty($speciality)) {
-        //         return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
-        //     } else {
-        //         return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
-        //     }
-        // } else {  
-
-        $speciality =  $query->latest('specialities.created_at')->paginate($perPage);
-        $count =  $query->latest('specialities.created_at')->paginate($perPage)->count();
+        if(Auth::user()->role == 'ORGANIZATION'){
+            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            $query2 = Speciality::whereIn('user_id', $staffIdArray);
+        }else{
+            $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
+        }
+        //$speciality = Speciality::where('user_id', $this->userId)->get()->toArray();
+        $speciality = $query2->latest()->paginate($perPage);
+        $count =  $speciality->count();
         if ($count > 0) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
         } else {
@@ -137,15 +137,6 @@ class SpecialitiesController extends Controller
 
     public function AllSpeciality(Request $request)
     {
-        if(Auth::user()->role == 'ORGANIZATION'){
-            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
-            $staffIdArray = array_column($staff, 'id');
-            $staffIdArray[] = Auth::user()->id;
-            $query = Speciality::whereIn('user_id', $staffIdArray)->get()->toArray();
-        }else{
-            $query = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id))->get()->toArray();
-        }
-
         //$query = Speciality::where('user_id', $this->userId)->get()->toArray();
         if (!empty($query)) {
             return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
