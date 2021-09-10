@@ -118,9 +118,11 @@ class RoleController extends Controller
             $staffIdArray = array_column($staff, 'id');
             $staffIdArray[] = Auth::user()->id;
             $staffIdArray[] = 1;
-            $role = Role::whereIn('user_id', $staffIdArray);
+            $role = Role::whereIn('user_id', $staffIdArray)->get()->toArray();
+            //print_r($staffIdArray);exit();
         } else {
-            $role = Role::whereIn('user_id', array(Auth::user()->id,1, Auth::user()->parent_id));
+            //print_r(Auth::user()->parent_id);exit();
+            $role = Role::whereIn('user_id', array(Auth::user()->id,1, Auth::user()->parent_id))->get();
         }
         // $role = Role::whereIn('user_id', array($this->userId, 1))->get()->toArray();
         if ($role) {

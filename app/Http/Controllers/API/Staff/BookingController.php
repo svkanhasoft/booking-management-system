@@ -361,7 +361,6 @@ class BookingController extends Controller
 
     public function staffBooking(Request $request, $status = null)
     {
-       
         $objBooking = new Booking();
         $booking = $objBooking->getStaffBooking($request,$status);
 

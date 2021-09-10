@@ -117,7 +117,9 @@ Route::prefix('organization')->group(function () {
 
 Route::prefix('staff')->middleware(['auth:api'])->group(function () {
     Route::get('/staff-booking-list/{search?}/{status?}', [App\Http\Controllers\API\Staff\BookingController::class, 'staffBooking']);
-    // Route::post('/add-staff-booking', [App\Http\Controllers\API\Staff\BookingController::class, 'add']);
+    Route::post('/add-staff-booking', [App\Http\Controllers\API\Staff\BookingController::class, 'add']);
+    Route::put('/edit-staff-booking', [App\Http\Controllers\API\Staff\BookingController::class, 'edit']);
+    Route::delete('/delete-staff-booking/{id}', [App\Http\Controllers\API\Staff\BookingController::class, 'destroy']);
 });
 
 Route::prefix('signee')->group(function () {
