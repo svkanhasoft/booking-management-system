@@ -123,7 +123,8 @@ class SpecialitiesController extends Controller
         //     } else {
         //         return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
         //     }
-        // } else {
+        // } else {  
+
         $speciality =  $query->latest('specialities.created_at')->paginate($perPage);
         $count =  $query->latest('specialities.created_at')->paginate($perPage)->count();
         if ($count > 0) {
@@ -136,7 +137,15 @@ class SpecialitiesController extends Controller
 
     public function AllSpeciality(Request $request)
     {
-        $query = Speciality::where('user_id', $this->userId)->get()->toArray();
+        if(Auth::user()->role == 'ORGANIZATION'){
+            $staff = User::select('id')->where('parent_id', $this->userId)->get();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            $query = Speciality::whereIn('user_id', $staffIdArray)->get();
+        }else{
+            $query = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id))->get()->toArray();
+        }  
+        //$query = Speciality::where('user_id', $this->userId)->get()->toArray();
         if (!empty($query)) {
             return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
         } else {

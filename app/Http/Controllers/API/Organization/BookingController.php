@@ -184,17 +184,6 @@ class BookingController extends Controller
         $objBooking = new Booking();
         $booking = $objBooking->getBookingByFilter($request, $status);
 
-        // if(Auth::user()->role == 'ORGANIZATION'){
-        //     $staff = User::select(DB::raw('GROUP_CONCAT(id SEPARATOR ",") AS userId'))->where('parent_id', $this->userId)->groupBy('parent_id')->first();
-        //     // $query = Trust::where('user_id', $this->userId);
-
-        //     //get his own bookings and his staffs bookings
-        //     $booking = Booking::whereIn('user_id',array(Auth::user()->id,$staff->userId))->get();
-        // }else
-        // {       //if role = staff will get his own booking and gis organisation bookings
-        //     $booking = Booking::whereIn('user_id',array(Auth::user()->id, Auth::user()->parent_id))->get();
-        //     //print_r($query);exit();
-        // }
         if (count($booking) > 0) {
             return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
         } else {
