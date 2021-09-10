@@ -329,6 +329,7 @@ class UserController extends Controller
             "first_name" => 'required',
             "last_name" => 'required',
             "contact_number" => 'required',
+            "address_line_1" => 'required',
             // "role_id" => 'required',
             // "designation_id" => 'required',
         ]);
