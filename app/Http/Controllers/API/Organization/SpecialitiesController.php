@@ -138,13 +138,14 @@ class SpecialitiesController extends Controller
     public function AllSpeciality(Request $request)
     {
         if(Auth::user()->role == 'ORGANIZATION'){
-            $staff = User::select('id')->where('parent_id', $this->userId)->get();
+            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
             $staffIdArray = array_column($staff, 'id');
             $staffIdArray[] = Auth::user()->id;
-            $query = Speciality::whereIn('user_id', $staffIdArray)->get();
+            $query = Speciality::whereIn('user_id', $staffIdArray)->get()->toArray();
         }else{
             $query = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id))->get()->toArray();
-        }  
+        }
+
         //$query = Speciality::where('user_id', $this->userId)->get()->toArray();
         if (!empty($query)) {
             return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
