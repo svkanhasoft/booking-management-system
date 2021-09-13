@@ -138,7 +138,8 @@ Route::prefix('signee')->group(function () {
         Route::post('/signee-delete', [App\Http\Controllers\API\Signees\SigneesController::class, 'delete']);
         Route::post('/availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'availability']);
         Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability']);
-        Route::post('/add-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'addPreferences']);
+        Route::put('/add-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'addPreferences']);
+        Route::get('/get-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'getPreferences']);
     });
 });
 

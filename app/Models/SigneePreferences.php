@@ -33,31 +33,7 @@ class SigneePreferences extends Model
 
     public function addOrUpdatePreference($postData, $userId)
     {
-        //print_r($postData['id']);exit();
-        if (isset($postData['id'])) {
             $objSigneePreference = SigneePreferences::where(['user_id' => $userId])->firstOrNew();
-            $objSigneePreference->monday_day = $postData['monday_day'];
-            $objSigneePreference->monday_night = $postData['monday_night'];
-            $objSigneePreference->tuesday_day = $postData['tuesday_day'];
-            $objSigneePreference->tuesday_night = $postData['tuesday_night'];
-            $objSigneePreference->wednesday_day = $postData['wednesday_day'];
-            $objSigneePreference->wednesday_night = $postData['wednesday_night'];
-            $objSigneePreference->thursday_day = $postData['thursday_day'];
-            $objSigneePreference->thursday_night = $postData['thursday_night'];
-            $objSigneePreference->friday_day = $postData['friday_day'];
-            $objSigneePreference->friday_night = $postData['friday_night'];
-            $objSigneePreference->saturday_day = $postData['saturday_day'];
-            $objSigneePreference->saturday_night = $postData['saturday_night'];
-            $objSigneePreference->sunday_day = $postData['sunday_day'];
-            $objSigneePreference->sunday_night = $postData['sunday_night'];
-            $objSigneePreference->no_of_shift = $postData['no_of_shift'];
-            $objSigneePreference->is_travel = $postData['is_travel'];
-            $objSigneePreference->save();
-            $objSigneePreference = '';
-        }
-        else 
-        {
-            $objSigneePreference = new SigneePreferences();
             $objSigneePreference->user_id = $userId;
             $objSigneePreference->monday_day = $postData['monday_day'];
             $objSigneePreference->monday_night = $postData['monday_night'];
@@ -76,8 +52,8 @@ class SigneePreferences extends Model
             $objSigneePreference->no_of_shift = $postData['no_of_shift'];
             $objSigneePreference->is_travel = $postData['is_travel'];
             $objSigneePreference->save();
-            return $objSigneePreference;
-        }
+            $objSigneePreference = '';
+            return true;
     }
 
 }

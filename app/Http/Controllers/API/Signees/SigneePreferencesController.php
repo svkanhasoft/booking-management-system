@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API\Signees;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
@@ -30,15 +31,31 @@ class SigneePreferencesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        $requestData = $request->all();
-        //print_r($requestData);exit();
-        $signeePreference = new SigneePreferences();
-        $res = $signeePreference->addOrUpdatePreference($requestData, $this->userId);
-        //print_r($res);exit();
-        if ($res) {
-            return response()->json(['status' => true, 'message' => 'Preferences added Successfully', 'data' => $res], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Preferences added Failed!', 'status' => false], 200);
+        try {
+            $requestData = $request->all();
+            $signeePreference = new SigneePreferences();
+            $res = $signeePreference->addOrUpdatePreference($requestData, $this->userId);
+            if ($res) {
+                return response()->json(['status' => true, 'message' => 'Preferences added Successfully', 'data' => $requestData], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Preferences added Failed!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    public function getPreferences(Request $request)
+    {
+        try {
+            $preference = SigneePreferences::where(['user_id' => $this->userId])->first();
+            if ($preference) {
+                return response()->json(['status' => true, 'message' => 'Preferences get Successfully', 'data' => $preference], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Preferences get Failed!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 }
