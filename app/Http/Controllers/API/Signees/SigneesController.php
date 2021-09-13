@@ -8,7 +8,7 @@ use App\Models\SigneesDetail;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\SigneeOrganization;
-use App\Models\Speciality;
+use App\Models\SigneePreferences;
 use App\Models\SigneeSpecialitie;
 use App\Models\CandidateReferredFrom;
 use Hash;
@@ -111,16 +111,21 @@ class SigneesController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 400);
         }
 
-        $checkRecord = User::where('email', $request->all('email'))->where('role', 'SIGNEE')->first();
 
+        $checkRecord = User::where('email', $request->all('email'))->where('role', 'SIGNEE')->first();
+  
         if (empty($checkRecord)) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 400);
         }
         if ($checkRecord->status != 'Active') {
             return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
+        }
+        $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->all('organization_id')])->first();
+        if(empty($orgResult)){
+            return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 400);
         }
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
             $checkRecord->parent_id =  request('organization_id');
@@ -169,7 +174,7 @@ class SigneesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-      
+
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
             return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
         }
@@ -326,18 +331,18 @@ class SigneesController extends Controller
 
     public function getOrganisation()
     {
-           //echo "hi";exit();
-            $query = User::select(
-                "users.*",
-                'org.organization_name'
-            );
-            $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-            $query->where('users.role', '=', 'ORGANIZATION');
-            $count =  $query->latest('users.created_at')->get();
-            if ($count) {
-                return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
-            } else {
-                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
-            }
+        //echo "hi";exit();
+        $query = User::select(
+            "users.*",
+            'org.organization_name'
+        );
+        $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+        $query->where('users.role', '=', 'ORGANIZATION');
+        $count =  $query->latest('users.created_at')->get();
+        if ($count) {
+            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+        }
     }
 }
