@@ -338,7 +338,7 @@ class SigneesController extends Controller
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
         $query->where('users.role', '=', 'ORGANIZATION');
-        $count =  $query->latest('users.created_at')->orderBy('org.organization_name','asc')->get();
+        $count =  $query->orderBy('org.organization_name','asc')->get();
         if ($count) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
         } else {
