@@ -29,8 +29,4 @@ class OrganizationUserDetail extends Model
      */
     protected $fillable = ['user_id', 'role_id', 'designation_id', 'created_by', 'updated_by'];
     protected $hidden = ['created_by', 'updated_by','deleted_at', 'created_at', 'updated_at'];
-    public function designation()
-    {
-        return $this->hasOne(Designation::class);
-    }
 }
