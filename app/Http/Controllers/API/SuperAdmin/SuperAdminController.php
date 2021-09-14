@@ -78,19 +78,15 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
-        //print_r($checkRecord->designation->designation_id);exit();
-        // $oud = OrganizationUserDetail::where('user_id', $checkRecord->id)->first();
-        // print_r($oud->designation->id);exit();
-        // // if($oud['designation_id']){
-        // //     echo "complience and booking";exit();
-        // // }
-        // // else{
-        // //     echo "finance";exit();
-        // // }
-        // print_r($oud);exit();
-        // $checkRecord->designation($checkRecord->stafdetails->designation_id);
-        // print_r($checkRecord);
-        // exit;
+
+        $query = Designation::select(
+            'designations.designation_name'
+        );
+        $query->leftJoin('organization_user_details',  'organization_user_details.designation_id', '=', 'designations.id');
+        $query->where('organization_user_details.user_id', $checkRecord->id);
+        $userDetais = $query->first();
+        //return $userDetais;
+        //print_r($userDetais['designation_name']);exit();
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 400);
         }
@@ -102,7 +98,8 @@ class SuperAdminController extends Controller
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
             if($checkRecord->role == 'STAFF'){
-                $user['staffdetails'] =  $checkRecord->stafdetails;
+                // $user['staffdetails'] =  $checkRecord->stafdetails;
+                $user['staffdetails'] = $userDetais['designation_name'];
             }
             User::where(['id' => $user->id])->update([
                 'last_login_date' => date('Y-m-d H:i:s'),
