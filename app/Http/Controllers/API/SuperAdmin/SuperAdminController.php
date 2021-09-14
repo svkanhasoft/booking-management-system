@@ -11,6 +11,7 @@ use Session;
 use App\Models\User;
 use App\Models\Organization;
 use App\Models\Designation;
+use App\Models\OrganizationUserDetail;
 use Hash;
 
 class SuperAdminController extends Controller
@@ -77,6 +78,16 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
+        //print_r($checkRecord->designation->designation_id);exit();
+        // $oud = OrganizationUserDetail::where('user_id', $checkRecord->id)->first();
+        // print_r($oud->designation->id);exit();
+        // // if($oud['designation_id']){
+        // //     echo "complience and booking";exit();
+        // // }
+        // // else{
+        // //     echo "finance";exit();
+        // // }
+        // print_r($oud);exit();
         // $checkRecord->designation($checkRecord->stafdetails->designation_id);
         // print_r($checkRecord);
         // exit;

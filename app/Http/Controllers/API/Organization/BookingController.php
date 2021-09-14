@@ -15,6 +15,7 @@ use App\Models\Grade;
 use App\Models\BookingMatch;
 use App\Models\BookingSpeciality;
 use App\Models\Hospital;
+use App\Models\OrganizationShift;
 use DB;
 
 class BookingController extends Controller
@@ -54,19 +55,24 @@ class BookingController extends Controller
             'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
         ]);
+        
         if ($validator->fails()) {
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $requestData = $request->all();
-            //print_r($requestData);exit();
-            //print_r($requestData['date']);
+
+            $shift = OrganizationShift::where('id', $requestData['shift_id'])->first();
+            //print_r($shift);exit();
+           // print_r($requestData);exit();
             if($requestData['date'] < date('Y-m-d'))
             {
                 return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             }
             $requestData['user_id'] = $this->userId;
+            $requestData['start_time'] = $shift['start_time'];
+            $requestData['end_time'] = $shift['end_time'];
             $bookingCreated = Booking::create($requestData);
             if ($bookingCreated) {
                 $objBookingSpeciality = new BookingSpeciality();
@@ -137,6 +143,10 @@ class BookingController extends Controller
         }
         try {
             $shift = Booking::findOrFail($requestData["id"]);
+            if($requestData['date'] < date('Y-m-d'))
+            {
+                return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
+            }
             $shiftUpdated = $shift->update($requestData);
             if ($shiftUpdated) {
                 $objBookingSpeciality = new BookingSpeciality();
