@@ -284,7 +284,7 @@ class User extends Authenticatable
             'organizations.organization_name',
             'organizations.contact_person_name',
             'organizations.plan',
-            'organizations.user_id',
+            //'organizations.user_id',
             'organizations.start_date',
             'organizations.end_date',
             'users.contact_number',
