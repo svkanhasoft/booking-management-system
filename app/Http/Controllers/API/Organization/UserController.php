@@ -330,11 +330,13 @@ class UserController extends Controller
             "last_name" => 'required',
             "contact_number" => 'required',
             "address_line_1" => 'required',
+            "city" => 'required',
+            "postcode" => 'required',
             // "role_id" => 'required',
             // "designation_id" => 'required',
         ]);
         if ($validator->fails()) {
-            $error = $validator->messages()->first();
+            $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
