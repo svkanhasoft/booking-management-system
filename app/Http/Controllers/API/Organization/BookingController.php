@@ -60,6 +60,12 @@ class BookingController extends Controller
         }
         try {
             $requestData = $request->all();
+            //print_r($requestData);exit();
+            //print_r($requestData['date']);
+            if($requestData['date'] < date('Y-m-d'))
+            {
+                return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
+            }
             $requestData['user_id'] = $this->userId;
             $bookingCreated = Booking::create($requestData);
             if ($bookingCreated) {
