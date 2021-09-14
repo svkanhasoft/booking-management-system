@@ -86,8 +86,8 @@ class Booking extends Model
             'trusts.name',
             'grade.grade_name',
             'shift_type.shift_type',
-            'organization_shift.start_time',
-            'organization_shift.end_time',
+            //'organization_shift.start_time',
+            //'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
