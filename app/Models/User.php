@@ -15,6 +15,7 @@ use App\Models\OrganizationUserDetail;
 use App\Models\Role;
 use Config;
 use Illuminate\Http\Request;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -324,8 +325,22 @@ class User extends Authenticatable
         $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
-        $query->where('signee_organization.organization_id', $userId);
+        // $query->whereIn('signee_organization.organization_id', array(40 ,107));
         $query->where('users.role', "SIGNEE");
+
+        if(Auth::user()->role == 'ORGANIZATION'){
+            //print_r(Auth::user()->role);exit();
+            $signee = User::select('id')->where(['parent_id' => Auth::user()->id])->get()->toArray();
+            $signeeIdArray = array_column($signee, 'id');
+            $signeeIdArray[] = Auth::user()->id;
+            //print_r($signeeIdArray);exit();
+            $query->whereIn('signee_organization.organization_id', $signeeIdArray);
+            // $query->whereIn('users.parent_id', $signeeIdArray)->get();
+        }
+        else{
+           // print_r(Auth::user()->parent_id);exit();
+            $query->whereIn('signee_organization.organization_id', array(Auth::user()->id, Auth::user()->parent_id));
+        }
 
         $query->whereNull(['signee_speciality.deleted_at']);
         // $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
