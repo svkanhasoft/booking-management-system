@@ -11,8 +11,10 @@ use App\Models\SigneeOrganization;
 use App\Models\SigneePreferences;
 use App\Models\SigneeSpecialitie;
 use App\Models\CandidateReferredFrom;
+use App\Models\Speciality;
 use Hash;
 use Validator;
+use Config;
 use Illuminate\Support\Facades\Auth;
 
 class SigneesController extends Controller
@@ -343,6 +345,21 @@ class SigneesController extends Controller
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+        }
+    }
+
+    // public function checkBookingList()
+    // {
+    //     echo "hi";
+    // }
+
+    public function getOrgSpecialities()
+    {
+        $speciality = Speciality::select('id', 'speciality_name')->where('user_id', $this->userId)->get()->toArray();
+        if ($speciality) {
+            return response()->json(['status' => true, 'message' => 'Specialities get successfully', 'data' => $speciality], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, No specialities available.', 'status' => false], 200);
         }
     }
 }
