@@ -4,12 +4,14 @@ namespace App\Http\Controllers\API\Signees;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\Booking;
 use App\Models\SigneesDetail;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\SigneeOrganization;
 use App\Models\SigneePreferences;
 use App\Models\SigneeSpecialitie;
+use App\Models\BookingMatch;
 use App\Models\CandidateReferredFrom;
 use App\Models\Speciality;
 use Hash;
@@ -54,13 +56,9 @@ class SigneesController extends Controller
             "date_of_birth" => 'required',
             "candidate_id" => 'required',
             "address_line_1" => 'required',
-            "address_line_2" => 'required',
-            "address_line_3" => 'required',
             "city" => 'required',
             "postcode" => 'required',
             "candidate_referred_from" => 'required',
-            "nationality" => 'required',
-            "date_registered" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -347,11 +345,6 @@ class SigneesController extends Controller
         }
     }
 
-    // public function checkBookingList()
-    // {
-    //     echo "hi";
-    // }
-
     public function getOrgSpecialities($id)
     {
         $speciality = Speciality::select('id', 'speciality_name')->where('user_id', $id)->get()->toArray();
@@ -379,4 +372,11 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' =>  $e->getMessage()], 200);
         }
     }
+
+    public function shiftList()
+    {
+        $booking = new BookingMatch();
+        $booking->getBookingMatch();
+    }
+
 }
