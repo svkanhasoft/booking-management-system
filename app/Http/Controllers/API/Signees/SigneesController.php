@@ -370,6 +370,21 @@ class SigneesController extends Controller
         }
     }
 
+    public function getCandidateId(Request $request)
+    {
+        try {
+            $time = [];
+            $time['candidate_id'] = date("ymdHis");
+            if ($time) {
+                return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $time], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
     public function shiftList()
     {
         $booking = new BookingMatch();

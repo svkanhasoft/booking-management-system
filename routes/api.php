@@ -132,6 +132,7 @@ Route::prefix('signee')->group(function () {
     Route::get('/candidate-referred-from', [App\Http\Controllers\API\Signees\SigneesController::class, 'getCandidateReferredFrom']);
     Route::get('/get-organisation', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrganisation']);
     Route::get('/get-org-specialities/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrgSpecialities']);
+    Route::get('/generate-candidateId', [App\Http\Controllers\API\Signees\SigneesController::class, 'getCandidateId']);
     Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-signee-details', [App\Http\Controllers\API\Signees\SigneesController::class, 'getDetails']);
         Route::post('/signee-change-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'changePassword']);
