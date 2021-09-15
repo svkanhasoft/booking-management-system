@@ -131,6 +131,7 @@ Route::prefix('signee')->group(function () {
     Route::post('/reset-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'resetPassword']);
     Route::get('/candidate-referred-from', [App\Http\Controllers\API\Signees\SigneesController::class, 'getCandidateReferredFrom']);
     Route::get('/get-organisation', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrganisation']);
+    Route::get('/get-org-specialities/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrgSpecialities']);
     Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-signee-details', [App\Http\Controllers\API\Signees\SigneesController::class, 'getDetails']);
         Route::post('/signee-change-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'changePassword']);
@@ -140,8 +141,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability']);
         Route::put('/add-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'addPreferences']);
         Route::get('/get-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'getPreferences']);
-        Route::get('/check-booking-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'checkBookingList']);
-        Route::get('/get-org-specialities', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrgSpecialities']);
+        Route::get('/check-booking-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'checkBookingList']);  
         Route::get('/logout', [App\Http\Controllers\API\Signees\SigneesController::class, 'logout']);
     });
 });

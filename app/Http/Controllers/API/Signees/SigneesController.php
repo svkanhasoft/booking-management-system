@@ -352,9 +352,9 @@ class SigneesController extends Controller
     //     echo "hi";
     // }
 
-    public function getOrgSpecialities()
+    public function getOrgSpecialities($id)
     {
-        $speciality = Speciality::select('id', 'speciality_name')->where('user_id', $this->userId)->get()->toArray();
+        $speciality = Speciality::select('id', 'speciality_name')->where('user_id', $id)->get()->toArray();
         if ($speciality) {
             return response()->json(['status' => true, 'message' => 'Specialities get successfully', 'data' => $speciality], $this->successStatus);
         } else {
