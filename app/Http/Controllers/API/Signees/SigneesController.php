@@ -52,7 +52,6 @@ class SigneesController extends Controller
             "first_name" => 'required',
             "last_name" => 'required',
             "contact_number" => 'required',
-            "date_of_birth" => 'required',
             "candidate_id" => 'required',
             "address_line_1" => 'required',
             "city" => 'required',
@@ -374,7 +373,6 @@ class SigneesController extends Controller
 
     public function shiftList()
     {
-        //print_r($this->userId);exit();
         $booking = new BookingMatch();
         $booking->getBookingMatch();
     }
