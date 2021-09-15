@@ -124,7 +124,7 @@ Route::prefix('organization')->group(function () {
 // });
 
 Route::prefix('signee')->group(function () {
-    Route::post('/signup-signee', [App\Http\Controllers\API\Signees\SigneesController::class, 'signup']);
+    Route::post('/signup', [App\Http\Controllers\API\Signees\SigneesController::class, 'signup']);
     Route::post('/signin', [App\Http\Controllers\API\Signees\SigneesController::class, 'signin']);
     Route::post('/forgot-signee', [App\Http\Controllers\API\Signees\SigneesController::class, 'forgot']);
     Route::post('/reset-passwordV2/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'resetPassword']);
@@ -141,7 +141,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability']);
         Route::put('/add-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'addPreferences']);
         Route::get('/get-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'getPreferences']);
-        Route::get('/check-booking-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'checkBookingList']);  
+        Route::get('/shift-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'shiftList']);  
         Route::get('/logout', [App\Http\Controllers\API\Signees\SigneesController::class, 'logout']);
     });
 });
