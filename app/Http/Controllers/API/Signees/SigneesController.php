@@ -333,7 +333,6 @@ class SigneesController extends Controller
 
     public function getOrganisation()
     {
-        //echo "hi";exit();
         $query = User::select(
             "users.*",
             'org.organization_name'
@@ -360,6 +359,24 @@ class SigneesController extends Controller
             return response()->json(['status' => true, 'message' => 'Specialities get successfully', 'data' => $speciality], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, No specialities available.', 'status' => false], 200);
+        }
+    }
+
+    public function logout(Request $request)
+    { 
+        $user = Auth::user()->token();
+        try {
+            if (Auth::user()) {
+                $user->revoke();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'You have Successfully logout',
+                ], $this->successStatus);
+            } else {
+                return response()->json(['status' => false, 'message' => 'Sorry, logout failed'], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 200);
         }
     }
 }

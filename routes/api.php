@@ -142,6 +142,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'getPreferences']);
         Route::get('/check-booking-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'checkBookingList']);
         Route::get('/get-org-specialities', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrgSpecialities']);
+        Route::get('/logout', [App\Http\Controllers\API\Signees\SigneesController::class, 'logout']);
     });
 });
 
