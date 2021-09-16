@@ -198,18 +198,12 @@ class SigneesController extends Controller
     public function profileUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'unique:users,email,' . $this->userId,
             "first_name" => 'required',
             "last_name" => 'required',
             "contact_number" => 'required',
-            "date_of_birth" => 'required',
-            //"candidate_id" => 'required',
             "address_line_1" => 'required',
             "city" => 'required',
             "postcode" => 'required',
-            "candidate_referred_from" => 'required',
-            "nationality" => 'required',
-            "date_registered" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -385,11 +379,21 @@ class SigneesController extends Controller
     public function shiftList()
     {
         $booking = new BookingMatch();
-        $result = $booking->getBookingMatch();
+        $result = $booking->getShiftList();
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Booking listed successfully', 'data' => $result], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking not available.', 'status' => false], 200);
+        }
+    }
+    public function viewShiftDetails($id)
+    {
+        $booking = new BookingMatch();
+        $result = $booking->viewShiftDetails($id);
+        if ($result) {
+            return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Something is wrong.', 'status' => false], 200);
         }
     }
 

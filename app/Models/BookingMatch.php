@@ -105,7 +105,7 @@ class BookingMatch extends Model
             return true;
         }
     }
-    public function getBookingMatch()
+    public function getShiftList()
     {
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
@@ -135,5 +135,35 @@ class BookingMatch extends Model
         $bookingList = $booking->latest('bookings.created_at')->paginate($perPage);
         //print_r($res);exit();
         return $bookingList;
+    }
+
+    public function viewShiftDetails($id = null)
+    {
+        $booking = Booking::select(
+            'bookings.*',
+            // 'bookings.id',
+            // 'bookings.date',
+            // 'bookings.start_time',
+            // 'bookings.end_time',
+            //'specialities.speciality_name',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
+            'shift_type.shift_type',
+            'trusts.trust_portal_url',
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            //'bookings.rate',
+        );
+        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->where('bookings.id', $id);
+        $booking->groupBy('bookings.id');
+        $res = $booking->get()->toArray();
+        return $res;
     }
 }

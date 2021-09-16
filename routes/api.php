@@ -142,7 +142,8 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-availability', [App\Http\Controllers\API\Signees\AvailabilityController::class, 'getAvailability']);
         Route::put('/add-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'addPreferences']);
         Route::get('/get-preferences', [App\Http\Controllers\API\Signees\SigneePreferencesController::class, 'getPreferences']);
-        Route::get('/shift-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'shiftList']);  
+        Route::get('/shift-list', [App\Http\Controllers\API\Signees\SigneesController::class, 'shiftList']);
+        Route::get('/view-shift-details/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'viewShiftDetails']);    
         Route::get('/logout', [App\Http\Controllers\API\Signees\SigneesController::class, 'logout']);
     });
 });
