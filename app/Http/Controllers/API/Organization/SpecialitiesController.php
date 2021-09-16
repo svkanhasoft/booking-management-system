@@ -125,7 +125,7 @@ class SpecialitiesController extends Controller
             $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
         }
         //$speciality = Speciality::where('user_id', $this->userId)->get()->toArray();
-        $speciality = $query2->latest()->paginate($perPage);
+        $speciality = $query->latest()->paginate($perPage);
         $count =  $speciality->count();
         if ($count > 0) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
