@@ -203,7 +203,7 @@ class SigneesController extends Controller
             "last_name" => 'required',
             "contact_number" => 'required',
             "date_of_birth" => 'required',
-            "candidate_id" => 'required',
+            //"candidate_id" => 'required',
             "address_line_1" => 'required',
             "city" => 'required',
             "postcode" => 'required',
