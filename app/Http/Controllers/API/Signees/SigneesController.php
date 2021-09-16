@@ -55,7 +55,6 @@ class SigneesController extends Controller
             "address_line_1" => 'required',
             "city" => 'required',
             "postcode" => 'required',
-            "candidate_referred_from" => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -63,7 +62,7 @@ class SigneesController extends Controller
         }
 
         $requestData = $request->all();
-
+        
         if ($request->hasFile('cv')) {
             $files1 = $request->file('cv');
             $name = time() . '_signee_' . $files1->getClientOriginalName();
