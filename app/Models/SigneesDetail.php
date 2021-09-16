@@ -27,7 +27,7 @@ class SigneesDetail extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'candidate_id', 'phone_number', 'mobile_number', 'date_of_birth', 'nationality', 'candidate_referred_from', 'date_registered','cv','nmc_dmc_pin'];
+    protected $fillable = ['user_id', 'candidate_id', 'date_of_birth', 'nationality', 'candidate_referred_from', 'date_registered','cv','nmc_dmc_pin'];
 
     public function user()
     {

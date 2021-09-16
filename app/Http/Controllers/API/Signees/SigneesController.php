@@ -201,13 +201,10 @@ class SigneesController extends Controller
             'email' => 'unique:users,email,' . $this->userId,
             "first_name" => 'required',
             "last_name" => 'required',
-            "password" => 'nullable|min:6',
             "contact_number" => 'required',
             "date_of_birth" => 'required',
             "candidate_id" => 'required',
             "address_line_1" => 'required',
-            "address_line_2" => 'required',
-            "address_line_3" => 'required',
             "city" => 'required',
             "postcode" => 'required',
             "candidate_referred_from" => 'required',
@@ -388,7 +385,12 @@ class SigneesController extends Controller
     public function shiftList()
     {
         $booking = new BookingMatch();
-        $booking->getBookingMatch();
+        $result = $booking->getBookingMatch();
+        if ($result) {
+            return response()->json(['status' => true, 'message' => 'Booking listed successfully', 'data' => $result], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Booking not available.', 'status' => false], 200);
+        }
     }
 
 }
