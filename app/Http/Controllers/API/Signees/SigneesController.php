@@ -390,6 +390,12 @@ class SigneesController extends Controller
     {
         $booking = new BookingMatch();
         $result = $booking->viewShiftDetails($id);
+        $start_time = strtotime($result['start_time']);
+        $end_time = strtotime($result['end_time']);
+        // $t1 = strtotime($start_time);
+        // $t2 = strtotime($end_time);
+        $diff = gmdate('H:i:s', $end_time - $start_time);
+        $result['duration'] = $diff;   
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
         } else {

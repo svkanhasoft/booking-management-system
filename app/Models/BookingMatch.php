@@ -123,14 +123,16 @@ class BookingMatch extends Model
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             //'bookings.rate',
         );
-        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-        $booking->groupBy('bookings.id');
+        $booking->where('bookings.status', 'OPEN');
+        $booking->whereNull('bookings.deleted_at');
+        $booking->groupBy('booking_specialities.booking_id');
         //$res = $booking->get()->toArray();
         $bookingList = $booking->latest('bookings.created_at')->paginate($perPage);
         //print_r($res);exit();
@@ -163,7 +165,7 @@ class BookingMatch extends Model
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->where('bookings.id', $id);
         $booking->groupBy('bookings.id');
-        $res = $booking->get()->toArray();
+        $res = $booking->first()->toArray();
         return $res;
     }
 }
