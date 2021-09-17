@@ -108,7 +108,6 @@ class BookingMatch extends Model
     }
     public function getShiftList()
     {
-
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
@@ -176,6 +175,39 @@ class BookingMatch extends Model
         $booking->where('bookings.id', $id);
         $booking->groupBy('bookings.id');
         $res = $booking->first()->toArray();
+        return $res;
+    }
+
+    public function getFilterBookings($request)
+    {
+        $parameter = $request->all();
+       // print_r($parameter);exit();
+        $perPage = Config::get('constants.pagination.perPage');
+        $booking = Booking::select(
+            'bookings.*',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
+            'shift_type.shift_type',
+            'trusts.trust_portal_url',
+            'trusts.address_line_1',
+            'trusts.address_line_2',
+            'trusts.city',
+            'trusts.post_code',
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'), 
+        );
+        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->whereIn();
+        $booking->orderBy('bookings.date');
+        $booking->groupBy('booking_specialities.booking_id');
+        $res = $booking->get();
+        $res = $booking->latest('bookings.created_at')->paginate($perPage);
         return $res;
     }
 }

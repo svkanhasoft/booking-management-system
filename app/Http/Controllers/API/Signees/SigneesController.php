@@ -18,6 +18,7 @@ use Hash;
 use Validator;
 use Config;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class SigneesController extends Controller
 {
@@ -400,6 +401,18 @@ class SigneesController extends Controller
         } else {
             return response()->json(['message' => 'Something is wrong.', 'status' => false], 200);
         }
+    }
+
+    public function filterBookings(Request $request)
+    {
+        $booking = new BookingMatch();
+        $result = $booking->getFilterBookings($request);
+        if ($result) {
+            return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Something is wrong.', 'status' => false], 200);
+        }
+    
     }
 
 }
