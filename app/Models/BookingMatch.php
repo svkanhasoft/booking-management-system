@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
 use Config;
+use Carbon\Carbon;
 
 class BookingMatch extends Model
 {
@@ -107,6 +108,7 @@ class BookingMatch extends Model
     }
     public function getShiftList()
     {
+
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
@@ -114,6 +116,7 @@ class BookingMatch extends Model
             // 'bookings.date',
             // 'bookings.start_time',
             // 'bookings.end_time',
+            //'bookings.rate',
             //'specialities.speciality_name',
             'hospitals.hospital_name',
             'ward.ward_name',
@@ -121,7 +124,6 @@ class BookingMatch extends Model
             'shift_type.shift_type',
             'trusts.trust_portal_url',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-            //'bookings.rate',
         );
         $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
@@ -133,10 +135,10 @@ class BookingMatch extends Model
         $booking->where('bookings.status', 'OPEN');
         $booking->whereNull('bookings.deleted_at');
         $booking->groupBy('booking_specialities.booking_id');
-        //$res = $booking->get()->toArray();
-        $bookingList = $booking->latest('bookings.created_at')->paginate($perPage);
-        //print_r($res);exit();
-        return $bookingList;
+        $booking->orderBy('bookings.date');
+        $res = $booking->get();
+        $res = $booking->latest('bookings.created_at')->paginate($perPage);
+        return $res;
     }
 
     public function viewShiftDetails($id = null)
