@@ -123,9 +123,7 @@ class User extends Authenticatable
                 $query2->where('users.email', 'like',  "%$keyword%")
                     ->orWhere('users.first_name', 'like',  "%$keyword%")
                     ->orWhere('users.last_name',  'LIKE', "%$keyword%")
-                    ->orWhere('users.email',  'LIKE', "%$keyword%")
-                    ->orWhere('roles.role_name',  'LIKE', "%$keyword%")
-                    ->orWhere('designations.designation_name',  'LIKE', "%$keyword%");
+                    ->orWhere('users.contact_number',  'LIKE', "%$keyword%");
             });
         }
         $query->where('users.parent_id', $userId);
