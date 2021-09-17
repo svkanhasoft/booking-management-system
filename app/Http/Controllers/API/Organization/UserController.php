@@ -487,7 +487,7 @@ class UserController extends Controller
         }
     }
 
-    public function getSignee($id)  //get signee by id from org
+    public function getMySigneeById($id)  //get signee by id from org
     {
         try {
             $userObj = new User();
