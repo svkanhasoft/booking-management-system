@@ -155,6 +155,10 @@ class BookingMatch extends Model
             'ward_type.ward_type',
             'shift_type.shift_type',
             'trusts.trust_portal_url',
+            'trusts.address_line_1',
+            'trusts.address_line_2',
+            'trusts.city',
+            'trusts.post_code',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             //'bookings.rate',
         );
