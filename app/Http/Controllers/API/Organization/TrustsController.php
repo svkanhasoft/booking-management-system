@@ -198,9 +198,6 @@ class TrustsController extends Controller
             if (!empty($keyword)) {
                 $query->Where('name',  'LIKE', "%$keyword%");
             }
-            if (!empty($keyword)) {
-                $query->Where('name',  'LIKE', "%$keyword%");
-            }
             $result =  $query->latest()->paginate($perPage);
             // $result = $query->get();
             if (count($result) > 0) {

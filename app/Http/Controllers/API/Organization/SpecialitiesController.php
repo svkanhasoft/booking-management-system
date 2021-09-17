@@ -110,12 +110,9 @@ class SpecialitiesController extends Controller
         $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
         //$showPagination = $request->get('showPagination');
-        $query = Speciality::select("specialities.*",);
-        $query->where('specialities.user_id',  $this->userId);
-        if (!empty($keyword)) {
-            // echo $keyword;exit;
-            $query->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
-        }
+        $speciality = Speciality::select("specialities.*",);
+        $speciality->where('specialities.user_id',  $this->userId);
+
         if(Auth::user()->role == 'ORGANIZATION'){
             $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
             $staffIdArray = array_column($staff, 'id');
@@ -124,15 +121,20 @@ class SpecialitiesController extends Controller
         }else{
             $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
         }
+
+        if (!empty($keyword)) {
+            // echo $keyword;exit;
+            $query2->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
+        }
+        
         //$speciality = Speciality::where('user_id', $this->userId)->get()->toArray();
-        $speciality = $query->latest()->paginate($perPage);
+        $speciality = $query2->latest()->paginate($perPage);
         $count =  $speciality->count();
         if ($count > 0) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
         }
-        // }
     }
 
     public function AllSpeciality(Request $request)
