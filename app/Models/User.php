@@ -298,8 +298,9 @@ class User extends Authenticatable
         return $userDetais;
     }
 
-    public function getSignee($userId = null)
+    public function getSignee(Request $request, $userId = null)
     {
+        $keyword = $request->get('search');
         $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             'users.id',
@@ -341,7 +342,14 @@ class User extends Authenticatable
            // print_r(Auth::user()->parent_id);exit();
             $query->whereIn('signee_organization.organization_id', array(Auth::user()->id, Auth::user()->parent_id));
         }
-
+        if (!empty($keyword)) {
+            $query->where(function ($query2) use ($keyword) {
+                $query2->where('users.email', 'like',  "%$keyword%")
+                    ->orWhere('users.first_name', 'like',  "%$keyword%")
+                    ->orWhere('users.last_name',  'LIKE', "%$keyword%")
+                    ->orWhere('users.contact_number', 'LIKE', "%$keyword%");
+            });
+        }
         $query->whereNull(['signee_speciality.deleted_at']);
         // $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
 

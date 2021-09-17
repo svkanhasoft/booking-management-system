@@ -409,7 +409,7 @@ class UserController extends Controller
     public function viewSignee(Request $request)    //get all signee by organisation
     {
         $UserObj = new User();
-        $user = $UserObj->getSignee($this->userId);
+        $user = $UserObj->getSignee($request, $this->userId);
         //print_r($user);exit();
         if (!empty($user)) {
             return response()->json(['status' => true, 'message' => 'Signee Get Successfully', 'data' => $user], $this->successStatus);
