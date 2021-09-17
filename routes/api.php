@@ -116,13 +116,6 @@ Route::prefix('organization')->group(function () {
     });
 });
 
-// Route::prefix('staff')->middleware(['auth:api'])->group(function () {
-//     Route::get('/staff-booking-list/{search?}/{status?}', [App\Http\Controllers\API\Staff\BookingController::class, 'staffBooking']);
-//     Route::post('/add-staff-booking', [App\Http\Controllers\API\Staff\BookingController::class, 'add']);
-//     Route::put('/edit-staff-booking', [App\Http\Controllers\API\Staff\BookingController::class, 'edit']);
-//     Route::delete('/delete-staff-booking/{id}', [App\Http\Controllers\API\Staff\BookingController::class, 'destroy']);
-// });
-
 Route::prefix('signee')->group(function () {
     Route::post('/signup', [App\Http\Controllers\API\Signees\SigneesController::class, 'signup']);
     Route::post('/signin', [App\Http\Controllers\API\Signees\SigneesController::class, 'signin']);
@@ -133,6 +126,8 @@ Route::prefix('signee')->group(function () {
     Route::get('/get-organisation', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrganisation']);
     Route::get('/get-org-specialities/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrgSpecialities']);
     Route::get('/generate-candidateId', [App\Http\Controllers\API\Signees\SigneesController::class, 'getCandidateId']);
+    Route::get('/show-all-hospital', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllHospital']);
+    Route::get('/show-all-speciality', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllSpeciality']);
     Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-signee-details', [App\Http\Controllers\API\Signees\SigneesController::class, 'getDetails']);
         Route::post('/signee-change-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'changePassword']);
