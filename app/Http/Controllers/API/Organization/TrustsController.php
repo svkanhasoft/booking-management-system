@@ -34,7 +34,8 @@ class TrustsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "name" => 'required',
-            "code" => 'required',
+            // "code" => 'required',
+            "code" => 'unique:trusts,code',
             "preference_invoice_method" => 'required',
             "email_address" => 'required|email',
             "address_line_1" => 'required',
@@ -105,10 +106,12 @@ class TrustsController extends Controller
 
     function update(Request $request)
     {
-        // echo "hi";exit();
+        $requestData = $request->all();
         $validator = Validator::make($request->all(), [
+            "id" => 'required',
             "name" => 'required',
-            "code" => 'required',
+            //"code" => 'required',
+            "code" => 'unique:trusts,code,' . $requestData['id'] . 'NULL,id,user_id,' . $this->userId,
             "preference_invoice_method" => 'required',
             "email_address" => 'required|email',
             "address_line_1" => 'required',
@@ -222,4 +225,19 @@ class TrustsController extends Controller
             return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted.'], $this->successStatus);
         }
     }
+
+    // public function generateTrustCode()
+    // {
+    //     try {
+    //         $time = [];
+    //         $time['trust_code'] = date("ymdHis");
+    //         if ($time) {
+    //             return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $time], $this->successStatus);
+    //         } else {
+    //             return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+    //     }
+    // }
 }
