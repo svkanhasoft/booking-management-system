@@ -137,6 +137,7 @@ class BookingMatch extends Model
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->where('bookings.status', 'OPEN');
         $booking->whereNull('bookings.deleted_at');
+        $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('booking_specialities.booking_id');
         $booking->orderBy('bookings.date');
         $res = $booking->get();
