@@ -33,13 +33,14 @@ class BookingSpeciality extends Model
     function addSpeciality($postData, $bookingId, $isDelete = false)
     {
 
-        // dd($postData);
+        //dd($postData);
         // exit;
         // if ($isDelete == true) {
-            BookingSpeciality::where('booking_id', '=', $bookingId)->whereNotIn('speciality_id', $postData)->delete();
+           // BookingSpeciality::where('booking_id', '=', $bookingId)->whereNotIn('speciality_id', $postData)->delete();
             // dd($objBookingMatchDelete);
             foreach ($postData as $key => $val) {
-                $objBookingSpeciality = BookingSpeciality::where(['speciality_id' => $val])->firstOrNew();
+                //print_r($val);exit();
+                $objBookingSpeciality = BookingSpeciality::where(['speciality_id' => $val, 'booking_id' => $bookingId])->firstOrNew();
                 $objBookingSpeciality->booking_id = $bookingId;
                 $objBookingSpeciality->speciality_id = $val;
                 $objBookingSpeciality->save();

@@ -138,7 +138,7 @@ class BookingMatch extends Model
         $booking->where('bookings.status', 'OPEN');
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
-        $booking->groupBy('booking_specialities.booking_id');
+        $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
         $res = $booking->get();
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
