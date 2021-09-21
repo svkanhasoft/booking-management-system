@@ -35,7 +35,9 @@ class HospitalController extends Controller
             'hospital_name'
         );
         $hospital->whereIn('trust_id', $trustIdArray);
+        $hospital->whereNull('hospitals.deleted_at');
         $res = $hospital->get()->toArray();
+
         //print_r(count($res));exit();
         // $hospitalList = Hospital::select(
         //     'hospital_name',
