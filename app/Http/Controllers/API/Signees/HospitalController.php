@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API\Signees;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models;
+use App\Models\Booking;
+use App\Models\BookingMatch;
 use App\Models\Hospital;
 use App\Models\SigneeOrganization;
 use App\Models\Speciality;
@@ -29,25 +31,40 @@ class HospitalController extends Controller
 
     public function showAllHospital()
     {
-        $trustList = Trust::where('user_id', $this->userId)->get()->toArray();
-        $trustIdArray = array_column($trustList, 'id');
-        $hospital = Hospital::select(
-            'hospital_name'
+       // $hospital = BookingMatch::where('signee_id', $this->userId)->get();
+       // print_r($hospital);exit();
+
+        $bookingMatches = BookingMatch::select(
+            //'bookings.*',
+            'hospitals.hospital_name'
         );
-        $hospital->whereIn('trust_id', $trustIdArray);
-        $hospital->whereNull('hospitals.deleted_at');
-        $res = $hospital->get()->toArray();
+        $bookingMatches->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        $bookingMatches->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $bookingMatches->whereNull('hospitals.deleted_at');
+        $bookingMatches->groupBy('bookings.id');
+        $res = $bookingMatches->get()->toArray();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
+        }
+
+        // $trustList = Trust::where('user_id', $this->userId)->get()->toArray();
+        // $trustIdArray = array_column($trustList, 'id');
+        // $hospital = Hospital::select(
+        //     'hospital_name'
+        // );
+        // $hospital->whereIn('trust_id', $trustIdArray);
+        // $hospital->whereNull('hospitals.deleted_at');
+        // $res = $hospital->get()->toArray();
+
 
         //print_r(count($res));exit();
         // $hospitalList = Hospital::select(
         //     'hospital_name',
         // )->distinct()->get()->toArray();
         // //$hospitalList->where();
-        if ($res) {
-            return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
-        }
+        
     }
 
     public function showAllSpeciality()
