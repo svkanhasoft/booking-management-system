@@ -126,8 +126,8 @@ Route::prefix('signee')->group(function () {
     Route::get('/get-organisation', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrganisation']);
     Route::get('/get-org-specialities/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'getOrgSpecialities']);
     Route::get('/generate-candidateId', [App\Http\Controllers\API\Signees\SigneesController::class, 'getCandidateId']);
-    Route::get('/show-all-hospital', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllHospital']);
-    Route::get('/show-all-speciality', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllSpeciality']);
+    // Route::get('/show-all-hospital', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllHospital']);
+    // Route::get('/show-all-speciality', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllSpeciality']);
     Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-signee-details', [App\Http\Controllers\API\Signees\SigneesController::class, 'getDetails']);
         Route::post('/signee-change-password', [App\Http\Controllers\API\Signees\SigneesController::class, 'changePassword']);
@@ -142,6 +142,8 @@ Route::prefix('signee')->group(function () {
         Route::get('/logout', [App\Http\Controllers\API\Signees\SigneesController::class, 'logout']);
         Route::put('/filter-shift', [App\Http\Controllers\API\Signees\SigneesController::class, 'filterBookings']);
         Route::post('/change-signee-status', [App\Http\Controllers\API\Signees\SigneesController::class, 'changeSigneeStatus']);
+        Route::get('/show-all-speciality', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllSpeciality']);
+        Route::get('/show-all-hospital', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllHospital']);
     });
 });
 

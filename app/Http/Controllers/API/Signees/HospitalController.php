@@ -6,28 +6,54 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models;
 use App\Models\Hospital;
+use App\Models\SigneeOrganization;
 use App\Models\Speciality;
+use App\Models\Trust;
+use Illuminate\Support\Facades\Auth;
 
 class HospitalController extends Controller
 {
     public $successStatus = 200;
+
+    protected $userId;
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!empty(Auth::user())) {
+                $this->userId = Auth::user()->id;
+            }
+            return $next($request);
+        });
+    }
+
     public function showAllHospital()
     {
-        $hospitalList = Hospital::select(
-            'hospital_name',
-        )->distinct()->get()->toArray();
-        if ($hospitalList) {
-            return response()->json(['status' => true, 'message' => 'Hospital get successfully', 'data' => $hospitalList], $this->successStatus);
+        $trustList = Trust::where('user_id', $this->userId)->get()->toArray();
+        $trustIdArray = array_column($trustList, 'id');
+        $hospital = Hospital::select(
+            'hospital_name'
+        );
+        $hospital->whereIn('trust_id', $trustIdArray);
+        $res = $hospital->get()->toArray();
+        //print_r(count($res));exit();
+        // $hospitalList = Hospital::select(
+        //     'hospital_name',
+        // )->distinct()->get()->toArray();
+        // //$hospitalList->where();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Hospital not available.', 'status' => false], 200);
+            return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
         }
     }
 
     public function showAllSpeciality()
     {
-        $specialityList = Speciality::select(
-            'speciality_name',
-        )->distinct()->get()->toArray();
+        $org = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
+        $orgIdArray = array_column($org, 'organization_id');
+        //print_r($orgIdArray);exit();
+        $specialityList = Speciality::whereIn('user_id', $orgIdArray)->get();
         if ($specialityList) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $specialityList], $this->successStatus);
         } else {
