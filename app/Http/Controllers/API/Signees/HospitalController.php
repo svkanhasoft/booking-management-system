@@ -41,7 +41,7 @@ class HospitalController extends Controller
         $bookingMatches->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
         $bookingMatches->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $bookingMatches->whereNull('hospitals.deleted_at');
-        $bookingMatches->groupBy('bookings.id');
+        $bookingMatches->groupBy('bookings.hospital_id');
         $res = $bookingMatches->get()->toArray();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
