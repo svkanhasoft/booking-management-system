@@ -63,7 +63,7 @@ class SigneesController extends Controller
         }
 
         $requestData = $request->all();
-        
+        //print_r($requestData);exit();
         if ($request->hasFile('cv')) {
             $files1 = $request->file('cv');
             $name = time() . '_signee_' . $files1->getClientOriginalName();
@@ -82,10 +82,12 @@ class SigneesController extends Controller
             $objSpeciality = new SigneeSpecialitie();
             $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
 
-            $requestData['organization_id'] = $request->post('organization_id');
-            $requestData['user_id'] = $userCreated['id'];
-            $sing = SigneeOrganization::create($requestData);
-            if ($orgResult) {
+            $objOrganization = new SigneeOrganization();
+            $objOrganization->addOrganization($requestData['organization'], $userCreated['id'], false);
+            // $requestData['organization_id'] = $request->post('organization_id');
+            // $requestData['user_id'] = $userCreated['id'];
+            // $sing = SigneeOrganization::create($requestData);
+            if ($userCreated) {
                 $UserObj = new User();
                 $mailRes =  $UserObj->sendRegisterEmail($request);
                 return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
@@ -94,6 +96,55 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
         }
     }
+
+    // public function signup(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         "email" => 'required|unique:users',
+    //         "first_name" => 'required',
+    //         "last_name" => 'required',
+    //         "contact_number" => 'required',
+    //         "address_line_1" => 'required',
+    //         "city" => 'required',
+    //         "postcode" => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $error = $validator->messages()->first();
+    //         return response()->json(['status' => false, 'message' => $error], 200);
+    //     }
+
+    //     $requestData = $request->all();
+    //     print_r($requestData);exit();
+    //     if ($request->hasFile('cv')) {
+    //         $files1 = $request->file('cv');
+    //         $name = time() . '_signee_' . $files1->getClientOriginalName();
+    //         $files1->move(public_path() . '/uploads/signee_docs/', $name);
+    //         $requestData['cv'] = $name;
+    //     }
+
+    //     $requestData['password'] = Hash::make($request->post('password'));
+    //     $requestData['parent_id'] = $request->post('organization_id');
+    //     $requestData['role'] = 'SIGNEE';
+    //     $userCreated = User::create($requestData);
+    //     if ($userCreated) {
+    //         $requestData['user_id'] = $userCreated['id'];
+    //         $orgResult = SigneesDetail::create($requestData);
+
+    //         $objSpeciality = new SigneeSpecialitie();
+    //         $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+
+    //         $requestData['organization_id'] = $request->post('organization_id');
+    //         $requestData['user_id'] = $userCreated['id'];
+    //         $sing = SigneeOrganization::create($requestData);
+    //         if ($orgResult) {
+    //             $UserObj = new User();
+    //             $mailRes =  $UserObj->sendRegisterEmail($request);
+    //             return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+    //         }
+    //     } else {
+    //         return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
+    //     }
+    // }
 
     /**
      *  creating a new resource.
@@ -415,4 +466,28 @@ class SigneesController extends Controller
     
     }
 
+    public function changeSigneeStatus(Request $request)
+    {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try {
+            $bookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['id']]);
+            $bookingMatch->signee_status = $requestData['status'];
+            $res =  $bookingMatch->save();
+            if ($res) {
+                return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
 }

@@ -141,6 +141,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/view-shift-details/{id}', [App\Http\Controllers\API\Signees\SigneesController::class, 'viewShiftDetails']);    
         Route::get('/logout', [App\Http\Controllers\API\Signees\SigneesController::class, 'logout']);
         Route::put('/filter-shift', [App\Http\Controllers\API\Signees\SigneesController::class, 'filterBookings']);
+        Route::post('/change-signee-status', [App\Http\Controllers\API\Signees\SigneesController::class, 'changeSigneeStatus']);
     });
 });
 

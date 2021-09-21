@@ -29,4 +29,21 @@ class SigneeOrganization extends Model
      */
     protected $fillable = ['user_id', 'status','organization_id'];
 
+    function addOrganization($postData, $userId, $isDelete = false)
+    {
+        //print_r($postData);exit();
+        if ($isDelete == true) {
+            SigneeOrganization::where(['user_id' => $userId])->delete();
+        }
+        foreach ($postData as $key => $val) {
+            //print_r($val);exit();
+            $objSigneeOrganization = new SigneeOrganization();
+            $objSigneeOrganization->organization_id = $val;
+            $objSigneeOrganization->user_id = $userId;
+            $objSigneeOrganization->status = "NEWSIGNUP";
+            $objSigneeOrganization->save();
+            $objSigneeOrganization = "";
+        }
+        return true;
+    }
 }

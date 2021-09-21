@@ -30,7 +30,7 @@ class BookingMatch extends Model
      *
      * @var array
      */
-    protected $fillable = ['organization_id', 'signee_id', 'booking_id', 'trust_id', 'match_count', 'booking_date', 'booking_status', 'shift_id'];
+    protected $fillable = ['organization_id', 'signee_id', 'booking_id', 'trust_id', 'match_count', 'booking_date', 'booking_status', 'shift_id', 'signee_status'];
 
     public function addBookingMatch($bookingArray, $bookingId)
     {
@@ -182,33 +182,60 @@ class BookingMatch extends Model
     public function getFilterBookings($request)
     {
         $parameter = $request->all();
-       // print_r($parameter);exit();
-        $perPage = Config::get('constants.pagination.perPage');
-        $booking = Booking::select(
-            'bookings.*',
-            'hospitals.hospital_name',
-            'ward.ward_name',
-            'ward_type.ward_type',
-            'shift_type.shift_type',
-            'trusts.trust_portal_url',
-            'trusts.address_line_1',
-            'trusts.address_line_2',
-            'trusts.city',
-            'trusts.post_code',
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'), 
-        );
-        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
-        $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
-        $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-        $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-        $booking->whereIn();
-        $booking->orderBy('bookings.date');
-        $booking->groupBy('booking_specialities.booking_id');
-        $res = $booking->get();
-        $res = $booking->latest('bookings.created_at')->paginate($perPage);
-        return $res;
+        //print_r($parameter);exit();
+
+        // $booking = Booking::select(
+        //     'bookings.*',
+        //     // 'hospitals.hospital_name',
+        //     // 'ward.ward_name',
+        //     // 'ward_type.ward_type',
+        //     // 'shift_type.shift_type',
+        //     // 'trusts.trust_portal_url',
+        //     // 'trusts.address_line_1',
+        //     // 'trusts.address_line_2',
+        //     // 'trusts.city',
+        //     // 'trusts.post_code',
+        //     // DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'), 
+        // );
+        // $booking->where('bookings.status', 'OPEN');
+        // $booking->whereNull('bookings.deleted_at');
+        // //$booking->whereNull('booking_specialities.deleted_at');
+        // $booking->groupBy('bookings.id');
+        // $booking->orderBy('bookings.date');
+        // $res = $booking->get()->toArray();
+        // $res = $booking->latest('bookings.created_at')->paginate(15);
+        // return $res;
+
+
+
+        // $perPage = Config::get('constants.pagination.perPage');
+        // $booking = Booking::select(
+        //     'bookings.*',
+        //     'hospitals.hospital_name',
+        //     'ward.ward_name',
+        //     'ward_type.ward_type',
+        //     'shift_type.shift_type',
+        //     'trusts.trust_portal_url',
+        //     'trusts.address_line_1',
+        //     'trusts.address_line_2',
+        //     'trusts.city',
+        //     'trusts.post_code',
+        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'), 
+        // );
+        // $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        // $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        // $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        // $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        // $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        // $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        // $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        // $booking->whereIn();
+        // $booking->whereNull('bookings.deleted_at');
+        // $booking->whereNull('booking_specialities.deleted_at');
+        // $booking->orderBy('bookings.date');
+        // $booking->groupBy('booking_specialities.booking_id');
+        // $res = $booking->get();
+        // $res = $booking->latest('bookings.created_at')->paginate($perPage);
+        // return $res;
     }
 }
