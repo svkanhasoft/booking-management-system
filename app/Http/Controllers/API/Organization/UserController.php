@@ -307,11 +307,12 @@ class UserController extends Controller
         }
     }
 
-    public function destroy($userId)
+    public function destroy($id)
     {
+        //print_r($id);exit();
         try {
-            OrganizationUserDetail::where('user_id', $userId)->delete();
-            $userDelete = User::where('id', $userId)->delete();
+            OrganizationUserDetail::where('user_id', $id)->delete();
+            $userDelete = User::where('id', $id)->delete();
             if ($userDelete) {
                 return response()->json(['status' => true, 'message' => 'User deleted successfully.'], $this->successStatus);
             } else {
