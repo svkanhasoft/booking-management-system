@@ -310,8 +310,8 @@ class SuperAdminController extends Controller
         }
         try {
             $requestData = $request->all();
-            $userId = $requestData['user_id'];
-            unset($requestData['user_id']);
+            $userId = $requestData['id'];
+            unset($requestData['id']);
             $role = User::findOrFail($userId);
             $roleUpdated = $role->update($requestData);
             if (!empty($roleUpdated)) {
