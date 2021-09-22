@@ -36,7 +36,7 @@ class BookingSpeciality extends Model
         //dd($postData);
         // exit;
         // if ($isDelete == true) {
-           // BookingSpeciality::where('booking_id', '=', $bookingId)->whereNotIn('speciality_id', $postData)->delete();
+            BookingSpeciality::where('booking_id', '=', $bookingId)->whereNotIn('speciality_id', $postData)->delete();
             // dd($objBookingMatchDelete);
             foreach ($postData as $key => $val) {
                 //print_r($val);exit();
