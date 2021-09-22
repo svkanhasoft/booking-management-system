@@ -443,8 +443,6 @@ class SigneesController extends Controller
         $result = $booking->viewShiftDetails($id);
         $start_time = strtotime($result['start_time']);
         $end_time = strtotime($result['end_time']);
-        // $t1 = strtotime($start_time);
-        // $t2 = strtotime($end_time);
         $diff = gmdate('H:i:s', $end_time - $start_time);
         $result['duration'] = $diff;   
         if ($result) {
@@ -457,13 +455,12 @@ class SigneesController extends Controller
     public function filterBookings(Request $request)
     {
         $booking = new BookingMatch();
-        $result = $booking->getFilterBookings($request);
+        $result = $booking->getFilterBookings($request,$this->userId);
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
         } else {
             return response()->json(['message' => 'Something is wrong.', 'status' => false], 200);
         }
-    
     }
 
     public function changeSigneeStatus(Request $request)
