@@ -35,7 +35,7 @@ class HospitalController extends Controller
        // print_r($hospital);exit();
 
         $bookingMatches = BookingMatch::select(
-            //'bookings.*',
+            'bookings.hospital_id',
             'hospitals.hospital_name'
         );
         $bookingMatches->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
