@@ -144,6 +144,8 @@ Route::prefix('signee')->group(function () {
         Route::post('/change-signee-status', [App\Http\Controllers\API\Signees\SigneesController::class, 'changeSigneeStatus']);
         Route::get('/show-all-speciality', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllSpeciality']);
         Route::get('/show-all-hospital', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllHospital']);
+        //Route::post('/add-org', [App\Http\Controllers\API\Signees\SigneesController::class, 'addOrg']);
+        Route::post('/upload-document', [App\Http\Controllers\API\Signees\SigneesController::class, 'documentUpload']);
     });
 });
 

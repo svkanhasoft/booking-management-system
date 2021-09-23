@@ -14,6 +14,7 @@ use App\Models\SigneeSpecialitie;
 use App\Models\BookingMatch;
 use App\Models\CandidateReferredFrom;
 use App\Models\Speciality;
+use App\Models\SigneeDocument;
 use Hash;
 use Validator;
 use Config;
@@ -484,6 +485,62 @@ class SigneesController extends Controller
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
             }
         } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    // public function addOrg(Request $request)
+    // {
+    //     // $validator = Validator::make($request->all(), [
+    //     //     "speciality" => 'required:speciality,[]'
+    //     // ]);
+    //     // if ($validator->fails()) {
+    //     //     $error = $validator->messages()->first();
+    //     //     return response()->json(['status' => false, 'message' => $error], 200);
+    //     // }
+    //     $requestData = $request->all();
+    //     $requestData['user_id'] = $this->userId;
+    //     $signeeOrg = SigneeOrganization::create($requestData);
+    //     echo "success";
+    // }
+
+    public function documentUpload(Request $request)
+    {
+        try
+        { 
+            if($request->hasfile('passport'))
+            {
+                if($request->file('passport'))
+                {
+                    $allowedfileExtension=['png','jpg','jpeg','pdf','docs'];
+                    foreach($request->file('passport') as $key=>$file)
+                    {
+                        $name = time() . '_signee_' . $file->getClientOriginalName(); 
+                        $file->move(public_path().'/uploads/signee_docs/', $name);
+                        $extension = $file->getClientOriginalExtension();
+                        $check = in_array($extension, $allowedfileExtension);
+                        //dd($check);exit();
+                        $file= new SigneeDocument();
+                        if($check)
+                        {
+                            $file->signee_id = $this->userId;
+                            $file->key = "Passport";
+                            $file->file_name = $name;
+                            $file->save();
+                        }
+                        else
+                        {
+                            return response()->json(['message' => 'File format not supported only supports jpg, png, pdf and jpeg', 'status' => false], 200);
+                        }  
+                    }
+                    return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully'], $this->successStatus);
+                }
+            }
+            else{
+                return response()->json(['message' => 'No file selected', 'status' => false], 200);
+            }
+        }
+        catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
