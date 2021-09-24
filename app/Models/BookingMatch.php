@@ -232,10 +232,16 @@ class BookingMatch extends Model
     public function getFilterBookings($request,$userId)
     {
         $requestData = $request->all();
-       
+
+        // $dayArray = $requestData['day'];
+        // $hospitalIdArray = $requestData['hospital_id'];
+        // $specialityIdArray = $requestData['speciality_id'];
+        
+        //print_r($hospitalIdArray);exit();
+        //print_r(gettype($requestData));exit();
         $perPage = Config::get('constants.pagination.perPage');
         //print_r($parameter);exit();
-        $booking = BookingMatch::select(
+        $booking = Booking::select(
             'bookings.*',
             'hospitals.hospital_name',
             'ward.ward_name',
@@ -246,21 +252,18 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
         );
-        $booking->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
-        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        //$booking->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         if (!empty($requestData['day'])) {
-            // $booking->whereIn( DB::raw( "DAYOFWEEK(booking_matches.booking_date)", array(1,2,3,4)) );
-            // $booking->whereRaw('WEEKDAY(booking_matches.booking_date)',array('Wed','Sun','Mon','Tues','Thu','Sat'));
-            $booking->whereRaw('WEEKDAY(booking_matches.booking_date) = 4');
-            // $booking->whereRaw('WEEKDAY(booking_matches.booking_date)', array(0,1,2,3,4,5,6));
+            $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
         }
         if (!empty($requestData['speciality_id'])) {
             $booking->whereIn('booking_specialities.speciality_id', $requestData['speciality_id']);
@@ -271,9 +274,12 @@ class BookingMatch extends Model
         $booking->where('bookings.status', 'OPEN');
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
-        $booking->where('booking_matches.signee_id',$userId);
+        $booking->whereNull('hospitals.deleted_at');
+       // $booking->where('booking_matches.signee_id',$userId);
         $booking->groupBy('bookings.id');
         // $res = $booking->get()->toArray();
+        // $res = $booking->toSql();
+        // print_r($res);die;
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         //print_r($res);exit();
         return $res;

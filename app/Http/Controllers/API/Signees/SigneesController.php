@@ -506,33 +506,44 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
+        $requestData = $request->file('passport');
+       // print_r($requestData);exit();
+        $validator = Validator::make($request->all(), [
+            // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
+            'nursing_certificates[]' => 'mimes:jpg|max:2048',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
         try
         { 
-            if($request->hasfile('passport'))
+            if($request->hasfile('nursing_certificates'))
             {
-                if($request->file('passport'))
+                if($request->file('nursing_certificates'))
                 {
-                    $allowedfileExtension=['png','jpg','jpeg','pdf','docs'];
-                    $files = $request->file('passport');
+                    //$allowedfileExtension=['png','jpg','jpeg','pdf','docs'];
+                    $files = $request->file('nursing_certificates');
                     foreach($files as $key=>$file)
                     {
                         $name = time() . '_signee_' . $file->getClientOriginalName(); 
-                        $file->move(public_path().'/uploads/signee_docs/', $name);
+                        $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $name);
+                        $file->move(public_path().'/uploads/signee_docs/', $new_name);
                         $extension = $file->getClientOriginalExtension();
-                        $check = in_array($extension, $allowedfileExtension);
+                        //$check = in_array($extension, $allowedfileExtension);
                         //dd($check);exit();
                         $file= new SigneeDocument();
-                        if($check)
-                        {
+                        //if($check)
+                        //{
                             $file->signee_id = $this->userId;
-                            $file->key = "Passport";
-                            $file->file_name = $name;
+                            $file->key = $request['key'];
+                            $file->file_name = $new_name;
                             $file->save();
-                        }
-                        else
-                        {
-                            return response()->json(['message' => 'File format not supported only supports jpg, png, pdf and jpeg', 'status' => false], 200);
-                        }  
+                        //}
+                        //else
+                        //{
+                         //   return response()->json(['message' => 'File format not supported only supports jpg, png, pdf and jpeg', 'status' => false], 200);
+                        //}  
                     }
                     return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully'], $this->successStatus);
                 }
