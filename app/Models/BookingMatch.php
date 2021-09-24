@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
 use Config;
+use Auth;
 use Carbon\Carbon;
 
 class BookingMatch extends Model
@@ -108,6 +109,7 @@ class BookingMatch extends Model
     }
     public function getShiftList()
     {
+        //print_r(Auth::user()->parent_id);exit();
         // $perPage = Config::get('constants.pagination.perPage');
         // $booking = BookingMatch::select(
         //     'bookings.*',
@@ -139,7 +141,10 @@ class BookingMatch extends Model
         // $res = $booking->get();
         // $res = $booking->latest('bookings.created_at')->paginate($perPage);
         // return $res;
-
+        $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
+        $staffIdArray = array_column($staff, 'id');
+        $staffIdArray[] = Auth::user()->parent_id;
+        //print_r($staffIdArray);exit();
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
@@ -168,6 +173,18 @@ class BookingMatch extends Model
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->where('bookings.status', 'OPEN');
+        $booking->whereIn('bookings.user_id', $staffIdArray);
+
+        // if(Auth::user()->role == 'ORGANIZATION'){
+        //     $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
+        //     $staffIdArray = array_column($staff, 'id');
+        //     $staffIdArray[] = Auth::user()->id;
+        //     $booking->whereIn('bookings.user_id',$staffIdArray);
+        // }else{
+        //     // $query->where('bookings.user_id',Auth::user()->id);
+        //     $booking->whereIn('bookings.user_id',array(Auth::user()->id,Auth::user()->parent_id));
+        // }
+
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
