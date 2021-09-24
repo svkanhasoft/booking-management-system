@@ -10,6 +10,7 @@ use App\Models\BookingMatch;
 use App\Models\Hospital;
 use App\Models\SigneeOrganization;
 use App\Models\Speciality;
+use App\Models\User;
 use App\Models\Trust;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,24 +32,50 @@ class HospitalController extends Controller
 
     public function showAllHospital()
     {
-       // $hospital = BookingMatch::where('signee_id', $this->userId)->get();
-       // print_r($hospital);exit();
+        // //print_r(Auth::user()->id);exit();
+        // $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
+        // $staffIdArray = array_column($staff, 'id');
+        // $staffIdArray[] = Auth::user()->parent_id;
+        // //print_r($staffIdArray);exit();
+        // $trusts = Trust::whereIn('user_id', $staffIdArray)->get()->toArray();
+        // $trustIdArray = array_column($trusts, 'id');
 
-        $bookingMatches = BookingMatch::select(
+        // $hospitals = Hospital::whereIn('trust_id', $trustIdArray)->get()->toArray();
+
+        // print_r($hospitals);exit();
+
+        $hospital = Hospital::select(
             //'bookings.hospital_id',
             'hospitals.id',
             'hospitals.hospital_name'
         );
-        $bookingMatches->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
-        $bookingMatches->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
-        $bookingMatches->whereNull('hospitals.deleted_at');
-        $bookingMatches->groupBy('bookings.hospital_id');
-        $res = $bookingMatches->get()->toArray();
+        $hospital->leftJoin('trusts',  'trusts.id', '=', 'hospitals.trust_id');
+        $hospital->whereNull('hospitals.deleted_at');
+        $hospital->groupBy('hospitals.trust_id');
+        $res = $hospital->get()->toArray();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
         } else {
             return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
         }
+
+        //old
+        // $bookingMatches = BookingMatch::select(
+        //     //'bookings.hospital_id',
+        //     'hospitals.id',
+        //     'hospitals.hospital_name'
+        // );
+        // $bookingMatches->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        // $bookingMatches->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        // $bookingMatches->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        // $bookingMatches->whereNull('hospitals.deleted_at');
+        // $bookingMatches->groupBy('bookings.hospital_id');
+        // $res = $bookingMatches->get()->toArray();
+        // if ($res) {
+        //     return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
+        // } else {
+        //     return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
+        // }
 
         // $trustList = Trust::where('user_id', $this->userId)->get()->toArray();
         // $trustIdArray = array_column($trustList, 'id');
