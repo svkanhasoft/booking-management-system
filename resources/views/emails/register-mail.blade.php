@@ -51,7 +51,7 @@
                                                         {{ $details['data']['password'] }} <br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        <a href="http://adminbooking.kanhasoftdev.com/login">Click here to login.</a>
+                                                        <a href="http://clientbooking.kanhasoftdev.com/login">Click here to login.</a>
                                                         <br>
                                                     </span>
                                                 </p>
