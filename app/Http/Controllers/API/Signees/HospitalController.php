@@ -32,32 +32,40 @@ class HospitalController extends Controller
 
     public function showAllHospital()
     {
-        // //print_r(Auth::user()->id);exit();
-        // $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
-        // $staffIdArray = array_column($staff, 'id');
-        // $staffIdArray[] = Auth::user()->parent_id;
-        // //print_r($staffIdArray);exit();
-        // $trusts = Trust::whereIn('user_id', $staffIdArray)->get()->toArray();
-        // $trustIdArray = array_column($trusts, 'id');
-
-        // $hospitals = Hospital::whereIn('trust_id', $trustIdArray)->get()->toArray();
-
-        // print_r($hospitals);exit();
-
-        $hospital = Hospital::select(
-            //'bookings.hospital_id',
-            'hospitals.id',
-            'hospitals.hospital_name'
-        );
-        $hospital->leftJoin('trusts',  'trusts.id', '=', 'hospitals.trust_id');
-        $hospital->whereNull('hospitals.deleted_at');
-        $hospital->groupBy('hospitals.trust_id');
-        $res = $hospital->get()->toArray();
-        if ($res) {
-            return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
+        //print_r(Auth::user()->id);exit();
+        $staff = User::select('id')->where(['parent_id' => Auth::user()->parent_id, 'role'=>'STAFF'])->get()->toArray();
+        $staffIdArray = array_column($staff, 'id');
+        $staffIdArray[] = Auth::user()->parent_id;
+       // print_r($staffIdArray);exit();
+        $trusts = Trust::whereIn('user_id', $staffIdArray)->get()->toArray();
+        $trustIdArray = array_column($trusts, 'id');
+        //print_r($trustIdArray);exit();
+        $hospitals = Hospital::whereIn('trust_id', $trustIdArray)->get()->toArray();
+        if ($hospitals) {
+            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $hospitals], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
+            return response()->json(['message' => 'Speciality not available.', 'status' => false], 200);
         }
+
+        // -----------------------------------------------------------------------------------
+        //print_r($hospitals);exit();
+
+        // $hospital = Hospital::select(
+        //     //'bookings.hospital_id',
+        //     'hospitals.id',
+        //     'hospitals.hospital_name',
+        //     'hospitals.trust_id'
+        // );
+        // $hospital->leftJoin('trusts',  'trusts.id', '=', 'hospitals.trust_id');
+        // $hospital->leftJoin('users',  'users.id', '=', 'trusts.user_id');
+        // $hospital->whereNull('hospitals.deleted_at');
+        // $hospital->groupBy('hospitals.trust_id');
+        // $res = $hospital->get()->toArray();
+        // if ($res) {
+        //     return response()->json(['status' => true, 'message' => 'Hospitals get successfully', 'data' => $res], $this->successStatus);
+        // } else {
+        //     return response()->json(['message' => 'Hospitals not available.', 'status' => false], 200);
+        // }
 
         //old
         // $bookingMatches = BookingMatch::select(
