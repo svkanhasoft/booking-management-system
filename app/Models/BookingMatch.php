@@ -223,6 +223,7 @@ class BookingMatch extends Model
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->where('bookings.id', $id);
+        $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $res = $booking->first()->toArray();
         return $res;
