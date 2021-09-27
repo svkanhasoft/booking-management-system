@@ -27,20 +27,28 @@ class SigneeSpecialitie extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'speciality_id'];
+    protected $fillable = ['user_id', 'speciality_id', 'organization_id'];
 
-    function addSpeciality($postData, $userId, $isDelete = false)
+    function addSpeciality($postData, $userId, $isDelete = true)
     {
-        
+        //print_r($postData);exit();
         if ($isDelete == true) {
             SigneeSpecialitie::where(['user_id' => $userId])->delete();
         }
         foreach ($postData as $key => $val) {
-            $objSigneeSpecialitie = new SigneeSpecialitie();
-            $objSigneeSpecialitie->speciality_id = $val;
-            $objSigneeSpecialitie->user_id = $userId;
-            $objSigneeSpecialitie->save();
-            $objSigneeSpecialitie = "";
+            //print_r($val);exit();
+            
+            foreach($val['speciality'] as $key => $data)
+            {
+                $objSigneeSpecialitie = new SigneeSpecialitie();
+                $objSigneeSpecialitie->organization_id = $val['organization_id'];
+                $objSigneeSpecialitie->speciality_id = $data;
+                $objSigneeSpecialitie->user_id = $userId;
+                $objSigneeSpecialitie->save();
+                $objSigneeSpecialitie = "";
+            }
+            //$objSigneeSpecialitie->speciality_id = $val;
+            
         }
         return true;
     }

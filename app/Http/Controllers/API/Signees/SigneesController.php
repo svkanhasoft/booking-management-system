@@ -115,12 +115,18 @@ class SigneesController extends Controller
         }
 
         $requestData = $request->all();
-       // print_r($requestData);exit();
+        //print_r($requestData);exit();
         if ($request->hasFile('cv')) {
             $files1 = $request->file('cv');
             $name = time() . '_signee_' . $files1->getClientOriginalName();
             $files1->move(public_path() . '/uploads/signee_docs/', $name);
             $requestData['cv'] = $name;
+        }
+        if ($request->hasFile('profile_pic')) {
+            $files1 = $request->file('profile_pic');
+            $name = time() . '_signee_' . $files1->getClientOriginalName();
+            $files1->move(public_path() . '/uploads/signee_docs/', $name);
+            $requestData['profile_pic'] = $name;
         }
 
         $requestData['password'] = Hash::make($request->post('password'));
@@ -154,6 +160,7 @@ class SigneesController extends Controller
      */
     public function signin(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             "email" => 'required',
             "password" => 'required',
@@ -165,14 +172,16 @@ class SigneesController extends Controller
 
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'SIGNEE')->first();
-  
+       // dd($checkRecord->id);
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 400);
         }
         if ($checkRecord->status != 'Active') {
             return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
         }
-        $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->all('organization_id')])->first();
+        // dd($checkRecord->id, $request->organization_id);
+        $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->organization_id])->get();
+        //print_r($orgResult);exit();
         if(empty($orgResult)){
             return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 400);
         }
@@ -378,6 +387,7 @@ class SigneesController extends Controller
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
         $query->where('users.role', '=', 'ORGANIZATION');
         $count =  $query->orderBy('org.organization_name','asc')->get();
+        //print_r($count);exit;
         if ($count) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
         } else {
@@ -489,28 +499,27 @@ class SigneesController extends Controller
         }
     }
 
-    // public function addOrg(Request $request)
-    // {
-    //     // $validator = Validator::make($request->all(), [
-    //     //     "speciality" => 'required:speciality,[]'
-    //     // ]);
-    //     // if ($validator->fails()) {
-    //     //     $error = $validator->messages()->first();
-    //     //     return response()->json(['status' => false, 'message' => $error], 200);
-    //     // }
-    //     $requestData = $request->all();
-    //     $requestData['user_id'] = $this->userId;
-    //     $signeeOrg = SigneeOrganization::create($requestData);
-    //     echo "success";
-    // }
+    public function addOrg(Request $request)
+    {
+        $requestData = $request->all();
+        //print_r($requestData);exit;
+        $requestData['user_id'] = $this->userId;
+        //$orgId = $requestData['organization']['organization_id'];
+        $signeeOrg = new SigneeOrganization();
+        $signeeOrg->addOrganisation($requestData['organization'], $this->userId, true);
+
+        $objSpeciality = new SigneeSpecialitie();
+        $objSpeciality->addSpeciality($requestData['organization'], $this->userId, true);
+        return response()->json(['status' => true, 'message' => 'Organisation added Successfully'], $this->successStatus);
+    }
 
     public function documentUpload(Request $request)
     {
-        $requestData = $request->file('passport');
-       // print_r($requestData);exit();
+        $requestData = $request->file();
+        //print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'nursing_certificates[]' => 'mimes:jpg|max:2048',
+            'nursing_certificates[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -526,13 +535,14 @@ class SigneesController extends Controller
                     $files = $request->file('nursing_certificates');
                     foreach($files as $key=>$file)
                     {
+                        print_r($file);exit();
                         $name = time() . '_signee_' . $file->getClientOriginalName(); 
                         $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $name);
                         $file->move(public_path().'/uploads/signee_docs/', $new_name);
                         $extension = $file->getClientOriginalExtension();
                         //$check = in_array($extension, $allowedfileExtension);
                         //dd($check);exit();
-                        $file= new SigneeDocument();
+                        $file = new SigneeDocument();
                         //if($check)
                         //{
                             $file->signee_id = $this->userId;
@@ -545,7 +555,9 @@ class SigneesController extends Controller
                          //   return response()->json(['message' => 'File format not supported only supports jpg, png, pdf and jpeg', 'status' => false], 200);
                         //}  
                     }
-                    return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully'], $this->successStatus);
+                    //$data = SigneeDocument::find($file['id']);
+                    //dd($data);
+                    return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $file], $this->successStatus);
                 }
             }
             else{
@@ -555,5 +567,24 @@ class SigneesController extends Controller
         catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
+    }
+
+    public function updateSpeciality(Request $request, $userId)
+    {
+        try{
+            $requestData = $request->all();
+            $objSpeciality = new SigneeSpecialitie();
+            $objSpeciality->addSpeciality($requestData['speciality_id'], $userId, true);
+            if ($objSpeciality) {
+                return response()->json(['status' => true, 'message' => 'Speciality updated successfully'], $this->successStatus);
+            }
+            else {
+                return response()->json(['message' => 'Sorry, Speciality updation failed!', 'status' => false], 200);
+            }
+        }
+        catch(\Exception $e){
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+        
     }
 }
