@@ -1,4 +1,4 @@
-```<?php
+<?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -151,6 +151,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/show-all-hospital', [HospitalController::class, 'showAllHospital']);
         //Route::post('/add-org', [SigneesController::class, 'addOrg']);
         Route::post('/upload-document', [SigneesController::class, 'documentUpload']);
+        Route::put('/update-signee-speciality/{id}', [SigneesController::class, 'updateSpeciality']);
     });
 });
 
