@@ -42,9 +42,9 @@ class HospitalController extends Controller
         //print_r($trustIdArray);exit();
         $hospitals = Hospital::whereIn('trust_id', $trustIdArray)->get()->toArray();
         if ($hospitals) {
-            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $hospitals], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Hospital get successfully', 'data' => $hospitals], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Speciality not available.', 'status' => false], 200);
+            return response()->json(['message' => 'Hospital not available.', 'status' => false], 200);
         }
 
         // -----------------------------------------------------------------------------------

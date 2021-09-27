@@ -125,6 +125,7 @@ class BookingController extends Controller
     public function edit(Request $request)
     {
         $requestData = $request->all();
+       // print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             // 'reference_id' => 'required',
             'trust_id' => 'required',
@@ -142,16 +143,21 @@ class BookingController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            $shift = Booking::findOrFail($requestData["id"]);
+            $booking = Booking::findOrFail($requestData["id"]);
             if($requestData['date'] < date('Y-m-d'))
             {
                 return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             }
-            $shiftUpdated = $shift->update($requestData);
-            if ($shiftUpdated) {
+            
+            if ($booking) {
+                $bookingShift = OrganizationShift::findOrFail($requestData["shift_id"]);
+                //print_r($bookinghift);exit();
+                $requestData['start_time'] = $bookingShift['start_time'];
+                $requestData['end_time'] = $bookingShift['end_time'];
+                $booking->update($requestData);
                 $objBookingSpeciality = new BookingSpeciality();
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
-                return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $shift], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $booking], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
             }
