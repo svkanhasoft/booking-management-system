@@ -144,10 +144,10 @@ class BookingController extends Controller
         }
         try {
             $booking = Booking::findOrFail($requestData["id"]);
-            if($requestData['date'] < date('Y-m-d'))
-            {
-                return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
-            }
+            // if($requestData['date'] < date('Y-m-d'))
+            // {
+            //     return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
+            // }
             
             if ($booking) {
                 $bookingShift = OrganizationShift::findOrFail($requestData["shift_id"]);
