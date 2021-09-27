@@ -183,9 +183,11 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
-        $shift = Booking::where(['user_id' => $this->userId, 'id' => $id])->delete();
-        $shift = BookingMatch::where(['booking_id' => $id])->delete();
-        $booking = BookingSpeciality::where(['booking_id' => $id])->delete();
+        //print_r($id);exit();
+        $booking = Booking::where('id', $id)->delete();
+        //print_r($booking);exit();
+        // $shift = BookingMatch::where(['booking_id' => $id])->delete();
+        // $booking = BookingSpeciality::where(['booking_id' => $id])->delete();
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'Booking deleted!'], $this->successStatus);
         } else {
