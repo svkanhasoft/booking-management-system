@@ -114,10 +114,25 @@ class HospitalController extends Controller
         $query2 = Speciality::whereIn('user_id', $staffIdArray)->get()->toArray();
         //print_r($query2);exit();
 
-        $selectedSpec = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
-        $query2 [] = $selectedSpec;
-        //print_r($query2);exit;
+        // $query = SigneeSpecialitie::where('user_id', Auth::user()->id)->get()->toArray();
+        // print_r($query);exit();
 
+    //     $query = Speciality::select(
+    //         'specialities.id'
+    //     );
+    //     $query->leftJoin('signee_speciality', 'signee_speciality.speciality_id', '=', 'specialities.id');
+        
+    //     $query->where('signee_speciality.user_id', Auth::user()->id);
+    //     $query->whereNull('signee_speciality.deleted_at');
+    //     $res = $query->get()->toArray();
+    // //    // $string = implode(', ', $res);
+    //     $string='';
+    //     foreach ($res as $value){
+    //         $string .=  $value.',';
+    //     }
+
+    //     $query2['signee_speciality'] = $string;
+    //     print_r($query2);exit;
         if ($query2) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $query2], $this->successStatus);
         } else {
