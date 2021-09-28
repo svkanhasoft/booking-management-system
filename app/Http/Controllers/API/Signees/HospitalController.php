@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\BookingMatch;
 use App\Models\Hospital;
 use App\Models\SigneeOrganization;
+use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
 use App\Models\User;
 use App\Models\Trust;
@@ -105,18 +106,18 @@ class HospitalController extends Controller
 
     public function showAllSpeciality()
     {
-        //$perPage = Config::get('constants.pagination.perPage');
+        // echo Auth::user()->id;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
         //print_r($staffIdArray);exit();
-        $query2 = Speciality::whereIn('user_id', $staffIdArray)->get();
-        // //echo $this->userId;exit();
-        // $org = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
-        // //print_r($org);exit();
-        // $orgIdArray = array_column($org, 'organization_id');
-        // //print_r($orgIdArray);exit();
-        // $specialityList = Speciality::whereIn('user_id', $orgIdArray)->get();
+        $query2 = Speciality::whereIn('user_id', $staffIdArray)->get()->toArray();
+        //print_r($query2);exit();
+
+        $selectedSpec = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
+        $query2 [] = $selectedSpec;
+        //print_r($query2);exit;
+
         if ($query2) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $query2], $this->successStatus);
         } else {
