@@ -29,7 +29,24 @@ class SigneeSpecialitie extends Model
      */
     protected $fillable = ['user_id', 'speciality_id', 'organization_id'];
 
-    function addSpeciality($postData, $userId, $isDelete = true)
+    function updateSpeciality($postData, $userId, $isDelete = true)
+    {
+        //print_r($postData);exit();
+        if ($isDelete == true) {
+            SigneeSpecialitie::where(['user_id' => $userId])->delete();
+        }
+        foreach ($postData as $key => $val) {
+            //print_r($val);exit();
+            $objSigneeSpecialitie = new SigneeSpecialitie();
+            $objSigneeSpecialitie->speciality_id = $val;
+            $objSigneeSpecialitie->user_id = $userId;
+            $objSigneeSpecialitie->save();
+            $objSigneeSpecialitie = "";
+        }
+        return true;
+    }
+
+    public function addSpeciality($postData, $userId, $isDelete = false)
     {
         //print_r($postData);exit();
         if ($isDelete == true) {
@@ -46,9 +63,7 @@ class SigneeSpecialitie extends Model
                 $objSigneeSpecialitie->user_id = $userId;
                 $objSigneeSpecialitie->save();
                 $objSigneeSpecialitie = "";
-            }
-            //$objSigneeSpecialitie->speciality_id = $val;
-            
+            }            
         }
         return true;
     }
