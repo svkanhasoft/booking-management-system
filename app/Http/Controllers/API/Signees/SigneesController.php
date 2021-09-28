@@ -582,4 +582,16 @@ class SigneesController extends Controller
         //     return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $organization], $this->successStatus);
         // }
     }
+
+    public function getSigneeDocument(Request $request)
+    {
+        $key = $request->get('key');
+        $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
+        if ($signeeDocument) {
+            return response()->json(['status' => true, 'message' => 'Documents get successfully', 'data'=>$signeeDocument], $this->successStatus);
+        }
+        else {
+            return response()->json(['message' => 'Sorry, Speciality getting error!', 'status' => false], 200);
+        }
+    }
 }

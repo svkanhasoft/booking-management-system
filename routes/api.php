@@ -154,6 +154,7 @@ Route::prefix('signee')->group(function () {
         Route::post('/upload-document', [SigneesController::class, 'documentUpload']);
         Route::put('/update-signee-speciality/{id}', [SigneesController::class, 'updateSpeciality']);
         Route::get('/get-signee-speciality', [SigneesController::class, 'getSigneeSpeciality']);
+        Route::get('/get-signee-document/{key?}', [SigneesController::class, 'getSigneeDocument']);
     });
 });
 
