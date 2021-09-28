@@ -105,12 +105,20 @@ class HospitalController extends Controller
 
     public function showAllSpeciality()
     {
-        $org = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
-        $orgIdArray = array_column($org, 'organization_id');
-        //print_r($orgIdArray);exit();
-        $specialityList = Speciality::whereIn('user_id', $orgIdArray)->get();
-        if ($specialityList) {
-            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $specialityList], $this->successStatus);
+        //$perPage = Config::get('constants.pagination.perPage');
+        $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
+        $staffIdArray = array_column($staff, 'id');
+        $staffIdArray[] = Auth::user()->parent_id;
+        //print_r($staffIdArray);exit();
+        $query2 = Speciality::whereIn('user_id', $staffIdArray)->get();
+        // //echo $this->userId;exit();
+        // $org = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
+        // //print_r($org);exit();
+        // $orgIdArray = array_column($org, 'organization_id');
+        // //print_r($orgIdArray);exit();
+        // $specialityList = Speciality::whereIn('user_id', $orgIdArray)->get();
+        if ($query2) {
+            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $query2], $this->successStatus);
         } else {
             return response()->json(['message' => 'Speciality not available.', 'status' => false], 200);
         }
