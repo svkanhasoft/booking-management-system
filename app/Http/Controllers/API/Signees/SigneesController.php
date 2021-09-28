@@ -465,8 +465,8 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
-        $requestData = $request->file();
-        //print_r($requestData);exit();
+        $requestData = $request->all();
+       // print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
             'passport[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
@@ -481,32 +481,23 @@ class SigneesController extends Controller
             {
                 if($request->file($request['key']))
                 {
-                    //$allowedfileExtension=['png','jpg','jpeg','pdf','docs'];
                     $files = $request->file($request['key']);
                     foreach($files as $key=>$file)
                     {
+                        //print_r($file);exit();
                         $name = time() . '_signee_' . $file->getClientOriginalName(); 
                         $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $name);
                         $file->move(public_path().'/uploads/signee_docs/', $new_name);
-                        $extension = $file->getClientOriginalExtension();
-                        //$check = in_array($extension, $allowedfileExtension);
-                        //dd($check);exit();
-                        $file = new SigneeDocument();
-                        //if($check)
-                        //{
-                            $file->signee_id = $this->userId;
-                            $file->key = $request['key'];
-                            $file->file_name = $new_name;
-                            $file->save();
-                        //}
-                        //else
-                        //{
-                         //   return response()->json(['message' => 'File format not supported only supports jpg, png, pdf and jpeg', 'status' => false], 200);
-                        //}  
+
+                        $image = new SigneeDocument();
+                        $image->signee_id = $this->userId;
+                        $image->key = $requestData['key'];
+                        $image->file_name = $new_name;
+                        $image->save();  
                     }
                     //$data = SigneeDocument::find($file['id']);
                     //dd($data);
-                    return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $file], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $image], $this->successStatus);
                 }
             }
             else{
@@ -540,9 +531,29 @@ class SigneesController extends Controller
 
     public function getSigneeSpeciality()
     {
-        $query = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
-        if ($query) {
-            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=>$query], $this->successStatus);
+        // $query = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
+        $query = SigneeSpecialitie::select(
+            DB::raw('GROUP_CONCAT( specialities.id SEPARATOR ",") AS speciality_id'),
+        );
+        $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        
+        $query->where('signee_speciality.user_id', Auth::user()->id);
+        $query->whereNull('signee_speciality.deleted_at');
+        $res = $query->first()->toArray();
+       
+        //$array = explode(',', $res);
+        
+        // $array = [];
+        // foreach ($array as $key => $value) {
+        //     $array[] = $value;
+        // }
+        print_r($res);exit();
+        //$array[] = $res;
+        //$speciality_id['speciality_id'] = $res;
+        
+        
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=>$res], $this->successStatus);
         }
         else {
             return response()->json(['message' => 'Sorry, Speciality getting error!', 'status' => false], 200);
