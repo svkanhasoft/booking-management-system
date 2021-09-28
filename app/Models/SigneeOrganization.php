@@ -29,7 +29,7 @@ class SigneeOrganization extends Model
      */
     protected $fillable = ['user_id', 'status','organization_id'];
 
-    function addOrganisation($postData, $userId, $orgId, $isDelete = true)
+    function addOrganisation($postData, $userId, $orgId, $isDelete = false)
     {
       // print_r($postData);exit();
         if ($isDelete == true) {
