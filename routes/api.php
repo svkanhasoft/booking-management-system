@@ -131,6 +131,7 @@ Route::prefix('signee')->group(function () {
     Route::get('/get-organisation', [SigneesController::class, 'getOrganisation']);
     Route::get('/get-org-specialities/{id}', [SigneesController::class, 'getOrgSpecialities']);
     Route::get('/generate-candidateId', [SigneesController::class, 'getCandidateId']);
+    Route::post('/get-email-organisation', [SigneesController::class, 'getEmailOrganisation']);
     // Route::get('/show-all-hospital', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllHospital']);
     // Route::get('/show-all-speciality', [App\Http\Controllers\API\Signees\HospitalController::class, 'showAllSpeciality']);
     Route::middleware(['auth:api'])->group(function () {
@@ -152,6 +153,7 @@ Route::prefix('signee')->group(function () {
         Route::post('/add-org', [SigneesController::class, 'addOrg']);
         Route::post('/upload-document', [SigneesController::class, 'documentUpload']);
         Route::put('/update-signee-speciality/{id}', [SigneesController::class, 'updateSpeciality']);
+        Route::get('/get-signee-speciality', [SigneesController::class, 'getSigneeSpeciality']);
     });
 });
 

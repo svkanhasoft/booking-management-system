@@ -538,6 +538,18 @@ class SigneesController extends Controller
         
     }
 
+    public function getSigneeSpeciality()
+    {
+        $query = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
+        if ($query) {
+            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=>$query], $this->successStatus);
+        }
+        else {
+            return response()->json(['message' => 'Sorry, Speciality getting error!', 'status' => false], 200);
+        }
+    }
+
+
     public function getEmailOrganisation(Request $request)
     {
         $requestData = $request->all();
