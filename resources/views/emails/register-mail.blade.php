@@ -49,12 +49,17 @@
                                                         {{ $details['data']['email'] }} <br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Password:
                                                         {{ $details['data']['password'] }} <br></span></p>
+                                                
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        <a href="http://clientbooking.kanhasoftdev.com/login">Click here to login.</a>
+                                                        @if( $details['data']['role'] == 'SIGNEE' )
+                                                            <a href="http://clientbooking.kanhasoftdev.com/login">Click here to login.</a>
                                                         <br>
+                                                        @else
+                                                        <a href="http://adminbooking.kanhasoftdev.com/login">Click here to login.</a>
+                                                        @endif
                                                     </span>
-                                                </p>
+                                                </p>                                                
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
                                                         you for being a part of the booking management system family.</span></p>
                                             </div>

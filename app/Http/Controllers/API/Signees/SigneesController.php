@@ -48,56 +48,6 @@ class SigneesController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    // public function signup(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         "email" => 'required|unique:users',
-    //         "first_name" => 'required',
-    //         "last_name" => 'required',
-    //         "contact_number" => 'required',
-    //         "address_line_1" => 'required',
-    //         "city" => 'required',
-    //         "postcode" => 'required',
-    //     ]);
-    //     if ($validator->fails()) {
-    //         $error = $validator->messages()->first();
-    //         return response()->json(['status' => false, 'message' => $error], 200);
-    //     }
-
-    //     $requestData = $request->all();
-    //     print_r($requestData);exit();
-    //     if ($request->hasFile('cv')) {
-    //         $files1 = $request->file('cv');
-    //         $name = time() . '_signee_' . $files1->getClientOriginalName();
-    //         $files1->move(public_path() . '/uploads/signee_docs/', $name);
-    //         $requestData['cv'] = $name;
-    //     }
-
-    //     $requestData['password'] = Hash::make($request->post('password'));
-    //     $requestData['parent_id'] = $request->post('organization_id');
-    //     $requestData['role'] = 'SIGNEE';
-    //     $userCreated = User::create($requestData);
-    //     if ($userCreated) {
-    //         $requestData['user_id'] = $userCreated['id'];
-    //         $orgResult = SigneesDetail::create($requestData);
-
-    //         $objSpeciality = new SigneeSpecialitie();
-    //         $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
-
-    //         $objOrganization = new SigneeOrganization();
-    //         $objOrganization->addOrganization($requestData['organization'], $userCreated['id'], false);
-    //         // $requestData['organization_id'] = $request->post('organization_id');
-    //         // $requestData['user_id'] = $userCreated['id'];
-    //         // $sing = SigneeOrganization::create($requestData);
-    //         if ($userCreated) {
-    //             $UserObj = new User();
-    //             $mailRes =  $UserObj->sendRegisterEmail($request);
-    //             return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
-    //         }
-    //     } else {
-    //         return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
-    //     }
-    // }
 
     public function signup(Request $request)
     {
@@ -125,9 +75,9 @@ class SigneesController extends Controller
         }
         if ($request->hasFile('profile_pic')) {
             $files1 = $request->file('profile_pic');
-            $name = time() . '_signee_' . $files1->getClientOriginalName();
-            $files1->move(public_path() . '/uploads/signee_docs/', $name);
-            $requestData['profile_pic'] = $name;
+            $name2 = time() . '_signee_' . $files1->getClientOriginalName();
+            $files1->move(public_path() . '/uploads/signee_docs/', $name2);
+            $requestData['profile_pic'] = $name2;
         }
 
         $requestData['password'] = Hash::make($request->post('password'));
@@ -139,7 +89,7 @@ class SigneesController extends Controller
             $orgResult = SigneesDetail::create($requestData);
 
             $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+            $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], false);
 
             $requestData['organization_id'] = $request->post('organization_id');
             $requestData['user_id'] = $userCreated['id'];
