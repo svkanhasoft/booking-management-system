@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\Booking;
 use App\Models\SigneesDetail;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\SigneeOrganization;
@@ -170,7 +171,6 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => $error], 400);
         }
 
-
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'SIGNEE')->first();
        // dd($checkRecord->id);
         if (empty($checkRecord)) {
@@ -180,7 +180,7 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
         }
         // dd($checkRecord->id, $request->organization_id);
-        $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->organization_id])->get();
+        $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->organization_id])->first();
         //print_r($orgResult);exit();
         if(empty($orgResult)){
             return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 400);
@@ -506,7 +506,7 @@ class SigneesController extends Controller
         $requestData['user_id'] = $this->userId;
         //$orgId = $requestData['organization']['organization_id'];
         $signeeOrg = new SigneeOrganization();
-        $signeeOrg->addOrganisation($requestData['organization'], $this->userId, true);
+        $signeeOrg->addOrganisation($requestData['organization'], $this->userId, false);
 
         $objSpeciality = new SigneeSpecialitie();
         $objSpeciality->addSpeciality($requestData['organization'], $this->userId, true);
@@ -519,7 +519,7 @@ class SigneesController extends Controller
         //print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'nursing_certificates[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
+            'passport[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -527,15 +527,14 @@ class SigneesController extends Controller
         }
         try
         { 
-            if($request->hasfile('nursing_certificates'))
+            if($request->hasfile($request['key']))
             {
-                if($request->file('nursing_certificates'))
+                if($request->file($request['key']))
                 {
                     //$allowedfileExtension=['png','jpg','jpeg','pdf','docs'];
-                    $files = $request->file('nursing_certificates');
+                    $files = $request->file($request['key']);
                     foreach($files as $key=>$file)
                     {
-                        print_r($file);exit();
                         $name = time() . '_signee_' . $file->getClientOriginalName(); 
                         $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $name);
                         $file->move(public_path().'/uploads/signee_docs/', $new_name);
@@ -586,5 +585,26 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
         
+    }
+
+    public function getEmailOrganisation(Request $request)
+    {
+        $requestData = $request->all();
+        $email = $requestData['email'];
+        $userData = User::where('email', $email)->first();
+        //print_r($userData);
+        $query = SigneeOrganization::select(
+            //"users.*",
+            'organizations.organization_name'
+        );
+        $query->join('organizations' , 'organizations.user_id', '=', 'users.id');
+        $query->where('users.email', $email);
+        $res = $query->toSql();
+        return $res;
+        // $organization = SigneeOrganization::where('user_id', $userData['id'])->get();
+        // if($organization)
+        // {
+        //     return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $organization], $this->successStatus);
+        // }
     }
 }
