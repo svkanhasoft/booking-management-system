@@ -465,11 +465,12 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
+        // print_r($request->file());exit;
         $requestData = $request->all();
-       // print_r($requestData);exit();
+        //print_r($requestData['key']);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'passport[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
+            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -477,11 +478,11 @@ class SigneesController extends Controller
         }
         try
         { 
-            if($request->hasfile($request['key']))
+            if($request->hasfile('files'))
             {
-                if($request->file($request['key']))
+                if($request->file('files'))
                 {
-                    $files = $request->file($request['key']);
+                    $files = $request->file('files');
                     foreach($files as $key=>$file)
                     {
                         //print_r($file);exit();
