@@ -370,7 +370,7 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-        //print_r($requestData);exit();
+       // print_r($requestData);exit();
         // if ($request->hasFile('cv')) {
         //     $files1 = $request->file('cv');
         //     $name = time() . '_signee_' . $files1->getClientOriginalName();
@@ -387,7 +387,7 @@ class UserController extends Controller
                 $orgResult = SigneesDetail::create($requestData);
 
                 $objSpeciality = new SigneeSpecialitie();
-                $objSpeciality->addSpeciality($requestData['speciality'], $userCreated['id'], false);
+                $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], false);
 
                 //$requestData['organization_id'] = $request->post('organization_id');
                 $requestData['organization_id'] = $this->userId;
@@ -457,12 +457,9 @@ class UserController extends Controller
     public function deleteSignee($id)
     {
         try {
-            $userDelete = User::destroy($id);
-            SigneesDetail::where('user_id', $id)->delete();
-            SigneeOrganization::where('user_id', $id)->delete();
-            SigneeSpecialitie::where('user_id', $id)->delete();
-
-            if ($userDelete) {
+            $userDelete = User::find($id);
+            $delete = SigneeOrganization::where(['user_id' => $id, 'organization_id' => $userDelete['parent_id']])->delete();
+            if ($delete) {
                 return response()->json(['status' => true, 'message' => 'Signee deleted successfully.'], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Sorry, Signee not deleted.'], $this->successStatus);

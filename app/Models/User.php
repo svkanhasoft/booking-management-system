@@ -354,6 +354,7 @@ class User extends Authenticatable
         // $query->whereNull(['signee_speciality.deleted_at','specialities.deleted_at']);
 
         $query->whereNull(['signee_speciality.deleted_at', 'specialities.deleted_at']);
+        $query->whereNull(['signee_organization.deleted_at', 'specialities.deleted_at']);
 
         $query->groupBy('signee_organization.user_id');
         // $query->groupBy('signee_speciality.user_id');
