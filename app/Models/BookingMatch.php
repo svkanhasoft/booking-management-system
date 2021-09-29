@@ -176,16 +176,6 @@ class BookingMatch extends Model
         $booking->where('bookings.date', '>=', date('y-m-d'));
         $booking->whereIn('bookings.user_id', $staffIdArray);
 
-        // if(Auth::user()->role == 'ORGANIZATION'){
-        //     $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
-        //     $staffIdArray = array_column($staff, 'id');
-        //     $staffIdArray[] = Auth::user()->id;
-        //     $booking->whereIn('bookings.user_id',$staffIdArray);
-        // }else{
-        //     // $query->where('bookings.user_id',Auth::user()->id);
-        //     $booking->whereIn('bookings.user_id',array(Auth::user()->id,Auth::user()->parent_id));
-        // }
-
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');

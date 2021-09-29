@@ -21,6 +21,7 @@ use Validator;
 use Config;
 use Illuminate\Support\Facades\Auth;
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class SigneesController extends Controller
 {
@@ -465,7 +466,7 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
-        // print_r($request->file());exit;
+        //print_r($request->file());exit;
         $requestData = $request->all();
         //print_r($requestData['key']);exit();
         $validator = Validator::make($request->all(), [
@@ -483,22 +484,31 @@ class SigneesController extends Controller
                 if($request->file('files'))
                 {
                     $files = $request->file('files');
+                    //print_r($files);exit();
+                   
                     foreach($files as $key=>$file)
                     {
                         //print_r($file);exit();
-                        $name = time() . '_signee_' . $file->getClientOriginalName(); 
-                        $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $name);
-                        $file->move(public_path().'/uploads/signee_docs/', $new_name);
+                        $name = $file->getClientOriginalName();
+                        $filename = pathinfo($name, PATHINFO_FILENAME);
+                        $extension = pathinfo($name, PATHINFO_EXTENSION);
+                        
+                        $new_filename = $filename.'_'.time().'.'.$extension;
 
+                        $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
+                        $file->move(public_path().'/uploads/signee_docs/', $new_name);
                         $image = new SigneeDocument();
                         $image->signee_id = $this->userId;
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
-                        $image->save();  
+                        $docUpload = $image->save(); 
                     }
-                    //$data = SigneeDocument::find($file['id']);
-                    //dd($data);
-                    return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $image], $this->successStatus);
+                    if($docUpload)
+                    {
+                        $document = $image->getDocument($image->signee_id, $image->key);
+                        return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $document], $this->successStatus);
+                    }
+                    //return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data'=> $files], $this->successStatus);
                 }
             }
             else{
@@ -552,9 +562,8 @@ class SigneesController extends Controller
         //$array[] = $res;
         //$speciality_id['speciality_id'] = $res;
         
-        
         if ($res) {
-            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=>$res], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=> $res], $this->successStatus);
         }
         else {
             return response()->json(['message' => 'Sorry, Speciality getting error!', 'status' => false], 200);
@@ -585,13 +594,40 @@ class SigneesController extends Controller
 
     public function getSigneeDocument(Request $request)
     {
+        $perPage = Config::get('constants.pagination.perPage');
         $key = $request->get('key');
-        $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
-        if ($signeeDocument) {
-            return response()->json(['status' => true, 'message' => 'Documents get successfully', 'data'=>$signeeDocument], $this->successStatus);
+        // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
+        $signeeDocument = SigneeDocument::select(
+            "id",
+            "signee_id",
+            "key",
+            "file_name",
+            DB::raw('date(created_at) as date_added'),
+        );
+        if (!empty($key)) {
+            // echo $keyword;exit;
+            $signeeDocument->Where('key', $key);
+        }
+
+        $data = $signeeDocument->latest()->paginate($perPage);
+        $count =  $data->count();
+        if ($count) {
+            return response()->json(['status' => true, 'message' => 'Documents get successfully', 'data'=>$data], $this->successStatus);
         }
         else {
-            return response()->json(['message' => 'Sorry, Speciality getting error!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Documents not found!', 'status' => false], 200);
+        }
+    }
+
+    public function deleteDocument($id)
+    {
+        // echo $id;
+        $document = SigneeDocument::find($id);
+        unlink(public_path()."/uploads/signee_docs/" . $document->file_name);
+        $document = SigneeDocument::where("id", $document->id)->delete();
+        if($document)
+        {
+            return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);           
         }
     }
 }
