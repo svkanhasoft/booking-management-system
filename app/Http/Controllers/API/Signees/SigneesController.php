@@ -500,14 +500,11 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
-        $user = User::where('id', $this->userId)->first();
-        //echo $this->userId;exit;
-        //print_r($request->file());exit;
         $requestData = $request->all();
         //print_r($requestData['key']);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:2048',
+            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:10048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -515,19 +512,20 @@ class SigneesController extends Controller
         }
         try
         { 
+            $user = User::where('id', $this->userId)->first();
             if($request->hasfile('files'))
             {
                 if($request->file('files'))
                 {
                     $files = $request->file('files');
+                    // $size = $request->file('files')->getClientSize();
+                    // echo $size;exit();
                     foreach($files as $key=>$file)
                     {
                         $name = $file->getClientOriginalName();
                         $filename = pathinfo($name, PATHINFO_FILENAME);
                         $extension = pathinfo($name, PATHINFO_EXTENSION);
-                        
                         $new_filename = $filename.'_'.time().'.'.$extension;
-
                         $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
                         $file->move(public_path().'/uploads/signee_docs/', $new_name);
                         $image = new SigneeDocument();
@@ -629,30 +627,36 @@ class SigneesController extends Controller
 
     public function getSigneeDocument(Request $request)
     {
-        $perPage = Config::get('constants.pagination.perPage');
-        $key = $request->get('key');
-        // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
-        $signeeDocument = SigneeDocument::select(
-            "id",
-            "signee_id",
-            "key",
-            "file_name",
-            "organization_id",
-            DB::raw('date(created_at) as date_added'),
-        );
-        $signeeDocument->where(['signee_id'=> $this->userId, 'organization_id'=>Auth::user()->parent_id]);
-        if (!empty($key)) {
-            // echo $keyword;exit;
-            $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId, 'organization_id'=>Auth::user()->parent_id]);
+        try{
+            $perPage = Config::get('constants.pagination.perPage');
+            $key = $request->get('key');
+            // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
+            $signeeDocument = SigneeDocument::select(
+                "id",
+                "signee_id",
+                "key",
+                "file_name",
+                "organization_id",
+                DB::raw('date(created_at) as date_added'),
+            );
+            $signeeDocument->where(['signee_id'=> $this->userId, 'organization_id'=>Auth::user()->parent_id]);
+            if (!empty($key)) {
+                // echo $keyword;exit;
+                $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId, 'organization_id'=>Auth::user()->parent_id]);
+            }
+    
+            $data = $signeeDocument->latest()->paginate($perPage);
+            $count =  $data->count();
+            if ($count) {
+                return response()->json(['status' => true, 'message' => 'Documents get successfully', 'data'=>$data], $this->successStatus);
+            }
+            else {
+                return response()->json(['message' => 'Sorry, Documents not found!', 'status' => false], 200);
+            }
         }
-
-        $data = $signeeDocument->latest()->paginate($perPage);
-        $count =  $data->count();
-        if ($count) {
-            return response()->json(['status' => true, 'message' => 'Documents get successfully', 'data'=>$data], $this->successStatus);
-        }
-        else {
-            return response()->json(['message' => 'Sorry, Documents not found!', 'status' => false], 200);
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
