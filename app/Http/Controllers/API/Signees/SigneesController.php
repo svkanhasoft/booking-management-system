@@ -333,37 +333,51 @@ class SigneesController extends Controller
     {
         $query = User::select(
             "users.*",
-            'org.organization_name',
-
+            'org.organization_name'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-
         $query->where('users.role', '=', 'ORGANIZATION');
-        $query->orderBy('org.organization_name','asc');
-        $orgList = $query->get()->toArray();
-        //print_r(gettype($orgList));exit();
-
-        $orgId = array_column($orgList, 'id');
-
-        $query2 = Speciality::select(
-            'id',
-            'speciality_name',
-        );
-        $query2->whereIn('user_id', $orgId);
-        $orgSpec = $query2->get()->toArray();
-
-        $result = [];
-        
-        $result = $orgList; 
-
-        $result['speciality'] = $orgSpec;
-        //print_r($result);exit();
-
-        if ($result) {
-            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $result], $this->successStatus);
+        $count =  $query->orderBy('org.organization_name','asc')->get();
+        if ($count) {
+            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
+
+
+        // $query = User::select(
+        //     "users.*",
+        //     'org.organization_name',
+
+        // );
+        // $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+
+        // $query->where('users.role', '=', 'ORGANIZATION');
+        // $query->orderBy('org.organization_name','asc');
+        // $orgList = $query->get()->toArray();
+        //print_r(gettype($orgList));exit();
+
+        // $orgId = array_column($orgList, 'id');
+
+        // $query2 = Speciality::select(
+        //     'id',
+        //     'speciality_name',
+        // );
+        // $query2->whereIn('user_id', $orgId);
+        // $orgSpec = $query2->get()->toArray();
+
+        // $result = [];
+        
+        // $result = $orgList; 
+
+        // $result['speciality'] = $orgSpec;
+        //print_r($result);exit();
+
+        // if ($result) {
+        //     return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $result], $this->successStatus);
+        // } else {
+        //     return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+        // }
     }
 
     public function getOrgSpecialities($id)
@@ -486,6 +500,7 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
+        $this->userId;exit;
         //print_r($request->file());exit;
         $requestData = $request->all();
         //print_r($requestData['key']);exit();
