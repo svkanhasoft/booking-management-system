@@ -333,14 +333,34 @@ class SigneesController extends Controller
     {
         $query = User::select(
             "users.*",
-            'org.organization_name'
+            'org.organization_name',
+
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+
         $query->where('users.role', '=', 'ORGANIZATION');
-        $count =  $query->orderBy('org.organization_name','asc')->get();
-        //print_r($count);exit;
-        if ($count) {
-            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
+        $query->orderBy('org.organization_name','asc');
+        $orgList = $query->get()->toArray();
+        //print_r(gettype($orgList));exit();
+
+        $orgId = array_column($orgList, 'id');
+
+        $query2 = Speciality::select(
+            'id',
+            'speciality_name',
+        );
+        $query2->whereIn('user_id', $orgId);
+        $orgSpec = $query2->get()->toArray();
+
+        $result = [];
+        
+        $result = $orgList; 
+
+        $result['speciality'] = $orgSpec;
+        //print_r($result);exit();
+
+        if ($result) {
+            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $result], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
@@ -542,24 +562,26 @@ class SigneesController extends Controller
 
     public function getSigneeSpeciality()
     {
+        // echo Auth::user()->id;exit;
         // $query = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
         $query = SigneeSpecialitie::select(
-            DB::raw('GROUP_CONCAT( specialities.id SEPARATOR ",") AS speciality_id'),
+            // DB::raw('GROUP_CONCAT( specialities.id SEPARATOR ",") AS speciality_id'),
+            'specialities.id as speciality_id'
         );
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         
         $query->where('signee_speciality.user_id', Auth::user()->id);
         $query->whereNull('signee_speciality.deleted_at');
-        $res = $query->first()->toArray();
-       
+        $res = $query->get()->toArray();
+        
         //$array = explode(',', $res);
         
         // $array = [];
         // foreach ($array as $key => $value) {
         //     $array[] = $value;
         // }
-        //$array[] = $res;
-        //$speciality_id['speciality_id'] = $res;
+        
+       // $speciality_id['speciality_id'] = $res;
         
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=> $res], $this->successStatus);
