@@ -500,7 +500,8 @@ class SigneesController extends Controller
 
     public function documentUpload(Request $request)
     {
-        $this->userId;exit;
+        $user = User::where('id', $this->userId)->first();
+        //echo $this->userId;exit;
         //print_r($request->file());exit;
         $requestData = $request->all();
         //print_r($requestData['key']);exit();
@@ -519,11 +520,8 @@ class SigneesController extends Controller
                 if($request->file('files'))
                 {
                     $files = $request->file('files');
-                    //print_r($files);exit();
-                   
                     foreach($files as $key=>$file)
                     {
-                        //print_r($file);exit();
                         $name = $file->getClientOriginalName();
                         $filename = pathinfo($name, PATHINFO_FILENAME);
                         $extension = pathinfo($name, PATHINFO_EXTENSION);
@@ -536,14 +534,14 @@ class SigneesController extends Controller
                         $image->signee_id = $this->userId;
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
+                        $image->organization_id = $user->parent_id;
                         $docUpload = $image->save(); 
                     }
                     if($docUpload)
                     {
-                        $document = $image->getDocument($image->signee_id, $image->key);
+                        $document = $image->getDocument($image->signee_id, $image->key, $user->parent_id);
                         return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $document], $this->successStatus);
                     }
-                    //return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data'=> $files], $this->successStatus);
                 }
             }
             else{
@@ -631,7 +629,6 @@ class SigneesController extends Controller
 
     public function getSigneeDocument(Request $request)
     {
-       // echo $this->userId;exit;
         $perPage = Config::get('constants.pagination.perPage');
         $key = $request->get('key');
         // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
@@ -640,12 +637,13 @@ class SigneesController extends Controller
             "signee_id",
             "key",
             "file_name",
+            "organization_id",
             DB::raw('date(created_at) as date_added'),
         );
-        $signeeDocument->where('signee_id', $this->userId);
+        $signeeDocument->where(['signee_id'=> $this->userId, 'organization_id'=>Auth::user()->parent_id]);
         if (!empty($key)) {
             // echo $keyword;exit;
-            $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId]);
+            $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId, 'organization_id'=>Auth::user()->parent_id]);
         }
 
         $data = $signeeDocument->latest()->paginate($perPage);
