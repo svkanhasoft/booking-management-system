@@ -607,16 +607,17 @@ class SigneesController extends Controller
     {
         $requestData = $request->all();
         $email = $requestData['email'];
-        $userData = User::where('email', $email)->first();
+        //$userData = User::where('email', $email)->first();
        // print_r($userData);exit();
         $query = SigneeOrganization::select(
             //"users.*",
+            'organization_id',
             'organizations.organization_name'
         );
-        $query->leftJoin('users' , 'users.id', '=', 'organizations.user_id');
-        $query->leftJoin('organizations' , 'organizations.user_id', '=', 'users.id');
+        $query->leftJoin('users' , 'users.id', '=', 'signee_organization.user_id');
+        $query->leftJoin('organizations' , 'organizations.user_id', '=', 'signee_organization.organization_id');
         $query->where('users.email', $email);
-        $res = $query->toSql();
+        $res = $query->get();
         return $res;
         // $organization = SigneeOrganization::where('user_id', $userData['id'])->get();
         // if($organization)
