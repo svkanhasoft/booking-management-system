@@ -575,12 +575,13 @@ class SigneesController extends Controller
         $requestData = $request->all();
         $email = $requestData['email'];
         $userData = User::where('email', $email)->first();
-        //print_r($userData);
+       // print_r($userData);exit();
         $query = SigneeOrganization::select(
             //"users.*",
             'organizations.organization_name'
         );
-        $query->join('organizations' , 'organizations.user_id', '=', 'users.id');
+        $query->leftJoin('users' , 'users.id', '=', 'organizations.user_id');
+        $query->leftJoin('organizations' , 'organizations.user_id', '=', 'users.id');
         $query->where('users.email', $email);
         $res = $query->toSql();
         return $res;
@@ -593,6 +594,7 @@ class SigneesController extends Controller
 
     public function getSigneeDocument(Request $request)
     {
+       // echo $this->userId;exit;
         $perPage = Config::get('constants.pagination.perPage');
         $key = $request->get('key');
         // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
@@ -603,9 +605,10 @@ class SigneesController extends Controller
             "file_name",
             DB::raw('date(created_at) as date_added'),
         );
+        $signeeDocument->where('signee_id', $this->userId);
         if (!empty($key)) {
             // echo $keyword;exit;
-            $signeeDocument->Where('key', $key);
+            $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId]);
         }
 
         $data = $signeeDocument->latest()->paginate($perPage);
