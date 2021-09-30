@@ -558,7 +558,6 @@ class SigneesController extends Controller
         // foreach ($array as $key => $value) {
         //     $array[] = $value;
         // }
-        print_r($res);exit();
         //$array[] = $res;
         //$speciality_id['speciality_id'] = $res;
         
