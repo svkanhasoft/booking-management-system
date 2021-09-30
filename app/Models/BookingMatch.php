@@ -269,6 +269,7 @@ class BookingMatch extends Model
             $booking->where('users.parent_id', Auth::user()->parent_id);
         }
         $booking->where('bookings.status', 'OPEN');
+        $booking->where('bookings.date', '>=', date('y-m-d'));
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->whereNull('hospitals.deleted_at');
