@@ -156,18 +156,18 @@
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Email:
-                                                        {{ $details['data']['email'] }} <br></span>
+                                                       {{ $details['data']['email'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
-                                                    <!-- @if(request()->getHttpHost() =='localhost:8000')
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        <a href="http://localhost:3000/reset-password?query={{ base64_encode($details['data']['id']) }}">Click
-                                                            Here to reset your password.</a></span>
-                                                        @else -->
-                                                        <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                        @if( $details['data']['role'] == 'SIGNEE' )
+                                                            <a href="http://clientbooking.kanhasoftdev.com/reset-password?query={{ base64_encode($details['data']['id']) }}">Click
+                                                                Here to reset your password.</a>
+                                                        @else
                                                             <a href="http://adminbooking.kanhasoftdev.com/reset-password?query={{ base64_encode($details['data']['id']) }}">Click
-                                                                Here to reset your password.</a></span>
-                                                            <!-- @endif -->
+                                                                Here to reset your password.</a>
+                                                        @endif
+                                                    </span>
                                                  <br></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
                                                         you for being a part of the booking management system family.</span></p>
