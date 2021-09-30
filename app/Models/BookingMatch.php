@@ -8,6 +8,7 @@ use DB;
 use Config;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class BookingMatch extends Model
 {
@@ -222,6 +223,7 @@ class BookingMatch extends Model
 
     public function getFilterBookings($request,$userId)
     {
+        //echo $userId;exit();
         $requestData = $request->all();
 
         // $dayArray = $requestData['day'];
@@ -253,14 +255,18 @@ class BookingMatch extends Model
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->leftJoin('users',  'users.parent_id', '=', 'bookings.user_id');
         if (!empty($requestData['day'])) {
             $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
+            $booking->where('users.parent_id', Auth::user()->parent_id);
         }
         if (!empty($requestData['speciality_id'])) {
             $booking->whereIn('booking_specialities.speciality_id', $requestData['speciality_id']);
+            $booking->where('users.parent_id', Auth::user()->parent_id);
         }
         if (!empty($requestData['hospital_id'])) {
             $booking->whereIn('bookings.hospital_id', $requestData['hospital_id']);
+            $booking->where('users.parent_id', Auth::user()->parent_id);
         }
         $booking->where('bookings.status', 'OPEN');
         $booking->whereNull('bookings.deleted_at');
