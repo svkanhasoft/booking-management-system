@@ -501,10 +501,10 @@ class SigneesController extends Controller
     public function documentUpload(Request $request)
     {
         $requestData = $request->all();
-        //print_r($requestData['key']);exit();
+       // print_r($requestData['files']);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|max:10048',
+            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
