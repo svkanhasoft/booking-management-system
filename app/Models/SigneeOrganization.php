@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class SigneeOrganization extends Model
 {
@@ -29,11 +30,11 @@ class SigneeOrganization extends Model
      */
     protected $fillable = ['user_id', 'status','organization_id'];
 
-    function addOrganisation($postData, $userId, $orgId, $isDelete = false)
+    function addOrganisation($postData, $userId, $orgId, $isDelete = true)
     {
-      // print_r($postData);exit();
+    //print_r(Auth::user()->parent_id);exit();
         if ($isDelete == true) {
-            SigneeOrganization::where(['user_id' => $userId])->delete();
+            SigneeOrganization::where(['user_id' => $userId, 'organization_id'=> Auth::user()->parent_id])->delete();
         }
         foreach ($postData as $key => $val) {
             //print_r($val);exit();
