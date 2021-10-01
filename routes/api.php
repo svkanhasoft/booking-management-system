@@ -156,6 +156,8 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-signee-speciality', [SigneesController::class, 'getSigneeSpeciality']);
         Route::get('/get-signee-document/{key?}', [SigneesController::class, 'getSigneeDocument']);
         Route::delete('/delete-document/{id}', [SigneesController::class, 'deleteDocument']);
+        //Route::get('/get-organisation', [SigneesController::class, 'getOrganisation']);
+        Route::get('/get-organisation-add-org', [SigneesController::class, 'getOrganisationListAddOrg']);
     });
 });
 

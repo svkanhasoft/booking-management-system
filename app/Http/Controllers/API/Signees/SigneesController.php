@@ -329,7 +329,7 @@ class SigneesController extends Controller
         }
     }
 
-    public function getOrganisation()
+    public function getOrganisation()   //while register signee
     {
         $query = User::select(
             "users.*",
@@ -345,40 +345,47 @@ class SigneesController extends Controller
         }
 
 
-        // $query = User::select(
-        //     "users.*",
-        //     'org.organization_name',
-
-        // );
-        // $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-
-        // $query->where('users.role', '=', 'ORGANIZATION');
-        // $query->orderBy('org.organization_name','asc');
-        // $orgList = $query->get()->toArray();
-        //print_r(gettype($orgList));exit();
-
-        // $orgId = array_column($orgList, 'id');
-
-        // $query2 = Speciality::select(
-        //     'id',
-        //     'speciality_name',
-        // );
-        // $query2->whereIn('user_id', $orgId);
-        // $orgSpec = $query2->get()->toArray();
-
-        // $result = [];
-        
-        // $result = $orgList; 
-
-        // $result['speciality'] = $orgSpec;
-        //print_r($result);exit();
-
-        // if ($result) {
-        //     return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $result], $this->successStatus);
-        // } else {
-        //     return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
-        // }
+    //     $query = User::select(
+    //         "users.*",
+    //         'org.organization_name',
+    //     );
+    //     $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+    //     $query->where('users.role', '=', 'ORGANIZATION');
+    //     $count =  $query->orderBy('org.organization_name','asc')->get()->toArray();
+    //     //dd($count);
+    //     foreach ($count as $key=>$spe){
+    //         $speciality=Speciality::where('user_id', $count->id)->toArray();
+    //         array_push($spe[$key],$speciality);
+    //     } 
+    //     dd($count);  
+    //     //print_r($count);exit();
+    //    // $speciality = Speciality::where('user_id', $count['id'])->get();
+    //     if ($count) {
+    //         return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
+    //     } else {
+    //         return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+    //     }
     }
+
+    public function getOrganisationListAddOrg()  //while signee add multiple org
+    {
+        //echo Auth::user()->parent_id;exit();
+        $query = User::select(
+            "users.*",
+            'org.organization_name'
+        );
+        $query->join('organizations as org', 'org.user_id', '=', 'users.id');
+        $query->where('users.role', '=', 'ORGANIZATION');
+        $query->where('users.id', '!=', Auth::user()->parent_id);
+        $res = $query->get()->toArray();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+        }
+    }
+
+
 
     public function getOrgSpecialities($id)
     {
@@ -504,7 +511,7 @@ class SigneesController extends Controller
        // print_r($requestData['files']);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
+            'passport[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -513,11 +520,11 @@ class SigneesController extends Controller
         try
         { 
             $user = User::where('id', $this->userId)->first();
-            if($request->hasfile('files'))
+            if($request->hasfile('passport'))
             {
-                if($request->file('files'))
+                if($request->file('passport'))
                 {
-                    $files = $request->file('files');
+                    $files = $request->file('passport');
                     // $size = $request->file('files')->getClientSize();
                     // echo $size;exit();
                     foreach($files as $key=>$file)
@@ -602,13 +609,12 @@ class SigneesController extends Controller
         }
     }
 
-
     public function getEmailOrganisation(Request $request)
     {
+        $data = [];
         $requestData = $request->all();
         $email = $requestData['email'];
-        //$userData = User::where('email', $email)->first();
-       // print_r($userData);exit();
+
         $query = SigneeOrganization::select(
             //"users.*",
             'organization_id',
@@ -617,13 +623,47 @@ class SigneesController extends Controller
         $query->leftJoin('users' , 'users.id', '=', 'signee_organization.user_id');
         $query->leftJoin('organizations' , 'organizations.user_id', '=', 'signee_organization.organization_id');
         $query->where('users.email', $email);
-        $res = $query->get();
-        return $res;
-        // $organization = SigneeOrganization::where('user_id', $userData['id'])->get();
-        // if($organization)
-        // {
-        //     return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $organization], $this->successStatus);
-        // }
+        $data = $query->get()->toArray();
+        foreach($data as $key=>$value)
+        {
+            //$orgSpeciality = Speciality::where('user_id', $value['organization_id'])->get()->toArray();
+            $orgSpeciality = Speciality::select(
+                'id',
+                'speciality_name'
+            );
+            $orgSpeciality->where('user_id', $value['organization_id']);
+            $res = $orgSpeciality->get()->toArray();
+            $data[$key]['speciality'] = $res;
+        }
+        //return $data;
+        $count = count($data);
+        if ($count == 0) {
+            return response()->json(['message' => 'Invalid email address!', 'status' => false], 400);
+        }
+        else {
+            return response()->json(['status' => true, 'message' => 'Organisation listed successfully', 'data'=>$data], $this->successStatus);
+        }
+        //proper working 
+        //     $requestData = $request->all();
+        //     $email = $requestData['email'];
+        //     //$userData = User::where('email', $email)->first();
+        //    // print_r($userData);exit();
+        //     $query = SigneeOrganization::select(
+        //         //"users.*",
+        //         'organization_id',
+        //         'organizations.organization_name'
+        //     );
+        //     $query->leftJoin('users' , 'users.id', '=', 'signee_organization.user_id');
+        //     $query->leftJoin('organizations' , 'organizations.user_id', '=', 'signee_organization.organization_id');
+        //     $query->where('users.email', $email);
+        //     $res = $query->get();
+        //     $count = count($query->get());
+        //     if ($count == 0) {
+        //         return response()->json(['message' => 'Invalid email address!', 'status' => false], 400);
+        //     }
+        //     else {
+        //         return response()->json(['status' => true, 'message' => 'Organisation listed successfully', 'data'=>$res], $this->successStatus);
+        //     }
     }
 
     public function getSigneeDocument(Request $request)
