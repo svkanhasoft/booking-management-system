@@ -611,13 +611,19 @@ class SigneesController extends Controller
 
     public function getEmailOrganisation(Request $request)
     {
+        //working
         $data = [];
         $requestData = $request->all();
         $email = $requestData['email'];
+        //$user = User::where('email', $email)->first();
+        //print_r($user);exit();
+       // $sorg = SigneeOrganization::where(['user_id'=> $user['id'], 'organization_id'=>$user['parent_id']])->delete();
 
+        //echo $email;exit();
         $query = SigneeOrganization::select(
             //"users.*",
-            'organization_id',
+            DB::raw('DISTINCT(organization_id)'),
+            // 'organization_id',
             'organizations.organization_name'
         );
         $query->leftJoin('users' , 'users.id', '=', 'signee_organization.user_id');
