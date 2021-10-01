@@ -51,10 +51,10 @@ class Hospital extends Model
 
     public function addUpdateHospital($postData)
     {
-        // dd($postData['hospital']);
+        $hospitalidArray = array_column($postData['hospital'], 'id');
         if (!empty($postData['hospital'])) {
+            $hospitals = Hospital::where('trust_id', '=', $postData['id'])->whereNotIn('id', $hospitalidArray)->delete();
             foreach ($postData['hospital'] as $keys => $values) {
-                // dd($values); exit;
                 if (isset($values['id'])) {
                     $hospitalId = $values['id'];
                     $objHospital = Hospital::where(['id' => $values['id'], 'trust_id' => $postData['id']])->firstOrNew();
