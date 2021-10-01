@@ -369,15 +369,18 @@ class SigneesController extends Controller
 
     public function getOrganisationListAddOrg()  //while signee add multiple org
     {
-        //echo Auth::user()->parent_id;exit();
+        $sigOrg = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
+        $orgId = array_column($sigOrg, 'organization_id');
+       // print_r($orgId);exit();
         $query = User::select(
             "users.*",
             'org.organization_name'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
         $query->where('users.role', '=', 'ORGANIZATION');
-        $query->where('users.id', '!=', Auth::user()->parent_id);
+        $query->whereNotIn('users.id', $orgId);
         $res = $query->get()->toArray();
+        //print_r($res);exit();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
         } else {
