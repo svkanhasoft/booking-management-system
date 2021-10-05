@@ -97,7 +97,7 @@ class TrustsController extends Controller
                 $trustDetails = $data->getTrustById($trustResult['id']);
                 return response()->json(['status' => true, 'message' => 'Trust added successfully.', 'data' => $trustResult], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Trust added failed.', 'status' => false], 200);
+                return response()->json(['message' => 'Trust added failed.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -162,7 +162,7 @@ class TrustsController extends Controller
                 $trustDetails = $trustData->getTrustById($requestData['id']);
                 return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $trustDetails], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Trust update failed.', 'status' => false], 200);
+                return response()->json(['message' => 'Trust update failed.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -206,7 +206,7 @@ class TrustsController extends Controller
             if (count($result) > 0) {
                 return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], $this->successStatus);
+                return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], 404);
             }
         }
     }
@@ -222,7 +222,7 @@ class TrustsController extends Controller
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Trust Delete successfully.'], $this->successStatus);
         } else {
-            return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted.'], $this->successStatus);
+            return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted.'], 409);
         }
     }
 
