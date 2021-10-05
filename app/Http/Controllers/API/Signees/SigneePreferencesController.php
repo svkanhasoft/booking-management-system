@@ -38,7 +38,7 @@ class SigneePreferencesController extends Controller
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'Preferences added Successfully', 'data' => $requestData], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Preferences added Failed!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Preferences added Failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -52,7 +52,7 @@ class SigneePreferencesController extends Controller
             if ($preference) {
                 return response()->json(['status' => true, 'message' => 'Preferences get Successfully', 'data' => $preference], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Preferences get Failed!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Preferences get Failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
