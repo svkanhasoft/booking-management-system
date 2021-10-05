@@ -56,29 +56,35 @@ class SpecialitiesController extends Controller
      */
     public function create(Request $request)
     {
-
-        $res = Speciality::withTrashed()->whereNotNull('deleted_at')->where(['speciality_name' => $request->all('speciality_name'), 'user_id' => $this->userId])->restore();
-        // $res = Speciality::withTrashed()->where(['speciality_name' => $request->all('speciality_name'),'user_id' => $this->userId])->restore();
-        if ($res == 1) {
-            return response()->json(['status' => true, 'message' => 'Speciality added Successfully', 'data' => $request->all()], $this->successStatus);
+        try
+        {
+            $res = Speciality::withTrashed()->whereNotNull('deleted_at')->where(['speciality_name' => $request->all('speciality_name'), 'user_id' => $this->userId])->restore();
+            // $res = Speciality::withTrashed()->where(['speciality_name' => $request->all('speciality_name'),'user_id' => $this->userId])->restore();
+            if ($res == 1) {
+                return response()->json(['status' => true, 'message' => 'Speciality added Successfully', 'data' => $request->all()], $this->successStatus);
+            }
+            $validator = Validator::make($request->all(), [
+                // "speciality_name" => 'required',
+                'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,' . $this->userId
+                // 'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId,'deleted_at,NULL'
+    
+            ]);
+            if ($validator->fails()) {
+                $error = $validator->messages()->first();
+                return response()->json(['status' => false, 'message' => $error], 200);
+            }
+            $requestData = $request->all();
+            $requestData['user_id'] = $this->userId;
+            $addResult =  Speciality::create($requestData);
+            if ($addResult) {
+                return response()->json(['status' => true, 'message' => 'Speciality added Successfully', 'data' => $addResult], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, speciality added failed!', 'status' => false], 409);
+            }
         }
-        $validator = Validator::make($request->all(), [
-            // "speciality_name" => 'required',
-            'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,' . $this->userId
-            // 'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId,'deleted_at,NULL'
-
-        ]);
-        if ($validator->fails()) {
-            $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
-        }
-        $requestData = $request->all();
-        $requestData['user_id'] = $this->userId;
-        $addResult =  Speciality::create($requestData);
-        if ($addResult) {
-            return response()->json(['status' => true, 'message' => 'Speciality added Successfully', 'data' => $addResult], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, speciality added failed!', 'status' => false], 200);
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
     }
 
@@ -91,12 +97,19 @@ class SpecialitiesController extends Controller
      */
     public function show($id)
     {
-        $speciality = Speciality::where('id', $id)->first();
-        if ($speciality) {
-            return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
+        try{
+            $speciality = Speciality::where('id', $id)->first();
+            if ($speciality) {
+                return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 404);
+            }
         }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
+        }
+        
     }
     /**
      * All Display the specified resource.
@@ -107,33 +120,40 @@ class SpecialitiesController extends Controller
      */
     public function showAll(Request $request)
     {
-        $perPage = Config::get('constants.pagination.perPage');
-        $keyword = $request->get('search');
-        //$showPagination = $request->get('showPagination');
-        $speciality = Speciality::select("specialities.*",);
-        $speciality->where('specialities.user_id',  $this->userId);
+        try
+        {
+            $perPage = Config::get('constants.pagination.perPage');
+            $keyword = $request->get('search');
+            //$showPagination = $request->get('showPagination');
+            $speciality = Speciality::select("specialities.*",);
+            $speciality->where('specialities.user_id',  $this->userId);
 
-        if(Auth::user()->role == 'ORGANIZATION'){
-            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
-            $staffIdArray = array_column($staff, 'id');
-            $staffIdArray[] = Auth::user()->id;
-            $query2 = Speciality::whereIn('user_id', $staffIdArray);
-        }else{
-            $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
-        }
+            if(Auth::user()->role == 'ORGANIZATION'){
+                $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
+                $staffIdArray = array_column($staff, 'id');
+                $staffIdArray[] = Auth::user()->id;
+                $query2 = Speciality::whereIn('user_id', $staffIdArray);
+            }else{
+                $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
+            }
 
-        if (!empty($keyword)) {
-            // echo $keyword;exit;
-            $query2->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
+            if (!empty($keyword)) {
+                // echo $keyword;exit;
+                $query2->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
+            }
+            
+            //$speciality = Speciality::where('user_id', $this->userId)->get()->toArray();
+            $speciality = $query2->latest()->paginate($perPage);
+            $count =  $speciality->count();
+            if ($count > 0) {
+                return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 404);
+            }
         }
-        
-        //$speciality = Speciality::where('user_id', $this->userId)->get()->toArray();
-        $speciality = $query2->latest()->paginate($perPage);
-        $count =  $speciality->count();
-        if ($count > 0) {
-            return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $speciality], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
     }
 
@@ -143,7 +163,7 @@ class SpecialitiesController extends Controller
         if (!empty($query)) {
             return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, No Speciality Available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, No Speciality Available!', 'status' => false], 404);
         }
     }
 
@@ -157,23 +177,30 @@ class SpecialitiesController extends Controller
      */
     public function update(Request $request)
     {
-        $requestData = $request->all();
-        $validator = Validator::make($request->all(), [
-            // "speciality_name" => 'required',
-            'speciality_name' => 'unique:specialities,speciality_name,' . $requestData['speciality_id'] . 'NULL,id,user_id,' . $this->userId,
-            "speciality_id" => 'required',
-        ]);
-        if ($validator->fails()) {
-            $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+        try
+        {
+            $requestData = $request->all();
+            $validator = Validator::make($request->all(), [
+                // "speciality_name" => 'required',
+                'speciality_name' => 'unique:specialities,speciality_name,' . $requestData['speciality_id'] . 'NULL,id,user_id,' . $this->userId,
+                "speciality_id" => 'required',
+            ]);
+            if ($validator->fails()) {
+                $error = $validator->messages()->first();
+                return response()->json(['status' => false, 'message' => $error], 200);
+            }
+    
+            $speciality = Speciality::findOrFail($requestData['speciality_id']);
+            $addResult =  $speciality->update($requestData);
+            if ($addResult) {
+                return response()->json(['status' => true, 'message' => 'Speciality update Successfully', 'data' => $speciality], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, speciality update failed!', 'status' => false], 409);
+            }
         }
-
-        $speciality = Speciality::findOrFail($requestData['speciality_id']);
-        $addResult =  $speciality->update($requestData);
-        if ($addResult) {
-            return response()->json(['status' => true, 'message' => 'Speciality update Successfully', 'data' => $speciality], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, speciality update failed!', 'status' => false], 200);
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
     }
 
@@ -186,11 +213,18 @@ class SpecialitiesController extends Controller
      */
     public function destroy($id)
     {
-        $speciality =  Speciality::destroy($id);
-        if ($speciality) {
-            return response()->json(['status' => true, 'message' => 'Speciality delete Successfully', 'data' => $speciality], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Speciality delete failed!', 'status' => false], 200);
+        try
+        {
+            $speciality =  Speciality::destroy($id);
+            if ($speciality) {
+                return response()->json(['status' => true, 'message' => 'Speciality delete Successfully', 'data' => $speciality], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Speciality delete failed!', 'status' => false], 409);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
     }
 }
