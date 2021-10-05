@@ -45,19 +45,19 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'SUPERADMIN')->count();
         if ($checkRecord == 0) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 404);
         }
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SUPERADMIN'])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 409);
         }
     }
 
@@ -75,7 +75,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
 
@@ -88,10 +88,10 @@ class SuperAdminController extends Controller
         //return $userDetais;
         //print_r($userDetais['designation_name']);exit();
         if (empty($checkRecord)) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 400);
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 404);
         }
         if ($checkRecord->status !== 'Active') {
-            return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
+            return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 403);
         }
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
@@ -107,7 +107,7 @@ class SuperAdminController extends Controller
             ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 409);
         }
     }
 
@@ -156,7 +156,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
 
         $input = $request->all();
@@ -167,7 +167,7 @@ class SuperAdminController extends Controller
             $userRes['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Register Successfully completed.', 'data' => $userRes], $this->successStatus);
         } else {
-            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            return response()->json(['status' => false, 'message' => "something will be wrong"], 409);
         }
     }
     /** 
@@ -201,10 +201,10 @@ class SuperAdminController extends Controller
                     'message' => 'You have Successfully logout',
                 ], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => 'Sorry, logout failed'], 200);
+                return response()->json(['status' => false, 'message' => 'Sorry, logout failed'], 409);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' => $e], 200);
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 400);
         }
     }
 
@@ -221,7 +221,7 @@ class SuperAdminController extends Controller
             $mailRes =  $userObj->sendForgotEmail($request);
             return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 409);
         }
     }
 
@@ -242,7 +242,7 @@ class SuperAdminController extends Controller
             $userObj->save();
             return response()->json(['message' => 'OTP Successfully verified', 'status' => true, 'data' => $userObj], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Please Enter valid OTP.', 'status' => false], 200);
+            return response()->json(['message' => 'Please Enter valid OTP.', 'status' => false], 409);
         }
     }
 
@@ -260,10 +260,10 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
-            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
+            return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
         }
         $user = User::where('role', 'SUPERADMIN')->where('id', $this->userId)->first();
         if (!empty($user)) {
@@ -273,7 +273,7 @@ class SuperAdminController extends Controller
             $userObj->save();
             return response()->json(['status' => true, 'message' => 'Password Successfully changed, please login'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 409);
         }
     }
 
@@ -306,7 +306,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         try {
             $requestData = $request->all();
@@ -322,10 +322,10 @@ class SuperAdminController extends Controller
                 ]);
                 return response()->json(['status' => true, 'message' => 'Organization detail updated successfully.', 'data' => $requestData], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+                return response()->json(['status' => false, 'message' => "something will be wrong"], 409);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' => $e], 200);
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 400);
         }
     }
 
@@ -342,7 +342,7 @@ class SuperAdminController extends Controller
         if ($validator->fails()) {
             $error = $validator->messages();
 
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
 
         $requestData = $request->all();
@@ -352,7 +352,7 @@ class SuperAdminController extends Controller
             $user = Auth::user();
             return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            return response()->json(['status' => false, 'message' => "something will be wrong"], 409);
         }
     }
 }
