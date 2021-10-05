@@ -54,24 +54,30 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
-        $requestData = $request->all();
-        $requestData['password'] = Hash::make(123456);
-        $requestData['parent_id'] = $this->userId;
-        $requestData['role'] = 'STAFF';
-        $userCreated = User::create($requestData);
-        if ($userCreated) {
-            $requestData['user_id'] = $userCreated['id'];
-            $orgResult = OrganizationUserDetail::create($requestData);
-            if ($orgResult) {
-                $UserObj = new User();
-                $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
-                $mailRes =  $UserObj->sendRegisterEmail($request);
-                return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+        try{
+            $requestData = $request->all();
+            $requestData['password'] = Hash::make(123456);
+            $requestData['parent_id'] = $this->userId;
+            $requestData['role'] = 'STAFF';
+            $userCreated = User::create($requestData);
+            if ($userCreated) {
+                $requestData['user_id'] = $userCreated['id'];
+                $orgResult = OrganizationUserDetail::create($requestData);
+                if ($orgResult) {
+                    $UserObj = new User();
+                    $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
+                    $mailRes =  $UserObj->sendRegisterEmail($request);
+                    return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+                }
+            } else {
+                return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 409);
             }
-        } else {
-            return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -88,24 +94,30 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
-
-        $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
-        if (empty($checkRecord)) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+        try
+        {
+            $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
+            if (empty($checkRecord)) {
+                return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+            }
+            if ($checkRecord->status != 'Active') {
+                return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
+            }
+            if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'STAFF'])) {
+                $userResult = Auth::user();
+                $UserObj = new User();
+                $user = $UserObj->getOrganizationDetails($userResult['id']);
+                $user[0]['token'] =  $userResult->createToken('User')->accessToken;
+                return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 401);
+            }
         }
-        if ($checkRecord->status != 'Active') {
-            return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
-        }
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'STAFF'])) {
-            $userResult = Auth::user();
-            $UserObj = new User();
-            $user = $UserObj->getOrganizationDetails($userResult['id']);
-            $user[0]['token'] =  $userResult->createToken('User')->accessToken;
-            return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
     /**
@@ -121,7 +133,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
@@ -138,7 +150,7 @@ class UserController extends Controller
             $user[0]['token'] =  $userResult->createToken('User')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 401);
         }
     }
 
@@ -149,13 +161,21 @@ class UserController extends Controller
      */
     public function getDetails()
     {
-        $UserObj = new User();
-        $user = $UserObj->getOrganizationDetails($this->userId);
-        if (!empty($user)) {
-            return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+        try
+        {
+            $UserObj = new User();
+            $user = $UserObj->getOrganizationDetails($this->userId);
+            if (!empty($user)) {
+                return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'something will be wrong', 'status' => false], 409);
+            }
         }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+
     }
     /** 
      * Get User list
@@ -170,7 +190,7 @@ class UserController extends Controller
             if (!empty($user)) {
                 return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
             } else {
-                return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+                return response()->json(['message' => 'something will be wrong', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -185,14 +205,12 @@ class UserController extends Controller
     public function getuserById($userId)
     {
         try {
-
-
             $UserObj = new User();
             $user = $UserObj->getStafById($userId);
             if (!empty($user)) {
                 return response()->json(['status' => true, 'message' => 'User details get successfully.', 'data' => $user], $this->successStatus);
             } else {
-                return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
+                return response()->json(['message' => 'something will be wrong', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -213,7 +231,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         try {
             $user = User::where('role', 'STAFF')->where('id', $this->userId)->first();
@@ -224,7 +242,7 @@ class UserController extends Controller
                 $userObj->save();
                 return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -245,7 +263,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         try {
             $user = Auth::user();
@@ -259,7 +277,7 @@ class UserController extends Controller
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -285,7 +303,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         try {
             $user = User::findOrFail($requestData['id']);
@@ -299,7 +317,7 @@ class UserController extends Controller
                 if ($oudResult) {
                     return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' => $userData], $this->successStatus);
                 } else {
-                    return response()->json(['message' => 'Sorry, user update failed!', 'status' => false], 200);
+                    return response()->json(['message' => 'Sorry, user update failed!', 'status' => false], 409);
                 }
             }
         } catch (\Exception $e) {
@@ -315,7 +333,7 @@ class UserController extends Controller
             if ($userDelete) {
                 return response()->json(['status' => true, 'message' => 'User deleted successfully.'], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => 'Sorry, User not deleted.'], $this->successStatus);
+                return response()->json(['status' => false, 'message' => 'Sorry, User not deleted.'], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -337,7 +355,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         $requestData = $request->all();
         if (!empty($request->post('password'))) {
@@ -348,7 +366,7 @@ class UserController extends Controller
         if ($userCreated) {
             return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' =>  $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, User update failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, User update failed!', 'status' => false], 409);
         }
     }
 
@@ -367,7 +385,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         $requestData = $request->all();
        // print_r($requestData);exit();
@@ -399,7 +417,7 @@ class UserController extends Controller
                     return response()->json(['status' => true, 'message' => 'Signee added Successfully', 'data' => $userCreated], $this->successStatus);
                 }
             } else {
-                return response()->json(['message' => 'Sorry, Signee added failed!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Signee added failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -414,7 +432,7 @@ class UserController extends Controller
         if (!empty($user)) {
             return response()->json(['status' => true, 'message' => 'Signee Get Successfully', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Something is Wrong!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Something is Wrong!', 'status' => false], 409);
         }
     }
 
@@ -428,7 +446,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
         try {
             // print_r($requestData);exit();
@@ -447,7 +465,7 @@ class UserController extends Controller
                     return response()->json(['status' => true, 'message' => 'Signee update Successfully', 'data' =>  $signee], $this->successStatus);
                 }
             } else {
-                return response()->json(['message' => 'Sorry, Signee update failed!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Signee update failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -462,7 +480,7 @@ class UserController extends Controller
             if ($delete) {
                 return response()->json(['status' => true, 'message' => 'Signee deleted successfully.'], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => 'Sorry, Signee not deleted.'], $this->successStatus);
+                return response()->json(['status' => false, 'message' => 'Sorry, Signee not deleted.'], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -477,7 +495,7 @@ class UserController extends Controller
             if ($time) {
                 return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $time], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -492,7 +510,7 @@ class UserController extends Controller
             if ($user) {
                 return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $user], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
