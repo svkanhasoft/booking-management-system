@@ -52,7 +52,7 @@ class OrganizationShiftController extends Controller
         if ($shiftCreated) {
             return response()->json(['status' => true, 'message' => 'Shift added Successfully', 'data' => $shiftCreated], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Shift added failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Shift added failed!', 'status' => false], 424);
         }
     }
 
@@ -70,7 +70,7 @@ class OrganizationShiftController extends Controller
         if ($shift) {
             return response()->json(['status' => true, 'message' => 'Shift get Successfully', 'data' => $shift], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Shift not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Shift not available!', 'status' => false], 404);
         }
     }
 
@@ -99,7 +99,7 @@ class OrganizationShiftController extends Controller
         if ($shiftUpdated) {
             return response()->json(['status' => true, 'message' => 'Shift update Successfully.', 'data' => $shift], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Shift update failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Shift update failed!', 'status' => false], 424);
         }
     }
 
@@ -117,7 +117,7 @@ class OrganizationShiftController extends Controller
         if ($shift) {
             return response()->json(['status' => true, 'message' => 'Shift get Successfully', 'data' => $shift], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Shift not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Shift not available!', 'status' => false], 404);
         }
     }
 
@@ -134,7 +134,7 @@ class OrganizationShiftController extends Controller
         if ($shift) {
             return response()->json(['status' => true, 'message' => 'Shift deleted!', 'data' => $shift], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Shift not deleted!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Shift not deleted!', 'status' => false], 409);
         }
     }
 }

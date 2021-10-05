@@ -86,7 +86,7 @@ class BookingController extends Controller
 
                 return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 424); //424 failed
+                return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 409); //424 failed
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
@@ -159,7 +159,7 @@ class BookingController extends Controller
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
                 return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 424);
+                return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -191,7 +191,7 @@ class BookingController extends Controller
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'Booking deleted!'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 424);
+            return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 409);
         }
     }
 
