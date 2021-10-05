@@ -48,14 +48,18 @@ class AvailabilityController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
-        $objAvailability = new Availability();
-        $orgResult = $objAvailability->addAvailability($request->all(), $this->userId);
-        if ($orgResult) {
-            $UserObj = new User();
-            return response()->json(['status' => true, 'message' => 'Availablity update Successfully', 'data' => $request->all()], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Availablity update failed!', 'status' => false], 200);
+        try {
+            $objAvailability = new Availability();
+            $orgResult = $objAvailability->addAvailability($request->all(), $this->userId);
+            if ($orgResult) {
+                $UserObj = new User();
+                return response()->json(['status' => true, 'message' => 'Availablity update Successfully', 'data' => $request->all()], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Availablity update failed!', 'status' => false], 409);
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
     public function getAvailability()
@@ -65,7 +69,7 @@ class AvailabilityController extends Controller
         if ($availability) {
             return response()->json(['status' => true, 'message' => 'Availablity get successfully', 'data' => $availability], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, availablity not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, availablity not available!', 'status' => false], 404);
         }
     }
 }
