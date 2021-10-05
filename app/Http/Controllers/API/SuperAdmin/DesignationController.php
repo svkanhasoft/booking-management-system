@@ -43,7 +43,7 @@ class DesignationController extends Controller
         if ($designationList) {
             return response()->json(['status' => true, 'message' => 'Designation get Successfully', 'data' => $designationList], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Designation added failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Designation added failed!', 'status' => false], 409);
         }
     }
 
@@ -56,13 +56,18 @@ class DesignationController extends Controller
      */
     public function add(Request $request)
     {
-        $requestData = $request->all();
-        $requestData['user_id'] = $this->userId;
-        $checkRecord =  Designation::create($requestData);
-        if ($checkRecord) {
-            return response()->json(['status' => true, 'message' => 'Designation added Successfully', 'data' => $checkRecord], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Designation added failed!', 'status' => false], 200);
+        try{
+            $requestData = $request->all();
+            $requestData['user_id'] = $this->userId;
+            $checkRecord =  Designation::create($requestData);
+            if ($checkRecord) {
+                return response()->json(['status' => true, 'message' => 'Designation added Successfully', 'data' => $checkRecord], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Designation added failed!', 'status' => false], 409);
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -79,7 +84,7 @@ class DesignationController extends Controller
         if ($designation) {
             return response()->json(['status' => true, 'message' => 'Designation get Successfully', 'data' => $designation], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Designation not found!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Designation not found!', 'status' => false], 404);
         }
     }
 
@@ -99,7 +104,7 @@ class DesignationController extends Controller
         if ($designation) {
             return response()->json(['status' => true, 'message' => 'Designation updated Successfully', 'data' => $designation], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Designation updated failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Designation updated failed!', 'status' => false], 409);
         }
     }
 
@@ -116,7 +121,7 @@ class DesignationController extends Controller
         if ($designationDelete) {
             return response()->json(['status' => true, 'message' => 'Designation delete Successfully'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Designation delete failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Designation delete failed!', 'status' => false], 409);
         }
     }
 }
