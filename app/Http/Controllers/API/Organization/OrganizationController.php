@@ -44,14 +44,14 @@ class OrganizationController extends Controller
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'ORGANIZATION')->count();
         if ($checkRecord == 0) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 404);
         }
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'ORGANIZATION'])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 401);
         }
     }
     /** 
@@ -103,7 +103,7 @@ class OrganizationController extends Controller
             $userRes['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Register Successfully completed.', 'data' => $userRes], $this->successStatus);
         } else {
-            return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+            return response()->json(['status' => false, 'message' => "something will be wrong"], 500);
         }
     }
     /** 
@@ -140,10 +140,10 @@ class OrganizationController extends Controller
                     'message' => 'You have Successfully logout',
                 ], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => 'Sorry, logout failed'], 200);
+                return response()->json(['status' => false, 'message' => 'Sorry, logout failed'], 400);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 200);
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
         }
     }
 
@@ -202,7 +202,7 @@ class OrganizationController extends Controller
         }
         try {
             if (!(Hash::check($request->old_password, Auth::user()->password))) {
-                return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
+                return response()->json(['status' => false, 'message' => "Your old password can't be match"], 403);
             }
             $user = User::where('id', $this->userId)->first();
             // $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
@@ -212,7 +212,7 @@ class OrganizationController extends Controller
                 $userObj->save();
                 return response()->json(['status' => true, 'message' => 'Password Successfully changed'], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Password change failed. please try again', 'status' => false], 409);  //409 conflict
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -240,7 +240,7 @@ class OrganizationController extends Controller
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -282,7 +282,7 @@ class OrganizationController extends Controller
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'Status changed successfully', 'data' => $res], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -330,7 +330,7 @@ class OrganizationController extends Controller
                 // if ($res) {
                 return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -365,7 +365,7 @@ class OrganizationController extends Controller
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 404);
         }
     }
 
@@ -405,7 +405,7 @@ class OrganizationController extends Controller
                 ]);
                 return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
+                return response()->json(['status' => false, 'message' => "something will be wrong"], 403);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
