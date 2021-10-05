@@ -52,7 +52,7 @@ class WardTypeController extends Controller
         if ($ward) {
             return response()->json(['status' => true, 'message' => 'Ward type get Successfully', 'data' => $ward], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 
@@ -62,7 +62,7 @@ class WardTypeController extends Controller
         if ($wardTypeList) {
             return response()->json(['status' => true, 'message' => 'Ward type get Successfully', 'data' => $wardTypeList], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 
