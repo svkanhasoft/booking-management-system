@@ -55,7 +55,7 @@ class RoleController extends Controller
         if ($roleCreated) {
             return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $roleCreated], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role added failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role added failed!', 'status' => false], 409);
         }
     }
  
@@ -73,7 +73,7 @@ class RoleController extends Controller
         if ($role) {
             return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 
@@ -100,7 +100,7 @@ class RoleController extends Controller
         if ($roleUpdated) {
             return response()->json(['status' => true, 'message' => 'Role update Successfully.', 'data' => $role], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role update failed!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role update failed!', 'status' => false], 409);
         }
     }
 
@@ -128,7 +128,7 @@ class RoleController extends Controller
         if ($role) {
             return response()->json(['status' => true, 'message' => 'Role get Successfully', 'data' => $role], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 
@@ -161,7 +161,7 @@ class RoleController extends Controller
         $staff = OrganizationUserDetail::where(['role_id' => $id])->get();
         if(count($staff) > 0)
         {
-            return response()->json(['message' => 'Sorry, This role already assign to the staff', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, This role already assign to the staff', 'status' => false], 404);
         }
         else
         {
@@ -169,7 +169,7 @@ class RoleController extends Controller
             if ($role) {
                 return response()->json(['status' => true, 'message' => 'Role deleted!', 'data' => $role], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Role not deleted!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Role not deleted!', 'status' => false], 404);
             }
         }
     }
