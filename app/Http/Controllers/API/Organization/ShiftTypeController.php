@@ -53,7 +53,7 @@ class ShiftTypeController extends Controller
         if ($shift) {
             return response()->json(['status' => true, 'message' => 'Shift type get Successfully', 'data' => $shift], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 
@@ -63,7 +63,7 @@ class ShiftTypeController extends Controller
         if ($shiftTypeList) {
             return response()->json(['status' => true, 'message' => 'Shift type get Successfully', 'data' => $shiftTypeList], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 
