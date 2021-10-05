@@ -86,10 +86,10 @@ class BookingController extends Controller
 
                 return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Booking added failed!', 'status' => false], 424); //424 failed
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
     }
 
@@ -111,7 +111,7 @@ class BookingController extends Controller
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'booking get Successfully', 'data' => $booking], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, booking not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, booking not available!', 'status' => false], 404);
         }
     }
 
@@ -159,7 +159,7 @@ class BookingController extends Controller
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
                 return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 424);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -191,7 +191,7 @@ class BookingController extends Controller
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'Booking deleted!'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 424);
         }
     }
 
@@ -211,7 +211,7 @@ class BookingController extends Controller
         if (count($booking) > 0) {
             return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
         }
     }
 
@@ -247,7 +247,7 @@ class BookingController extends Controller
         if ($objBookingMatch) {
             return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 424);
         }
     }
 
@@ -272,7 +272,7 @@ class BookingController extends Controller
             if ($bookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -296,7 +296,7 @@ class BookingController extends Controller
             if ($bookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -312,7 +312,7 @@ class BookingController extends Controller
         if ($signeeDetails) {
             return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $signeeDetails], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 404);
         }
     }
 
@@ -328,7 +328,7 @@ class BookingController extends Controller
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $booking], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
         }
         
     }
@@ -343,14 +343,14 @@ class BookingController extends Controller
             if ($wardAll) {
                 return response()->json(['status' => true, 'message' => 'wards get successfully', 'data' => $wardAll], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Wards not available!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Wards not available!', 'status' => false], 404);
             }
         } else {
             $ward = Ward::where(['hospital_id' => $hospitalId, 'trust_id' => $trustId])->get();
             if ($ward) {
                 return response()->json(['status' => true, 'message' => 'Ward get successfully', 'data' => $ward], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Ward not available!', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Ward not available!', 'status' => false], 404);
             }
         }
     }
@@ -361,7 +361,7 @@ class BookingController extends Controller
         if (count($ward)) {
             return response()->json(['status' => true, 'message' => 'hospital get successfully', 'data' => $ward], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, hospital not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, hospital not available!', 'status' => false], 404);
         }
     }
 
@@ -371,7 +371,7 @@ class BookingController extends Controller
         if (count($grade)) {
             return response()->json(['status' => true, 'message' => 'grade get successfully', 'data' => $grade], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, grade not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, grade not available!', 'status' => false], 404);
         }
     }
 
@@ -382,7 +382,7 @@ class BookingController extends Controller
         if ($time) {
             return response()->json(['status' => true, 'message' => 'reference get successfully', 'data' => $time], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, reference not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, reference not available!', 'status' => false], 404);
         }
     }
 }
