@@ -36,12 +36,13 @@ class BookingMatch extends Model
 
     public function addBookingMatch($bookingArray, $bookingId)
     {
+       // print_r($bookingArray);exit();
         $signeeidArray = array_column($bookingArray, 'signeeId');
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);
             // exit;
-            // $this->sendMatchEmail($values);
+            $this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
                 'signee_id' =>  $values['signeeId'],
@@ -90,58 +91,27 @@ class BookingMatch extends Model
 
     public function sendMatchEmail($result)
     {
+       // print_r($result);exit();
         if (isset($result) && !empty($result)) {
             $details = [
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'addMatch',
                 'subject' => 'Booking Management System: Your match found',
-                'data' => $result,
+                'data' => $result
             ];
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('shaileshv.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            ->cc('maulik.kanhasoft@gmail.com')
+            //->bcc('suresh.kanhasoft@gmail.com')
+            ->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
-            return true;
+            return false;
         }
     }
     public function getShiftList()
     {
-        //print_r(Auth::user()->parent_id);exit();
-        // $perPage = Config::get('constants.pagination.perPage');
-        // $booking = BookingMatch::select(
-        //     'bookings.*',
-        //     'hospitals.hospital_name',
-        //     'ward.ward_name',
-        //     'ward_type.ward_type',
-        //     'shift_type.shift_type',
-        //     'trusts.trust_portal_url',
-        //     'trusts.address_line_1',
-        //     'trusts.address_line_2',
-        //     'trusts.city',
-        //     'trusts.post_code',
-        //     DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
-        // );
-        // $booking->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
-        // $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        // $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        // $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
-        // $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
-        // $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-        // $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        // $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-        // $booking->where('bookings.status', 'OPEN');
-        // $booking->whereNull('bookings.deleted_at');
-        // $booking->whereNull('booking_specialities.deleted_at');
-        // $booking->groupBy('bookings.id');
-        // $booking->orderBy('bookings.date');
-
-        // $res = $booking->get();
-        // $res = $booking->latest('bookings.created_at')->paginate($perPage);
-        // return $res;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
