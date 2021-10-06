@@ -530,7 +530,7 @@ class SigneesController extends Controller
        // print_r($requestData['files']);exit();
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
-            'passport[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
+            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -539,11 +539,11 @@ class SigneesController extends Controller
         try
         { 
             $user = User::where('id', $this->userId)->first();
-            if($request->hasfile('passport'))
+            if($request->hasfile('files'))
             {
-                if($request->file('passport'))
+                if($request->file('files'))
                 {
-                    $files = $request->file('passport');
+                    $files = $request->file('files');
                     // $size = $request->file('files')->getClientSize();
                     // echo $size;exit();
                     foreach($files as $key=>$file)
