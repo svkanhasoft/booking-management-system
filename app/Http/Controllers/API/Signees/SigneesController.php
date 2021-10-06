@@ -331,15 +331,31 @@ class SigneesController extends Controller
 
     public function getOrganisation()   //while register signee
     {
+        $data = [];
         $query = User::select(
             "users.*",
             'org.organization_name'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
         $query->where('users.role', '=', 'ORGANIZATION');
-        $count =  $query->orderBy('org.organization_name','asc')->get();
-        if ($count) {
-            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
+        $data = $query->get()->toArray();
+       // print_r($data);exit();
+        foreach($data as $key=>$value)
+        {
+           // print_r($value);exit();
+            //$orgSpeciality = Speciality::where('user_id', $value['organization_id'])->get()->toArray();
+            $orgSpeciality = Speciality::select(
+                'id',
+                'speciality_name'
+            );
+            $orgSpeciality->where('user_id', $value['id']);
+            $res = $orgSpeciality->get()->toArray();
+            $data[$key]['speciality'] = $res;
+        }
+        //$count =  $data->get();
+        //print_r($count);exit();
+        if ($data) {
+            return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $data], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
@@ -719,6 +735,44 @@ class SigneesController extends Controller
         if($document)
         {
             return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);           
+        }
+        else
+        {
+            return response()->json(['status' => false, 'message' => 'Image deleting failed'], 409);           
+        }
+    }
+
+    public function multiOrgLogin(Request $request)
+    {
+        try{
+            $organization_id = $request->get('organization_id');
+            $signee_id = $this->userId;
+
+            //to check signee is present in org or not
+            $data = SigneeOrganization::where(['user_id' => $signee_id, 'organization_id' => $organization_id])->first();
+            if(!empty($data))
+            {
+                $signee = User::where('id', $this->userId)->first();
+               // print_r($signee);exit();
+                if(Auth::guard('web')->loginUsingId($signee_id))
+                {
+                    $signee->parent_id = $organization_id;
+                    $signee->save();
+                    $userResult = Auth::user();
+                    $userObj = new User();
+                    $user = $userObj->getSigneeDetails($signee_id);
+                    $user['token'] =  $userResult->createToken('User')->accessToken;
+                    return response()->json(['status' => true, 'message' => 'Organization successfully changed', 'data' => $user], $this->successStatus);           
+                }         
+            }
+            else
+            {
+                return response()->json(['status' => false, 'message' => 'No user found in selected organization'], 404);           
+            }
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 }
