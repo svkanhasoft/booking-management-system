@@ -73,6 +73,7 @@ class BookingController extends Controller
             $requestData['user_id'] = $this->userId;
             $requestData['start_time'] = $shift['start_time'];
             $requestData['end_time'] = $shift['end_time'];
+            $requestData['created_by'] = $this->userId;
             $bookingCreated = Booking::create($requestData);
             if ($bookingCreated) {
                 $objBookingSpeciality = new BookingSpeciality();
@@ -154,6 +155,7 @@ class BookingController extends Controller
                 //print_r($bookinghift);exit();
                 $requestData['start_time'] = $bookingShift['start_time'];
                 $requestData['end_time'] = $bookingShift['end_time'];
+                $booking->updated_by = $this->userId;
                 $booking->update($requestData);
                 $objBookingSpeciality = new BookingSpeciality();
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
@@ -233,7 +235,7 @@ class BookingController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
 
         $booking = booking::findOrFail($requestData['booking_id']);
@@ -247,7 +249,7 @@ class BookingController extends Controller
         if ($objBookingMatch) {
             return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 424);
+            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
         }
     }
 
