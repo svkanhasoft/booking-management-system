@@ -663,7 +663,7 @@ class SigneesController extends Controller
         //return $data;
         $count = count($data);
         if ($count == 0) {
-            return response()->json(['message' => 'Invalid email address!', 'status' => false], 400);
+            return response()->json(['message' => 'Invalid email address!', 'status' => false], 200);
         }
         else {
             return response()->json(['status' => true, 'message' => 'Organisation listed successfully', 'data'=>$data], $this->successStatus);
