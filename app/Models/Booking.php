@@ -349,11 +349,12 @@ class Booking extends Model
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
-        $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'booking_matches.signee_id');
+        
         $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
         
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('booking_matches.booking_id', $matchiId);
