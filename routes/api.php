@@ -78,7 +78,7 @@ Route::prefix('organization')->group(function () {
         Route::DELETE('/delete-shift/{id?}', [OrganizationShiftController::class, 'destroy']);
         Route::post('/add-booking', [BookingController::class, 'add']);
         Route::post('/edit-booking', [BookingController::class, 'edit']);
-        Route::get('/add-match/{id}', [BookingController::class, 'getMetchByBookingId']);
+        Route::get('/get-booking-match/{id}', [BookingController::class, 'getMetchByBookingId']);
         Route::get('/update-match/{id}', [BookingController::class, 'updateMatchBySignee']);
         Route::get('/get-booking/{id}', [BookingController::class, 'show']);
         Route::get('/booking-by-status/{search?}/{status?}', [BookingController::class, 'bookingStatus']);
@@ -116,6 +116,7 @@ Route::prefix('organization')->group(function () {
                 Route::put('/edit-user', [UserController::class, 'update']);
                 Route::delete('/delete-user/{id}', [UserController::class, 'destroy']);
                 Route::post('/staff-profile-update', [UserController::class, 'profileUpdate']);
+                Route::post('/change-shift-status', [UserController::class, 'changeShiftStatus']);
             });
         });
     });

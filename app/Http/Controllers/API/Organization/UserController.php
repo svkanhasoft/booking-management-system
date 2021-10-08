@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Requests;
+use App\Models\Booking;
 use App\Models\User;
 use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
@@ -513,6 +514,36 @@ class UserController extends Controller
                 return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    public function changeShiftStatus(Request $request)
+    {
+        $requestData = $request->all();
+        //print_r($requestData);exit();
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+            'booking_id' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 422);
+        }
+        try{
+            $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=>$this->userId]);
+            //print_r($booking);exit();
+            $booking->status = $requestData['status'];
+            $booking->save();
+            if(!empty($booking))
+            {
+                return response()->json(['status' => true, 'message' => 'Shift status changed successfully', 'data' => $booking], $this->successStatus);
+            } 
+            else {
+                return response()->json(['message' => 'Shift status not changed!', 'status' => false], 404);
+            }
+        }
+        catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }

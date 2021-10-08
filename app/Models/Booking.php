@@ -331,11 +331,9 @@ class Booking extends Model
 
     public function getMetchByBookingId($matchiId = null)
     {
-
-        $subQuery = Booking::select(
-            // // $subQuery = BookingSpeciality::select(
+        $subQuery = BookingMatch::select(
             'users.email',
-            'users.id as signeeId',
+            'signee_preference.user_id as signeeId',
             'bookings.id as booking_id',
             'users.address_line_1',
             'users.address_line_2',
@@ -346,26 +344,58 @@ class Booking extends Model
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
-        $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-
-        $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'booking_matches.signee_id');
+        $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
+        
         $subQuery->where('users.role', 'SIGNEE');
-        $subQuery->where('bookings.id', $matchiId);
+        $subQuery->where('booking_matches.booking_id', $matchiId);
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
-        $subQuery->groupBy('users.id');
-        // $subQuery->groupBy('specialities.id');
+        $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
-        $res = $subQuery->get()->toArray();
-        // $subQuery->join('kg_shops', function ($join) {
-        //     $join->on('kg_shops.id', '=', 'kg_feeds.shop_id');
+
+        // $subQuery->where(function($q){
+        //     $q->when(DB::raw('If(DAYOFWEEK(bookings`.`date`))'== 1) , function ($q) {
+        //         return $q->where('signee_preference.sunday_day','=',1)->orWhere('signee_preference.sunday_night','=',1);
+        //     });
         // });
+        // $res = $subQuery->toSql();
+        $subQuery->whereRaw("(
+            IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
+        )");
+            // $subQuery->whereRaw("(IF(DAYOFWEEK(`bookings`.`date`) = 1, `signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1,'')
+            //     or
+            //     IF(DAYOFWEEK(`bookings`.`date`) = 2, `signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1,'')
+            // )");
+
+        // $subQuery->where(function($q){
+        //     $q->where(DB::raw('IF(DAYOFWEEK(`bookings`.`date`) = 1,`signee_preference`.`sunday_day` = 1 OR `signee_preference`.`sunday_night` = 1,"")'))
+        //     ->orWhere(DB::raw('IF(DAYOFWEEK(`bookings`.`date`) = 2,`signee_preference`.`monday_day` = 1 OR `signee_preference`.`monday_night` = 1,"")'));
+        // });
+
+        $res = $subQuery->get()->toArray();
+
+        //print_r($res);exit();
         return $res;
     }
 
