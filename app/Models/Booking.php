@@ -341,6 +341,7 @@ class Booking extends Model
             'users.role',
             'bookings.user_id as organization_id',
             'bookings.*',
+            'booking_matches.signee_status',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
