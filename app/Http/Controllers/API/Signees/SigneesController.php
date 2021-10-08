@@ -489,25 +489,46 @@ class SigneesController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
+            'signee_id' => 'required',
             'status' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
-        try {
-            $bookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['id']]);
-            $bookingMatch->signee_status = $requestData['status'];
-            $res =  $bookingMatch->save();
-            if ($res) {
-                return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
-            } else {
-                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 200);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        
+        $requestData['organization_id'] = $this->userId;
+
+        $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id']]);
+        $data->status = $requestData['status'];
+        $res = $data->save();
+        if (!empty($res)) {
+            return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
         }
+
+
+        // $validator = Validator::make($request->all(), [
+        //     'id' => 'required',
+        //     'status' => 'required',
+        // ]);
+        // if ($validator->fails()) {
+        //     $error = $validator->messages()->first();
+        //     return response()->json(['status' => false, 'message' => $error], 422);
+        // }
+        // try {
+        //     $bookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['id']]);
+        //     $bookingMatch->signee_status = $requestData['status'];
+        //     $res =  $bookingMatch->save();
+        //     if ($res) {
+        //         return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+        //     } else {
+        //         return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
+        //     }
+        // } catch (\Exception $e) {
+        //     return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        // }
     }
 
     public function addOrg(Request $request)
