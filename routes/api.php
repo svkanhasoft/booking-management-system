@@ -117,6 +117,7 @@ Route::prefix('organization')->group(function () {
                 Route::delete('/delete-user/{id}', [UserController::class, 'destroy']);
                 Route::post('/staff-profile-update', [UserController::class, 'profileUpdate']);
                 Route::post('/change-shift-status', [UserController::class, 'changeShiftStatus']);
+                Route::put('/change-signee-profile-status', [UserController::class, 'changeSigneeProfileStatus']);
             });
         });
     });
@@ -148,7 +149,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/view-shift-details/{id}', [SigneesController::class, 'viewShiftDetails']);    
         Route::get('/logout', [SigneesController::class, 'logout']);
         Route::put('/filter-shift', [SigneesController::class, 'filterBookings']);
-        Route::post('/change-signee-status', [SigneesController::class, 'changeSigneeStatus']);
+        Route::post('/change-signee-compliance-status', [SigneesController::class, 'changeSigneeComplianceStatus']);
         Route::get('/show-all-speciality', [HospitalController::class, 'showAllSpeciality']);
         Route::get('/show-all-hospital', [HospitalController::class, 'showAllHospital']);
         Route::post('/add-org', [SigneesController::class, 'addOrg']);

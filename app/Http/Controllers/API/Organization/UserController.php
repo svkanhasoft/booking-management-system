@@ -548,4 +548,32 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    public function changeSigneeProfileStatus(Request $request)
+    {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'signee_id' => 'required',
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 422);
+        }
+        try
+        {
+            $data = User::findOrFail($requestData['signee_id']);
+            $data->status = $requestData['status'];
+            $res = $data->save();
+            if(!empty($res))
+            {
+                return response()->json(['status' => true, 'message' => 'Signee profile status changed successfully'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
 }

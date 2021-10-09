@@ -485,7 +485,7 @@ class SigneesController extends Controller
         }
     }
 
-    public function changeSigneeStatus(Request $request)
+    public function changeSigneeComplianceStatus(Request $request)
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
@@ -496,16 +496,21 @@ class SigneesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
-        
-        $requestData['organization_id'] = $this->userId;
+        try
+        {
+            $requestData['organization_id'] = $this->userId;
 
-        $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id']]);
-        $data->status = $requestData['status'];
-        $res = $data->save();
-        if (!empty($res)) {
-            return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
+            $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id']]);
+            $data->status = $requestData['status'];
+            $res = $data->save();
+            if (!empty($res)) {
+                return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
 
 
