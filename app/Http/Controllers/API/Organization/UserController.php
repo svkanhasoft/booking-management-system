@@ -406,7 +406,7 @@ class UserController extends Controller
                 $orgResult = SigneesDetail::create($requestData);
 
                 $objSpeciality = new SigneeSpecialitie();
-                $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], false);
+                $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $this->userId, false);
 
                 //$requestData['organization_id'] = $request->post('organization_id');
                 $requestData['organization_id'] = $this->userId;
