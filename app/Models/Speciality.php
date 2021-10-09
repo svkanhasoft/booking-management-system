@@ -30,9 +30,9 @@ class Speciality extends Model
     protected $fillable = ['user_id', 'speciality_name'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
-    public function addOrUpdateSpeciality($postData, $userId)
+    public function addOrUpdateSpeciality($postData, $userId, $orgId)
     {
-        //print_r($postData);exit();
+       // print_r($postData);exit();
         //$signeeidArray = array_column($postData['speciality'], 'id');
         SigneeSpecialitie::where('user_id', '=', $userId)->whereNotIn('speciality_id', $postData)->delete();
         foreach ($postData as $keys => $values) {
@@ -41,7 +41,8 @@ class Speciality extends Model
                 $res = SigneeSpecialitie::withTrashed()->where(['speciality_id' => $values, 'user_id' => $userId])->restore();
                 $objSpeciality = SigneeSpecialitie::where(['speciality_id' => $values, 'user_id' => $userId])->firstOrNew();
                 //print_r($objSpeciality);exit();
-                $objSpeciality->speciality_id = $values['id'];
+                $objSpeciality->organization_id = $orgId;
+                $objSpeciality->speciality_id = $values;
                 $objSpeciality->user_id = $userId;
                 $objSpeciality->save();
                 $objSpeciality = '';

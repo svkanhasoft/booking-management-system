@@ -454,14 +454,15 @@ class UserController extends Controller
             if (!empty($request->post('password'))) {
                 $requestData['password'] = Hash::make($request->post('password'));
             }
-            $signee = User::findOrFail($requestData['id']);;
+            $signee = User::findOrFail($requestData['id']);
+            //print_r($signee->parent_id);exit();
             $signeeUpdated = $signee->update($requestData);
             if ($signeeUpdated) {
                 $signeeDetailResult = SigneesDetail::where('user_id', '=', $requestData['id'])->firstOrFail();
                 $result = $signeeDetailResult->update($requestData);
                 if ($result) {
                     $speciality = new Speciality();
-                    $speciality->addOrUpdateSpeciality($requestData['speciality'], $requestData['id']);
+                    $speciality->addOrUpdateSpeciality($requestData['speciality'], $requestData['id'], $signee->parent_id);
                     $user = User::find($this->userId)->SigneesDetail;
                     return response()->json(['status' => true, 'message' => 'Signee update Successfully', 'data' =>  $signee], $this->successStatus);
                 }
