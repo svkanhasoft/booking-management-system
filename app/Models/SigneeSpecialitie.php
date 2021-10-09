@@ -29,7 +29,7 @@ class SigneeSpecialitie extends Model
      */
     protected $fillable = ['user_id', 'speciality_id', 'organization_id'];
 
-    function updateSpeciality($postData, $userId, $isDelete = true)
+    function updateSpeciality($postData, $userId, $orgId, $isDelete = true)
     {
         //print_r($postData);exit();
         if ($isDelete == true) {
@@ -40,6 +40,7 @@ class SigneeSpecialitie extends Model
             $objSigneeSpecialitie = new SigneeSpecialitie();
             $objSigneeSpecialitie->speciality_id = $val;
             $objSigneeSpecialitie->user_id = $userId;
+            $objSigneeSpecialitie->organization_id = $orgId;
             $objSigneeSpecialitie->save();
             $objSigneeSpecialitie = "";
         }

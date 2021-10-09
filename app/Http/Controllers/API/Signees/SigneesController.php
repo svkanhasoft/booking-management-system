@@ -90,7 +90,7 @@ class SigneesController extends Controller
             $orgResult = SigneesDetail::create($requestData);
 
             $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], false);
+            $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $requestData['parent_id'], false);
 
             $requestData['organization_id'] = $request->post('organization_id');
             $requestData['user_id'] = $userCreated['id'];
