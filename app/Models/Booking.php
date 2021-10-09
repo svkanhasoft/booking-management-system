@@ -341,6 +341,7 @@ class Booking extends Model
             'users.role',
             'bookings.user_id as organization_id',
             'bookings.*',
+            'shift_type.shift_type',
             'booking_matches.signee_status',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
@@ -349,7 +350,7 @@ class Booking extends Model
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
-        
+        $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
