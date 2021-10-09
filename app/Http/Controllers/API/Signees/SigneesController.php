@@ -145,6 +145,9 @@ class SigneesController extends Controller
             $userObj = new User();
             $user = $userObj->getSigneeDetails(Auth::user()->id);
             $user['token'] =  $userResult->createToken('User')->accessToken;
+            User::where(['id' => $user->id])->update([
+                'last_login_date' => date('Y-m-d H:i:s'),
+            ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
