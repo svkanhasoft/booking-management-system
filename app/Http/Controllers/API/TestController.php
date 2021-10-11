@@ -1,17 +1,20 @@
 <?php
+
 namespace App\Http\Controllers\API;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests;
 use App\Models\Hospital;
 use Hash;
-use App\Models\Trust;
-use App\Models\Ward;
-use App\Models\Traning;
+use App\Models\User;
 use Config;
 use DateTime;
+use finfo;
+use Illuminate\Support\Facades\Date;
 use Session;
+use Illuminate\Support\Carbon;
 
 class TestController extends Controller
 {
@@ -45,6 +48,18 @@ class TestController extends Controller
         }
     }
 
-    
+    function inactive()
+    {
+        $userObj = User::select('id', 'email', 'first_name', 'last_login_date')->whereNotNull('last_login_date')->where('role', 'SIGNEE')->get()->toArray();
+        foreach ($userObj as $key => $value) {
+            $date1 = new DateTime(date('Y-m-d H:i:s'));
+            $date2 = new DateTime($value['last_login_date']);
+            $interval = $date1->diff($date2);
+            if ($interval->y >= 1) {
+                $userUpdateObj = User::find($value['id']);
+                $userUpdateObj->status = 'Inactive';
+                $userUpdateObj->save();
+            }
+        }
+    }
 }
-
