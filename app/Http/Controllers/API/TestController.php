@@ -50,19 +50,21 @@ class TestController extends Controller
 
     function inactive()
     {
-        $userObj = User::select('id', 'email', 'first_name', 'last_login_date')->whereNotNull('last_login_date')->where('status', 'Active')->where('role', 'SIGNEE')->get()->toArray();
+        $userObj = User::select('id', 'email', 'first_name', 'last_login_date')->where('status', 'Active')->where('role', 'SIGNEE')->get()->toArray();
         foreach ($userObj as $key => $value) {
-            $date1 = new DateTime(date('Y-m-d H:i:s'));
-            $date2 = new DateTime($value['last_login_date']);
-            $interval = $date1->diff($date2);
-            if ($interval->y > 0) {
-                $userUpdateObj = User::find($value['id']);
-                $userUpdateObj->status = 'Dormant';
-                $userUpdateObj->save();
-            }else if ($interval->m > 5) {
-                $userUpdateObj = User::find($value['id']);
-                $userUpdateObj->status = 'Inactive';
-                $userUpdateObj->save();
+            if ($value['last_login_date'] != '' && $value['last_login_date'] != null) {
+                $date1 = new DateTime(date('Y-m-d H:i:s'));
+                $date2 = new DateTime($value['last_login_date']);
+                $interval = $date1->diff($date2);
+                if ($interval->y > 0) {
+                    $userUpdateObj = User::find($value['id']);
+                    $userUpdateObj->status = 'Dormant';
+                    $userUpdateObj->save();
+                } else if ($interval->m > 5) {
+                    $userUpdateObj = User::find($value['id']);
+                    $userUpdateObj->status = 'Inactive';
+                    $userUpdateObj->save();
+                }
             }
         }
     }
