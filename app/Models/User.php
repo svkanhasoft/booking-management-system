@@ -192,7 +192,7 @@ class User extends Authenticatable
             'users.postcode',
             'signees_detail.nationality',
             'signees_detail.nmc_dmc_pin',
-            'signees_detail.cv',
+            
             'signees_detail.date_of_birth',
             'signees_detail.mobile_number',
             'signees_detail.phone_number',
@@ -392,7 +392,6 @@ class User extends Authenticatable
             'users.postcode',
             'signees_detail.nationality',
             'signees_detail.date_of_birth',
-            'signees_detail.cv',
             // 'signees_detail.mobile_number',
             // 'signees_detail.phone_number',
             'signees_detail.candidate_referred_from',
