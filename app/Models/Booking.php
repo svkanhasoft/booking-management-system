@@ -625,6 +625,7 @@ class Booking extends Model
             'users.id as signeeId',
             'users.address_line_1',
             'users.address_line_2',
+            'users.contact_number',
             'users.city',
             'users.first_name',
             'users.last_name',
