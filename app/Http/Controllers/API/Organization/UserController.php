@@ -603,6 +603,14 @@ class UserController extends Controller
             $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
             $objBookingMatch->booking_status = $requestData['status'];
             $objBookingMatch->save();
+            if($objBookingMatch)
+            {
+                return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
+            }
+            else
+            {
+                return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+            }
         }
         catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
