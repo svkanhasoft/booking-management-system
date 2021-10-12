@@ -106,13 +106,17 @@ class BookingController extends Controller
     {
         $objBooking = new Booking();
         $booking = $objBooking->getBooking($id);
-        $obj = new BookingSpeciality();
-        $booking['speciality'] = $obj->getBookingSpeciality($id);
+        if($booking){
+            $obj = new BookingSpeciality();
+            $booking['speciality'] = $obj->getBookingSpeciality($id);
+            $booking['matching'] = $objBooking->getMatchByBooking($id,'Matching');
+            $booking['interested'] = $objBooking->getMatchByBooking($id,'Interested');
+        }
         // $shift['speciality'] = BookingSpeciality::where('booking_id', $id)->get()->toArray();
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'booking get Successfully', 'data' => $booking], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, booking not available!', 'status' => false], 404);
+            return response()->json(['message' => 'Sorry, booking not available!', 'status' => false], 200);
         }
     }
 

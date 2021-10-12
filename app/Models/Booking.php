@@ -528,4 +528,30 @@ class Booking extends Model
         }
         return $subArray;
     }
+
+    public function getMatchByBooking($bookingId,$status)
+    {
+        $subQuery = Booking::select(
+            // // $subQuery = BookingSpeciality::select(
+            'users.id as signeeId',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.first_name',
+            'users.last_name',
+            'users.email',
+            'bookings.user_id as organization_id',
+            'bookings.*',
+        );
+        $subQuery->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $subQuery->Join('users',  'users.id', '=', 'booking_matches.signee_id');
+        $subQuery->where('users.role', 'SIGNEE');
+        $subQuery->where('bookings.id', $bookingId);
+        $subQuery->where('booking_matches.signee_status',$status );
+        $res = $subQuery->get()->toArray();
+
+        return $res;
+    }
+
+
 }
