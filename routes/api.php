@@ -167,3 +167,4 @@ Route::prefix('signee')->group(function () {
 
 Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
+Route::get('/pdf', [TestController::class, 'pdf']);

@@ -15,6 +15,7 @@ use finfo;
 use Illuminate\Support\Facades\Date;
 use Session;
 use Illuminate\Support\Carbon;
+use PDF;
 
 class TestController extends Controller
 {
@@ -67,5 +68,15 @@ class TestController extends Controller
                 }
             }
         }
+    }
+
+    public function pdf()
+    {
+        $data = [
+            'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('m/d/Y')
+        ];
+        $pdf = PDF::loadView('signee', $data);
+        return $pdf->download('itsolutionstuff.pdf');
     }
 }
