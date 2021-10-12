@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Requests;
 use App\Models\Booking;
+use App\Models\BookingMatch;
 use App\Models\User;
 use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
@@ -571,6 +572,37 @@ class UserController extends Controller
             } else {
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
             }
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    public function confirmBooking(Request $request)
+    {
+        $requestData = $request->all();
+        
+        $validator = Validator::make($request->all(), [
+            'booking_id' => 'required',
+            'signee_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 422);
+        }
+        try{
+            $objBooking = new Booking();
+            $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+            
+            $objBooking->sendBookingConfirmEmail($matchSignee);
+
+            $booking = booking::findOrFail($requestData['booking_id']);
+            $booking['status'] = $requestData['status'];
+            $bookingUpdate = $booking->update($requestData);
+
+            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
+            $objBookingMatch->booking_status = $requestData['status'];
+            $objBookingMatch->save();
         }
         catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
