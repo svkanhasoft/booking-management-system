@@ -118,6 +118,7 @@ Route::prefix('organization')->group(function () {
                 Route::post('/staff-profile-update', [UserController::class, 'profileUpdate']);
                 Route::post('/change-shift-status', [UserController::class, 'changeShiftStatus']);
                 Route::put('/change-signee-profile-status', [UserController::class, 'changeSigneeProfileStatus']);
+                Route::post('/confirm-booking', [UserController::class, 'confirmBooking']);
             });
         });
     });

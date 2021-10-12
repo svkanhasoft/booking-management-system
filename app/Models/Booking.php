@@ -342,7 +342,9 @@ class Booking extends Model
             'bookings.user_id as organization_id',
             'bookings.*',
             'shift_type.shift_type',
-            'booking_matches.signee_status',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
@@ -355,6 +357,9 @@ class Booking extends Model
         $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
         
         $subQuery->where('users.role', 'SIGNEE');
@@ -402,9 +407,93 @@ class Booking extends Model
         return $res;
     }
 
+    public function getMetchByBookingIdAndSigneeId($bookingId = null, $signeeId = null)
+    {
+        //echo 'booking='.$bookingId, 'signee='.$signeeId;exit();
+        $subQuery = BookingMatch::select(
+            'users.email',
+            'signee_preference.user_id as signeeId',
+            'bookings.id as booking_id',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.role',
+            'bookings.user_id as organization_id',
+            'bookings.*',
+            'shift_type.shift_type',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
+            DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+            DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        //$subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
+        
+        $subQuery->where('users.role', 'SIGNEE');
+        $subQuery->where('bookings.id', $bookingId);
+        $subQuery->where('users.id', $signeeId);
+        $subQuery->whereNull('signee_speciality.deleted_at');
+        $subQuery->whereNull('booking_specialities.deleted_at');
+        $subQuery->whereNull('bookings.deleted_at');
+        $subQuery->groupBy('signee_preference.user_id');
+        $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $subQuery->whereRaw("(
+            IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
+        )");
+        $res = $subQuery->first()->toArray();
+        //print_r($res);exit();
+        return $res;
+    }
+
+    public function sendBookingConfirmEmail($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'bookingConfirm',
+                'subject' => 'Booking Management System: Your booking is confirm',
+                'data' => $result
+            ];
+            $emailRes = \Mail::to($result['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+            ->cc('maulik.kanhasoft@gmail.com')
+            ->bcc('suresh.kanhasoft@gmail.com')
+            ->send(new \App\Mail\SendSmtpMail($details));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function editMetchBySigneeId($signeeId = null)
     {
-
         $subQuery = Booking::select(
             'users.id as signeeId',
             'bookings.id as booking_id',
