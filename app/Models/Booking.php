@@ -328,7 +328,7 @@ class Booking extends Model
 
     public function getMetchByBookingId($matchiId = null)
     {
-        $subQuery = BookingMatch::select(
+        $subQuery = Booking::select(
             'users.email',
             'signee_preference.user_id as signeeId',
             'bookings.id as booking_id',
@@ -348,7 +348,7 @@ class Booking extends Model
             DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
-        $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        // $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
         $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
@@ -360,7 +360,7 @@ class Booking extends Model
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
         
         $subQuery->where('users.role', 'SIGNEE');
-        $subQuery->where('booking_matches.booking_id', $matchiId);
+        $subQuery->where('bookings.id', $matchiId);
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
