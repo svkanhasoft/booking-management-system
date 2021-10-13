@@ -52,7 +52,7 @@ class SigneePreferencesController extends Controller
             if ($preference) {
                 return response()->json(['status' => true, 'message' => 'Preferences get Successfully', 'data' => $preference], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Preferences get Failed!', 'status' => false], 409);
+                return response()->json(['message' => 'Sorry, Preferences not found!', 'status' => false], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
