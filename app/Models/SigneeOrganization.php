@@ -41,7 +41,7 @@ class SigneeOrganization extends Model
             $objSigneeOrganization = new SigneeOrganization();
             $objSigneeOrganization->organization_id = $val['organization_id'];
             $objSigneeOrganization->user_id = $userId;
-            $objSigneeOrganization->status = "NEWSIGNUP";
+            $objSigneeOrganization->status = "NEW SIGNUP";
             $objSigneeOrganization->save();
             $objSigneeOrganization = "";
         }
