@@ -56,7 +56,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->booking_status = 'OPEN';
+            $objBookingMatch->booking_status = 'CREATED';
             $objBookingMatch->save();
             $objBookingMatch = '';
         }
