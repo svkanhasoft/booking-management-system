@@ -149,6 +149,7 @@ class SigneesController extends Controller
             $this->organizationId = Auth::user()->organization_id;
             $userObj = new User();
             $user = $userObj->getSigneeDetails(Auth::user()->id);
+            // $user['is_password_change'] =  ($user['is_password_change']==1)?true:false;
             $user['token'] =  $userResult->createToken('User')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
@@ -196,8 +197,9 @@ class SigneesController extends Controller
         //print_r($user);exit();
         if (!empty($user)) {
             $userObj = User::find($this->userId);
+           // print_r($userObj);exit();
             $userObj['password'] = Hash::make($request->post('password'));
-            $userObj['password_change'] = 1;
+            $userObj['password_change'] = true;
             $userObj->save();
             return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
         } else {

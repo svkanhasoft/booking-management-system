@@ -86,11 +86,13 @@ class Booking extends Model
             'trusts.name',
             'grade.grade_name',
             'shift_type.shift_type',
+            'hospitals.hospital_name',
             //'organization_shift.start_time',
             //'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
         $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');

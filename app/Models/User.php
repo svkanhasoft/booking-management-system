@@ -31,7 +31,6 @@ class User extends Authenticatable
         'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number','device_id','platform'
     ];
 
-
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -49,6 +48,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_password_change' => 'boolean',
     ];
 
     public function getOrganizationDetails($userId = null)
@@ -188,6 +188,7 @@ class User extends Authenticatable
             'signees_detail.candidate_id',
             'users.address_line_1',
             'users.address_line_2',
+            'users.password_change as is_password_change',
             'users.city',
             'users.postcode',
             'signees_detail.nationality',
