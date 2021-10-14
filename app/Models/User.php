@@ -380,6 +380,7 @@ class User extends Authenticatable
 
     public function getSigneeById($userId = null)
     {
+       // print_r(Auth::user()->id);exit();
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -437,6 +438,7 @@ class User extends Authenticatable
         );
         $query3->where('signee_id', $userId);
         $query3->where('key', '=','passport');
+        $query3->where('organization_id', Auth::user()->id);
         $userPassportDocs = $query3->get();
 
         //query for immunisation_record documents
@@ -445,6 +447,7 @@ class User extends Authenticatable
         );
         $query4->where('signee_id', $userId);
         $query4->where('key', '=','immunisation_record');
+        $query4->where('organization_id', Auth::user()->id);
         $userIRDocs = $query4->get();
         // print_r($userIRDocs);exit();
         
@@ -454,6 +457,7 @@ class User extends Authenticatable
         );
         $query5->where('signee_id', $userId);
         $query5->where('key', '=','training_certificates');
+        $query5->where('organization_id', Auth::user()->id);
         $userTCDocs = $query5->get();
 
         //query for nursing_certificates documents
@@ -462,6 +466,7 @@ class User extends Authenticatable
         );
         $query6->where('signee_id', $userId);
         $query6->where('key', '=','nursing_certificates');
+        $query6->where('organization_id', Auth::user()->id);
         $userNCDocs = $query6->get();
 
         //query for professional_indemnity_insurance documents
@@ -470,6 +475,7 @@ class User extends Authenticatable
         );
         $query7->where('signee_id', $userId);
         $query7->where('key', '=','professional_indemnity_insurance');
+        $query7->where('organization_id', Auth::user()->id);
         $userPIIDocs = $query7->get();
 
         //query for nmc_statement documents
@@ -478,6 +484,7 @@ class User extends Authenticatable
         );
         $query8->where('signee_id', $userId);
         $query8->where('key', '=','nmc_statement');
+        $query8->where('organization_id', Auth::user()->id);
         $userNMCDocs = $query8->get();
 
         //query for dbs_disclosure_certificate documents
@@ -486,6 +493,7 @@ class User extends Authenticatable
         );
         $query9->where('signee_id', $userId);
         $query9->where('key', '=','dbs_disclosure_certificate');
+        $query9->where('organization_id', Auth::user()->id);
         $userDDCDocs = $query9->get();
 
         //query for cv documents
@@ -494,6 +502,7 @@ class User extends Authenticatable
         );
         $query10->where('signee_id', $userId);
         $query10->where('key', '=','cv');
+        $query10->where('organization_id', Auth::user()->id);
         $userCVDocs = $query10->get();
 
         //query for employment documents
@@ -502,6 +511,7 @@ class User extends Authenticatable
         );
         $query11->where('signee_id', $userId);
         $query11->where('key', '=','employment');
+        $query11->where('organization_id', Auth::user()->id);
         $userEmpDocs = $query11->get();
 
         //query for address_proof documents
@@ -510,6 +520,7 @@ class User extends Authenticatable
         );
         $query12->where('signee_id', $userId);
         $query12->where('key', '=','address_proof');
+        $query12->where('organization_id', Auth::user()->id);
         $userAPDocs = $query12->get();
 
         //query for passport_photo documents
@@ -518,6 +529,7 @@ class User extends Authenticatable
         );
         $query13->where('signee_id', $userId);
         $query13->where('key', '=','passport_photo');
+        $query13->where('organization_id', Auth::user()->id);
         $userPPDocs = $query13->get();
 
         //query for ni_proof documents
@@ -526,6 +538,7 @@ class User extends Authenticatable
         );
         $query14->where('signee_id', $userId);
         $query14->where('key', '=','ni_proof');
+        $query14->where('organization_id', Auth::user()->id);
         $userNIDocs = $query14->get();
 
         //print_r($userTCDocs);exit();     
