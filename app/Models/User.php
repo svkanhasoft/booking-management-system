@@ -365,6 +365,18 @@ class User extends Authenticatable
     {
         return $this->hasMany(Speciality::class, 'user_id');
     }
+    public function documents()
+    {
+        return $this->hasMany(SigneeDocument::class, 'signee_id');
+    }
+    // public function passport()
+    // {
+    //     return $this->hasMany(SigneeDocument::class, 'signee_id');
+    // }
+    // public function immuninisation_records()
+    // {
+    //     return $this->hasMany(SigneeDocument::class, 'signee_id');
+    // }
 
     public function getSigneeById($userId = null)
     {
@@ -410,21 +422,133 @@ class User extends Authenticatable
         $query->where('users.id', $userId);
         $userDetais = $query->first();
 
-
+        //query for speciality
         $query2 = SigneeSpecialitie::select(
             'specialities.id',
             'specialities.speciality_name',
         );
         $query2->Join('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query2->where('signee_speciality.user_id', $userId);
-
-        $result = [];
         $userSpec = $query2->get();
+
+        //query for passport documents
+        $query3 = SigneeDocument::select(
+            'file_name'
+        );
+        $query3->where('signee_id', $userId);
+        $query3->where('key', '=','passport');
+        $userPassportDocs = $query3->get();
+
+        //query for immunisation_record documents
+        $query4 = SigneeDocument::select(
+            'file_name'
+        );
+        $query4->where('signee_id', $userId);
+        $query4->where('key', '=','immunisation_record');
+        $userIRDocs = $query4->get();
+        // print_r($userIRDocs);exit();
+        
+        //query for training_certificates documents
+        $query5 = SigneeDocument::select(
+            'file_name'
+        );
+        $query5->where('signee_id', $userId);
+        $query5->where('key', '=','training_certificates');
+        $userTCDocs = $query5->get();
+
+        //query for nursing_certificates documents
+        $query6 = SigneeDocument::select(
+            'file_name'
+        );
+        $query6->where('signee_id', $userId);
+        $query6->where('key', '=','nursing_certificates');
+        $userNCDocs = $query6->get();
+
+        //query for professional_indemnity_insurance documents
+        $query7 = SigneeDocument::select(
+            'file_name'
+        );
+        $query7->where('signee_id', $userId);
+        $query7->where('key', '=','professional_indemnity_insurance');
+        $userPIIDocs = $query7->get();
+
+        //query for nmc_statement documents
+        $query8 = SigneeDocument::select(
+            'file_name'
+        );
+        $query8->where('signee_id', $userId);
+        $query8->where('key', '=','nmc_statement');
+        $userNMCDocs = $query8->get();
+
+        //query for dbs_disclosure_certificate documents
+        $query9 = SigneeDocument::select(
+            'file_name'
+        );
+        $query9->where('signee_id', $userId);
+        $query9->where('key', '=','dbs_disclosure_certificate');
+        $userDDCDocs = $query9->get();
+
+        //query for cv documents
+        $query10 = SigneeDocument::select(
+            'file_name'
+        );
+        $query10->where('signee_id', $userId);
+        $query10->where('key', '=','cv');
+        $userCVDocs = $query10->get();
+
+        //query for employment documents
+        $query11 = SigneeDocument::select(
+            'file_name'
+        );
+        $query11->where('signee_id', $userId);
+        $query11->where('key', '=','employment');
+        $userEmpDocs = $query11->get();
+
+        //query for address_proof documents
+        $query12 = SigneeDocument::select(
+            'file_name'
+        );
+        $query12->where('signee_id', $userId);
+        $query12->where('key', '=','address_proof');
+        $userAPDocs = $query12->get();
+
+        //query for passport_photo documents
+        $query13 = SigneeDocument::select(
+            'file_name'
+        );
+        $query13->where('signee_id', $userId);
+        $query13->where('key', '=','passport_photo');
+        $userPPDocs = $query13->get();
+
+        //query for ni_proof documents
+        $query14 = SigneeDocument::select(
+            'file_name'
+        );
+        $query14->where('signee_id', $userId);
+        $query14->where('key', '=','ni_proof');
+        $userNIDocs = $query14->get();
+
+        //print_r($userTCDocs);exit();     
+        
+        
+                
+        
+        $result = [];
         $result = $userDetais;
         $result->speciality = $userSpec;
-        //$result = $userSpec;
-        //$result = array_push($userDetais, $userSpec);
-
+        $result->documents = array('passport'=>$userPassportDocs);
+        $result->documents += array('immunisation_record'=>$userIRDocs);
+        $result->documents += array('training_certificates'=>$userTCDocs);
+        $result->documents += array('nursing_certificates'=>$userNCDocs);
+        $result->documents += array('professional_indemnity_insurance'=>$userPIIDocs);
+        $result->documents += array('nmc_statement'=>$userNMCDocs);
+        $result->documents += array('dbs_disclosure_certificate'=>$userDDCDocs);
+        $result->documents += array('cv'=>$userCVDocs);
+        $result->documents += array('employment'=>$userEmpDocs);
+        $result->documents += array('address_proof'=>$userAPDocs);
+        $result->documents += array('passport_photo'=>$userPPDocs);
+        $result->documents += array('ni_proof'=>$userNIDocs);
+        //$result->passport = $userPassportDocs;
         return $result;
     }
 }
