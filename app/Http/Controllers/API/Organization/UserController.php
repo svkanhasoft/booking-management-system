@@ -522,21 +522,39 @@ class UserController extends Controller
 
     public function changeShiftStatus(Request $request)
     {
+        //print_r(Auth::user()->role);exit();
         $requestData = $request->all();
         //print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             'status' => 'required',
-            'booking_id' => 'required'
+            'booking_id' => 'required',
+            'signee_id' => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
         try{
-            $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=>$this->userId]);
+            if(Auth::user()->role == 'ORGANIZATION'){
+                //$data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
+                $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->id]);
+                $booking->status = $requestData['status'];
+                $booking->save();
+                $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->id]);
+                $objBookingMatch->booking_status = $requestData['status'];
+                $objBookingMatch->save();
+            }
+            else{
+                //$data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
+                $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->parent_id]);
+                $booking->status = $requestData['status'];
+                $booking->save();
+                $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->parent_id]);
+                $objBookingMatch->booking_status = $requestData['status'];
+                $objBookingMatch->save();
+            }
+            //$booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=>$this->userId]);
             //print_r($booking);exit();
-            $booking->status = $requestData['status'];
-            $booking->save();
             if(!empty($booking))
             {
                 return response()->json(['status' => true, 'message' => 'Shift status changed successfully', 'data' => $booking], $this->successStatus);
