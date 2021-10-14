@@ -301,6 +301,7 @@ class User extends Authenticatable
 
     public function getSignee(Request $request, $userId = null)
     {
+        //print_r(Auth::user()->id);exit();
         $keyword = $request->get('search');
         $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
@@ -334,12 +335,12 @@ class User extends Authenticatable
             $signeeIdArray = array_column($signee, 'id');
             $signeeIdArray[] = Auth::user()->id;
             //print_r($signeeIdArray);exit();
-            $query->whereIn('signee_organization.organization_id', $signeeIdArray);
+            $query->whereIn('users.parent_id', $signeeIdArray);
             // $query->whereIn('users.parent_id', $signeeIdArray)->get();
         }
         else{
            // print_r(Auth::user()->parent_id);exit();
-            $query->whereIn('signee_organization.organization_id', array(Auth::user()->id, Auth::user()->parent_id));
+            $query->whereIn('users.parent_id', array(Auth::user()->id, Auth::user()->parent_id));
         }
         if (!empty($keyword)) {
             $query->where(function ($query2) use ($keyword) {
