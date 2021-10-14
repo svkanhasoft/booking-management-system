@@ -528,7 +528,6 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'status' => 'required',
             'booking_id' => 'required',
-            'signee_id' => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -536,7 +535,6 @@ class UserController extends Controller
         }
         try{
             if(Auth::user()->role == 'ORGANIZATION'){
-                //$data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
                 $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
@@ -545,7 +543,6 @@ class UserController extends Controller
                 // $objBookingMatch->save();
             }
             else{
-                //$data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
                 $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->parent_id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
