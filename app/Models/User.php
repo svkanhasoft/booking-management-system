@@ -316,7 +316,7 @@ class User extends Authenticatable
             'signees_detail.nationality',
             DB::raw('candidate_referred_froms.name AS candidate_referred_from'),
             'signees_detail.nmc_dmc_pin',
-            'signee_organization.status',
+            'signee_organization.status as compliance_status',
             'signee_speciality.speciality_id',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
