@@ -100,7 +100,7 @@ Route::prefix('organization')->group(function () {
         Route::delete('/delete-signee/{id}', [UserController::class, 'deleteSignee']);
         Route::get('/get-candidate', [UserController::class, 'getCandidate']);
         Route::get('/get-my-signee/{id}', [UserController::class, 'getMySigneeById']);    //get signee by id from org
-        
+        Route::post('/change-signee-compliance-status', [SigneesController::class, 'changeSigneeComplianceStatus']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
@@ -150,7 +150,6 @@ Route::prefix('signee')->group(function () {
         Route::get('/view-shift-details/{id}', [SigneesController::class, 'viewShiftDetails']);    
         Route::get('/logout', [SigneesController::class, 'logout']);
         Route::put('/filter-shift', [SigneesController::class, 'filterBookings']);
-        Route::post('/change-signee-compliance-status', [SigneesController::class, 'changeSigneeComplianceStatus']);
         Route::get('/show-all-speciality', [HospitalController::class, 'showAllSpeciality']);
         Route::get('/show-all-hospital', [HospitalController::class, 'showAllHospital']);
         Route::post('/add-org', [SigneesController::class, 'addOrg']);
