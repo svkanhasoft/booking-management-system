@@ -540,18 +540,18 @@ class UserController extends Controller
                 $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
-                $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->id]);
-                $objBookingMatch->booking_status = $requestData['status'];
-                $objBookingMatch->save();
+                // $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->id]);
+                // $objBookingMatch->booking_status = $requestData['status'];
+                // $objBookingMatch->save();
             }
             else{
                 //$data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
                 $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->parent_id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
-                $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->parent_id]);
-                $objBookingMatch->booking_status = $requestData['status'];
-                $objBookingMatch->save();
+                // $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->parent_id]);
+                // $objBookingMatch->booking_status = $requestData['status'];
+                // $objBookingMatch->save();
             }
             //$booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=>$this->userId]);
             //print_r($booking);exit();
