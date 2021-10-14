@@ -616,7 +616,8 @@ class SigneesController extends Controller
         try{
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, true);
+            $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, Auth::user()->parent_id,true);
+            
             if ($objSpeciality) {
                 return response()->json(['status' => true, 'message' => 'Speciality updated successfully'], $this->successStatus);
             }
