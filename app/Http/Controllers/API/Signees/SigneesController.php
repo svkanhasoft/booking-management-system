@@ -494,6 +494,7 @@ class SigneesController extends Controller
 
     public function changeSigneeComplianceStatus(Request $request)
     {
+        //print_r(Auth::user()->role);exit();
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             'signee_id' => 'required',
@@ -505,9 +506,13 @@ class SigneesController extends Controller
         }
         try
         {
-            $requestData['organization_id'] = $this->userId;
-
-            $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id']]);
+            //$requestData['organization_id'] = Auth::user()->parent_id;
+            if(Auth::user()->role == 'ORGANIZATION'){
+                $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
+            }
+            else{
+                $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
+            }
             $data->status = $requestData['status'];
             $res = $data->save();
             if (!empty($res)) {
