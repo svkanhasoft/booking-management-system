@@ -191,14 +191,15 @@ class User extends Authenticatable
             'users.password_change as is_password_change',
             'users.city',
             'users.postcode',
+
             'signees_detail.nationality',
             'signees_detail.nmc_dmc_pin',
             
             'signees_detail.date_of_birth',
-            'signees_detail.mobile_number',
-            'signees_detail.phone_number',
+            'signee_organization.status'
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
+        $query->leftJoin('signee_organization',  'signee_organization.user_id', '=', 'users.id');
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
