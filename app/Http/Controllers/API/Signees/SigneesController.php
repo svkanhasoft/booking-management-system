@@ -732,8 +732,9 @@ class SigneesController extends Controller
 
     public function getSigneeDocument(Request $request)
     {
+       // print_r(Auth::user()->parent_id);exit();
         try{
-            $perPage = Config::get('constants.pagination.perPage');
+            //$perPage = Config::get('constants.pagination.perPage');
             $key = $request->get('key');
             // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
             $signeeDocument = SigneeDocument::select(
@@ -750,7 +751,7 @@ class SigneesController extends Controller
                 $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId, 'organization_id'=>Auth::user()->parent_id]);
             }
     
-            $data = $signeeDocument->latest()->paginate($perPage);
+            $data = $signeeDocument->get();
             $count =  $data->count();
             if ($count) {
                 return response()->json(['status' => true, 'message' => 'Documents get successfully', 'data'=>$data], $this->successStatus);
