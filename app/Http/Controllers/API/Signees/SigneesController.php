@@ -165,8 +165,9 @@ class SigneesController extends Controller
      */
     public function getDetails()
     {
+        //print_r($this->userId);exit();
         $userObj = new User();
-        $user = $userObj->getSigneeDetails($this->userId);
+        $user = $userObj->getSigneeDetails($this->userId, Auth::user()->parent_id);
         if (!empty($user)) {
             return response()->json(['status' => true, 'message' => 'Signee details get successfully.', 'data' => $user], $this->successStatus);
         } else {

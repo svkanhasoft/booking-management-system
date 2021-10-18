@@ -205,7 +205,7 @@ class User extends Authenticatable
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->where('users.id', $userId);
         $query->where('signee_organization.organization_id', $orgId);
-        $userDetais = $query->first()->toArray();
+        $userDetais = $query->first();
         //print_r($userDetais);exit();
         return $userDetais;
     }
