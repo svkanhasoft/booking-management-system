@@ -802,7 +802,7 @@ class SigneesController extends Controller
                     $signee->save();
                     $userResult = Auth::user();
                     $userObj = new User();
-                    $user = $userObj->getSigneeDetails($signee_id);
+                    $user = $userObj->getSigneeDetails($signee_id, Auth::user()->parent_id);
                     $user['token'] =  $userResult->createToken('User')->accessToken;
                     return response()->json(['status' => true, 'message' => 'Organization successfully changed', 'data' => $user], $this->successStatus);           
                 }         
