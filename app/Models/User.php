@@ -304,7 +304,7 @@ class User extends Authenticatable
 
     public function getSignee(Request $request, $userId = null)
     {
-        //print_r(Auth::user()->id);exit();
+        //print_r($userId);exit();
         $keyword = $request->get('search');
         $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
@@ -331,14 +331,20 @@ class User extends Authenticatable
         $query->leftJoin('candidate_referred_froms', 'candidate_referred_froms.id', '=', 'signees_detail.candidate_referred_from');
         // $query->whereIn('signee_organization.organization_id', array(40 ,107));
         $query->where('users.role', "SIGNEE");
-
+        //$query->where('users.parent_id', $userId);
         if(Auth::user()->role == 'ORGANIZATION'){
             //print_r(Auth::user()->role);exit();
+            $org = SigneeOrganization::where('organization_id', $userId)->get()->toArray();
+            $userIdArray = array_column($org, 'user_id');
+           // print_r($userIdArray);exit();
+
             $signee = User::select('id')->where(['parent_id' => Auth::user()->id])->get()->toArray();
+            //print_r($signee);exit();
             $signeeIdArray = array_column($signee, 'id');
             $signeeIdArray[] = Auth::user()->id;
-            //print_r($signeeIdArray);exit();
-            $query->whereIn('users.parent_id', $signeeIdArray);
+            $mainArray = array_merge($userIdArray, $signeeIdArray);
+            //print_r($mainArray);exit();
+            $query->whereIn('users.id', $mainArray);
             // $query->whereIn('users.parent_id', $signeeIdArray)->get();
         }
         else{
