@@ -165,9 +165,9 @@ class User extends Authenticatable
         return $userDetais;
     }
 
-    public function getSigneeDetails($userId = null)
+    public function getSigneeDetails($userId = null, $orgId = null)
     {
-
+        //print_r($orgId);exit();
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -204,7 +204,9 @@ class User extends Authenticatable
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->where('users.id', $userId);
-        $userDetais = $query->first();
+        $query->where('signee_organization.organization_id', $orgId);
+        $userDetais = $query->first()->toArray();
+        //print_r($userDetais);exit();
         return $userDetais;
     }
 

@@ -146,9 +146,10 @@ class SigneesController extends Controller
             
             $userResult = Auth::user();
             $this->userId = Auth::user()->id;
-            $this->organizationId = Auth::user()->organization_id;
+            $this->organizationId = Auth::user()->parent_id;
             $userObj = new User();
-            $user = $userObj->getSigneeDetails(Auth::user()->id);
+            //print_r(Auth::user()->id);exit();
+            $user = $userObj->getSigneeDetails(Auth::user()->id, Auth::user()->parent_id);
             // $user['is_password_change'] =  ($user['is_password_change']==1)?true:false;
             $user['token'] =  $userResult->createToken('User')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
