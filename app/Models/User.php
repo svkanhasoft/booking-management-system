@@ -324,7 +324,7 @@ class User extends Authenticatable
             'signee_speciality.speciality_id',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
-        $query->Join('signee_organization', 'signee_organization.user_id', '=', 'users.id');
+        $query->leftJoin('signee_organization', 'signee_organization.user_id', '=', 'users.id');
         $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
         $query->leftJoin('signee_speciality', 'signee_speciality.user_id', '=', 'users.id');
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
@@ -333,22 +333,23 @@ class User extends Authenticatable
         $query->where('users.role', "SIGNEE");
         //$query->where('users.parent_id', $userId);
         if(Auth::user()->role == 'ORGANIZATION'){
-            //print_r(Auth::user()->role);exit();
+            //print_r($userId);exit();
             $org = SigneeOrganization::where('organization_id', $userId)->get()->toArray();
             $userIdArray = array_column($org, 'user_id');
-           // print_r($userIdArray);exit();
+            //print_r($userIdArray);exit();
 
             $signee = User::select('id')->where(['parent_id' => Auth::user()->id])->get()->toArray();
-            //print_r($signee);exit();
             $signeeIdArray = array_column($signee, 'id');
             $signeeIdArray[] = Auth::user()->id;
             $mainArray = array_merge($userIdArray, $signeeIdArray);
             //print_r($mainArray);exit();
+            $query->where('signee_organization.organization_id', $userId);
+            //$query->where('users.parent_id', $userId);
             $query->whereIn('users.id', $mainArray);
             // $query->whereIn('users.parent_id', $signeeIdArray)->get();
         }
         else{
-           // print_r(Auth::user()->parent_id);exit();
+            //print_r($userId);exit();
             $query->whereIn('users.parent_id', array(Auth::user()->id, Auth::user()->parent_id));
         }
         if (!empty($keyword)) {
