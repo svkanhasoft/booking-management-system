@@ -510,7 +510,9 @@ class SigneesController extends Controller
         {
             //$requestData['organization_id'] = Auth::user()->parent_id;
             if(Auth::user()->role == 'ORGANIZATION'){
+                //print_r(Auth::user()->role);exit();
                 $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
+                //print_r($data);exit();
             }
             else{
                 $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
@@ -795,14 +797,14 @@ class SigneesController extends Controller
             if(!empty($data))
             {
                 $signee = User::where('id', $this->userId)->first();
-               // print_r($signee);exit();
+                //print_r($signee);exit();
                 if(Auth::guard('web')->loginUsingId($signee_id))
                 {
                     $signee->parent_id = $organization_id;
                     $signee->save();
                     $userResult = Auth::user();
                     $userObj = new User();
-                    $user = $userObj->getSigneeDetails($signee_id, Auth::user()->parent_id);
+                    $user = $userObj->getSigneeDetails($signee_id, $organization_id);
                     $user['token'] =  $userResult->createToken('User')->accessToken;
                     return response()->json(['status' => true, 'message' => 'Organization successfully changed', 'data' => $user], $this->successStatus);           
                 }         

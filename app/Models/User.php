@@ -203,8 +203,8 @@ class User extends Authenticatable
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
-        $query->where('users.id', $userId);
         $query->where('signee_organization.organization_id', $orgId);
+        $query->where('users.id', $userId);
         $userDetais = $query->first();
         //print_r($userDetais);exit();
         return $userDetais;
