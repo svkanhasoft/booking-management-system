@@ -161,6 +161,7 @@ Route::prefix('signee')->group(function () {
         //Route::get('/get-organisation', [SigneesController::class, 'getOrganisation']);
         Route::get('/get-organisation-add-org', [SigneesController::class, 'getOrganisationListAddOrg']);
         Route::post('/multi-org-login/{organization_id?}', [SigneesController::class, 'multiOrgLogin']);
+        Route::post('/apply-shift', [SigneesController::class, 'applyShift']);
     });
 });
 

@@ -149,7 +149,7 @@ class SigneesController extends Controller
             $this->organizationId = Auth::user()->parent_id;
             $userObj = new User();
             //print_r(Auth::user()->id);exit();
-            $user = $userObj->getSigneeDetails(Auth::user()->id, Auth::user()->parent_id);
+            $user = $userObj->getSigneeDetails(Auth::user()->id, $checkRecord->parent_id);
             // $user['is_password_change'] =  ($user['is_password_change']==1)?true:false;
             $user['token'] =  $userResult->createToken('User')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
@@ -554,16 +554,22 @@ class SigneesController extends Controller
 
     public function addOrg(Request $request)
     {
-        $requestData = $request->all();
-        //print_r($requestData);exit;
-        $requestData['user_id'] = $this->userId;
-        //$orgId = $requestData['organization']['organization_id'];
-        $signeeOrg = new SigneeOrganization();
-        $signeeOrg->addOrganisation($requestData['organization'], $this->userId, false);
+        try{
+            $requestData = $request->all();
+            //print_r($requestData);exit;
+            $requestData['user_id'] = $this->userId;
+            //$orgId = $requestData['organization']['organization_id'];
+            $signeeOrg = new SigneeOrganization();
+            $signeeOrg->addOrganisation($requestData['organization'], $this->userId, false);
 
-        $objSpeciality = new SigneeSpecialitie();
-        $objSpeciality->addSpeciality($requestData['organization'], $this->userId, true);
-        return response()->json(['status' => true, 'message' => 'Organisation added Successfully'], $this->successStatus);
+            $objSpeciality = new SigneeSpecialitie();
+            $objSpeciality->addSpeciality($requestData['organization'], $this->userId, true);
+            return response()->json(['status' => true, 'message' => 'Organisation added Successfully'], $this->successStatus);
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+        
     }
 
     public function documentUpload(Request $request)
@@ -772,17 +778,21 @@ class SigneesController extends Controller
 
     public function deleteDocument($id)
     {
-        // echo $id;
-        $document = SigneeDocument::find($id);
-        unlink(public_path()."/uploads/signee_docs/" . $document->file_name);
-        $document = SigneeDocument::where("id", $document->id)->delete();
-        if($document)
+        try{
+            $document = SigneeDocument::find($id);
+            unlink(public_path()."/uploads/signee_docs/" . $document->file_name);
+            $document = SigneeDocument::where("id", $document->id)->delete();
+            if($document)
+            {
+                return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);           
+            }
+            else
+            {
+                return response()->json(['status' => false, 'message' => 'Image deleting failed'], 409);           
+            }
+        } catch(\Exception $e)
         {
-            return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);           
-        }
-        else
-        {
-            return response()->json(['status' => false, 'message' => 'Image deleting failed'], 409);           
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -813,6 +823,37 @@ class SigneesController extends Controller
             {
                 return response()->json(['status' => false, 'message' => 'No user found in selected organization'], 404);           
             }
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    public function applyShift(Request $request)
+    {
+        $requestData = $request->all();
+        
+        $validator = Validator::make($request->all(), [
+            'booking_id' => 'required',
+            'signee_status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 422);
+        }
+        try{
+            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']]);
+            $objBookingMatch->signee_status = $requestData['signee_status'];
+            $res = $objBookingMatch->save();
+            if($res)
+            {
+                return response()->json(['status' => true, 'message' => 'Congratulations, You have successfully apply for the shift'], $this->successStatus);           
+            } else{
+                return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);           
+            }
+            //print_r($objBookingMatch->signee_status);exit();
+            //$objBookingMatch->booking_status = "OPEN";
         }
         catch(\Exception $e)
         {
