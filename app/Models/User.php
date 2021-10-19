@@ -306,7 +306,8 @@ class User extends Authenticatable
     {
         //print_r($userId);exit();
         $keyword = $request->get('search');
-        $perPage = Config::get('constants.pagination.perPage');
+        $perPage = 40;
+        //$perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -314,6 +315,7 @@ class User extends Authenticatable
             'users.email',
             'users.contact_number',
             'users.parent_id',
+            //'signee_organization.organization_id as parent_id',
             'users.status as signee_status',
             'signees_detail.candidate_id',
             'signees_detail.date_of_birth',
@@ -342,15 +344,20 @@ class User extends Authenticatable
             $signeeIdArray = array_column($signee, 'id');
             $signeeIdArray[] = Auth::user()->id;
             $mainArray = array_merge($userIdArray, $signeeIdArray);
-            //print_r($mainArray);exit();
+            //$query->where('signee_organization.organization_id', $userId);
             $query->where('signee_organization.organization_id', $userId);
-            //$query->where('users.parent_id', $userId);
             $query->whereIn('users.id', $mainArray);
-            // $query->whereIn('users.parent_id', $signeeIdArray)->get();
         }
         else{
-            //print_r($userId);exit();
-            $query->whereIn('users.parent_id', array(Auth::user()->id, Auth::user()->parent_id));
+            //print_r(Auth::user()->parent_id);exit();
+            // $org = SigneeOrganization::where('organization_id', Auth::user()->parent_id)->get()->toArray();
+            // $signeeIdArray = array_column($org, 'user_id');
+           // print_r($signeeIdArray);exit();
+            // $query->whereIn('users.id', array($signeeIdArray))->whereIn('users.parent_id', array(Auth::user()->id, Auth::user()->parent_id));
+            // $a = $query->get()->toArray();
+            // print_r($a);exit();
+            //$query->whereIn('users.parent_id', Auth::user()->id,  Auth::user()->parent_id);
+            $query->whereIn('signee_organization.organization_id', array(Auth::user()->id, Auth::user()->parent_id));
         }
         if (!empty($keyword)) {
             $query->where(function ($query2) use ($keyword) {
