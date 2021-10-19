@@ -428,6 +428,7 @@ class UserController extends Controller
 
     public function viewSignee(Request $request)    //get all signee by organisation
     {
+        //print_r($this->userId);exit();
         $UserObj = new User();
         $user = $UserObj->getSignee($request, $this->userId);
         //print_r($user);exit();
@@ -606,26 +607,65 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 422);
         }
         try{
-            $objBooking = new Booking();
-            $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+            if($requestData['status'] == 'CANCEL')
+            {
+                $objBooking = new Booking();
+                $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
+                //print_r($signee);exit();
+                //$objBooking->sendBookingCancelEmail($signee);
+                $booking = booking::findOrFail($requestData['booking_id']);
+                $booking['status'] = $requestData['status'];
+                $bookingUpdate = $booking->update($requestData);
+
+                $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
+                $signeeIdArray = array_column($objBookingMatch, 'signee_id');
+                //$emailArray = array_column($signee, 'email');
+                //print_r($emailArray);exit();
+                $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->update(array('booking_status' => $requestData['status']));
+                $objBooking->sendBookingCancelEmail($signee);
+                //$objBooking->sendBookingCancelEmail($emailArray);
+                //print_r($bookingIdArray);exit();
+                // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
+                // //print_r($objBookingMatch);exit();
+                // $objBookingMatch['booking_status'] = $requestData['status'];
+                // $objBookingMatch->save();
+                if($update)
+                {
+                    return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
+                }
+                else
+                {
+                    return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+                }
+                // $objBookingMatch = new BookingMatch();
+                // $bookingMatch = $objBookingMatch->addBookingMatch($booking, $requestData['booking_id']);
+                //print_r($signee);exit();
+            }
+            else if($requestData['status'] == 'CONFIRMED')
+            {
+                //echo "hi";exit();
+                $objBooking = new Booking();
+                $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+                
+                $objBooking->sendBookingConfirmEmail($matchSignee);
+
+                $booking = booking::findOrFail($requestData['booking_id']);
+                $booking['status'] = $requestData['status'];
+                $bookingUpdate = $booking->update($requestData);
+
+                $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
+                $objBookingMatch->booking_status = $requestData['status'];
+                $objBookingMatch->save();
+                if($objBookingMatch)
+                {
+                    return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
+                }
+                else
+                {
+                    return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+                }
+            }
             
-            $objBooking->sendBookingConfirmEmail($matchSignee);
-
-            $booking = booking::findOrFail($requestData['booking_id']);
-            $booking['status'] = $requestData['status'];
-            $bookingUpdate = $booking->update($requestData);
-
-            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
-            $objBookingMatch->booking_status = $requestData['status'];
-            $objBookingMatch->save();
-            if($objBookingMatch)
-            {
-                return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
-            }
-            else
-            {
-                return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
-            }
         }
         catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);

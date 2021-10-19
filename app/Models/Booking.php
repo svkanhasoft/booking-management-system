@@ -344,6 +344,7 @@ class Booking extends Model
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
+            'booking_matches.signee_status',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
@@ -359,10 +360,12 @@ class Booking extends Model
         $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
         
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $matchiId);
+        //$subQuery->where('booking_matches.signee_status', 'Interested');
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
@@ -486,6 +489,32 @@ class Booking extends Model
             ->bcc('suresh.kanhasoft@gmail.com')
             ->send(new \App\Mail\SendSmtpMail($details));
             return true;
+        } else {
+            return false;
+        }
+    }
+    public function sendBookingCancelEmail($result)
+    {
+       // print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            foreach($result as $key=>$val)
+            {
+                //print_r($result[$key]['email']);exit();
+                $details = [
+                    'title' => '',
+                    'body' => 'Hello ',
+                    'mailTitle' => 'bookingCancel',
+                    'subject' => 'Booking Management System: Your booking is canceled',
+                    'data' => $val
+                ];
+               // print_r($details['data']);exit();
+                $emailRes = \Mail::to($result)
+                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+                return true;
+            }
         } else {
             return false;
         }
