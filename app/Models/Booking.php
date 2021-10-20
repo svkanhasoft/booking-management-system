@@ -467,7 +467,7 @@ class Booking extends Model
             or
             IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
         )");
-        $res = $subQuery->first()->toArray();
+        $res = $subQuery->first();
         //print_r($res);exit();
         return $res;
     }
