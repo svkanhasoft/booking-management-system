@@ -671,5 +671,29 @@ class Booking extends Model
         return $res;
     }
 
+    public function getSigneeForPDF($postData)
+    {
+        $query = Booking::select(
+            'bookings.*',
+            'booking_matches.signee_id',
+            'users.contact_number',
+            'users.email',
+            'users.postcode',
+            'users.city',
+            'users.address_line_1',
+            'users.address_line_2',
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT(specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $query->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
+        $query->leftJoin('signee_speciality',  'signee_speciality.user_id', '=', 'booking_matches.signee_id');
+        $query->leftJoin('specialities',  'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query->whereIn('booking_matches.signee_id',$postData['signee_id']);
+        $query->where('bookings.id', $postData['booking_id']);
+        $query->groupBy('booking_matches.signee_id');
+        return $query->get()->toArray();
+    }
 
 }

@@ -9,6 +9,9 @@ $perPage = 20;
 return [
     'pagination' => ['perPage' => '15'],
     'paginationapi' => ['perPage' => '15'],
+    'path' => [
+        'pdf_download' => 'http://backendbooking.kanhasoftdev.com/public/uploads/signee_pdf/',
+    ],
     'uploadFilePath' => [
         'product' => ['default' => $defaultPath . 'product/', 'view' => $viewPath . 'product/'],
             'categories' => ['default' => $defaultPath1 . 'categories/', 'view' => $viewPath1],
