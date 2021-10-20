@@ -174,6 +174,7 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
+            'booking_matches.signee_status',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             //'bookings.rate',
         );
@@ -184,6 +185,7 @@ class BookingMatch extends Model
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $booking->where('bookings.id', $id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
