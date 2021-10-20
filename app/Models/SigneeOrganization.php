@@ -30,10 +30,11 @@ class SigneeOrganization extends Model
      */
     protected $fillable = ['user_id', 'status','organization_id'];
 
-    function addOrganisation($postData, $userId, $orgId, $isDelete = true)
+    function addOrganisation($postData, $userId, $isDelete = false)
     {
     //print_r(Auth::user()->parent_id);exit();
         if ($isDelete == true) {
+            //print_r(Auth::user()->parent_id);exit();
             SigneeOrganization::where(['user_id' => $userId, 'organization_id'=> Auth::user()->parent_id])->delete();
         }
         foreach ($postData as $key => $val) {
