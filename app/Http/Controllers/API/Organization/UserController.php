@@ -18,6 +18,7 @@ use Hash;
 use App\Models\Role;
 use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
+use App;
 
 class UserController extends Controller
 {
@@ -670,5 +671,40 @@ class UserController extends Controller
         catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
+    }
+
+    public function pdf(Request $request)
+    {
+        $requestData = $request->all();
+        
+        $objBooking = new Booking();
+        $booking = $objBooking->getBooking($requestData['booking_id'])->toArray();
+
+        $userObj = new User();
+        $user = $userObj->getSigneeById($requestData['signee_id'])->toArray();
+        
+        $bookingSigneeData = array_merge($booking, $user);
+        // print_r($data);exit();
+
+        $result = [
+            'title' => 'Signee Details',
+            'date' => date('m/d/Y'),
+            'data' => $bookingSigneeData
+        ];
+
+        //print_r($result);exit();
+        // $pdf = PDF::loadView('signee', $data);
+        // return $pdf->download('itsolutionstuff.pdf');
+
+        $pdf = App::make('dompdf.wrapper');
+        // load from other pages use object or array by comma like (pdf-view,$user) 
+        $pdf->loadView('signee', $result);
+        // return $pdf->stream();
+        $filePath = public_path().'/uploads/signee_pdf/';
+        $time = date('Ymdhms');
+        $file = $filePath ."$time-offerLetter.pdf";
+        file_put_contents($file, $pdf->output());
+        
+        return response()->json(['status' => true, 'message' => $file], 200);
     }
 }
