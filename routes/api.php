@@ -119,6 +119,7 @@ Route::prefix('organization')->group(function () {
                 Route::post('/change-shift-status', [UserController::class, 'changeShiftStatus']);
                 Route::put('/change-signee-profile-status', [UserController::class, 'changeSigneeProfileStatus']);
                 Route::post('/confirm-booking', [UserController::class, 'confirmBooking']);
+                Route::get('/pdf/{id?}', [TestController::class, 'pdf']);
             });
         });
     });
@@ -167,4 +168,4 @@ Route::prefix('signee')->group(function () {
 
 Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
-Route::get('/pdf', [TestController::class, 'pdf']);
+// Route::get('/pdf/{signee_id?}', [TestController::class, 'pdf']);

@@ -442,13 +442,14 @@ class User extends Authenticatable
 
         //query for speciality
         $query2 = SigneeSpecialitie::select(
-            'specialities.id',
-            'specialities.speciality_name',
+            //'specialities.id',
+            //'specialities.speciality_name',
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
-        $query2->Join('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query2->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query2->where('signee_speciality.user_id', $userId);
-        $userSpec = $query2->get();
-
+        $userSpec = $query2->get()->toArray();
+        //print_r($userSpec);exit();
         //query for passport documents
         $query3 = SigneeDocument::select(
             'file_name'
@@ -460,7 +461,7 @@ class User extends Authenticatable
         }else{
             $query3->where('organization_id', Auth::user()->parent_id);
         }
-        $userPassportDocs = $query3->get();
+        $userPassportDocs = $query3->get()->toArray();
 
         //query for immunisation_record documents
         $query4 = SigneeDocument::select(
@@ -473,7 +474,7 @@ class User extends Authenticatable
         }else{
             $query4->where('organization_id', Auth::user()->parent_id);
         }
-        $userIRDocs = $query4->get();
+        $userIRDocs = $query4->get()->toArray();
         // print_r($userIRDocs);exit();
         
         //query for training_certificates documents
@@ -488,7 +489,7 @@ class User extends Authenticatable
             $query5->where('organization_id', Auth::user()->parent_id);
         }
         // $query5->where('organization_id', Auth::user()->id);
-        $userTCDocs = $query5->get();
+        $userTCDocs = $query5->get()->toArray();
 
         //query for nursing_certificates documents
         $query6 = SigneeDocument::select(
@@ -502,7 +503,7 @@ class User extends Authenticatable
             $query6->where('organization_id', Auth::user()->parent_id);
         }
         //$query6->where('organization_id', Auth::user()->id);
-        $userNCDocs = $query6->get();
+        $userNCDocs = $query6->get()->toArray();
 
         //query for professional_indemnity_insurance documents
         $query7 = SigneeDocument::select(
@@ -516,7 +517,7 @@ class User extends Authenticatable
             $query7->where('organization_id', Auth::user()->parent_id);
         }
         //$query7->where('organization_id', Auth::user()->id);
-        $userPIIDocs = $query7->get();
+        $userPIIDocs = $query7->get()->toArray();
 
         //query for nmc_statement documents
         $query8 = SigneeDocument::select(
@@ -530,7 +531,7 @@ class User extends Authenticatable
             $query8->where('organization_id', Auth::user()->parent_id);
         }
         //$query8->where('organization_id', Auth::user()->id);
-        $userNMCDocs = $query8->get();
+        $userNMCDocs = $query8->get()->toArray();
 
         //query for dbs_disclosure_certificate documents
         $query9 = SigneeDocument::select(
@@ -544,7 +545,7 @@ class User extends Authenticatable
             $query9->where('organization_id', Auth::user()->parent_id);
         }
         //$query9->where('organization_id', Auth::user()->id);
-        $userDDCDocs = $query9->get();
+        $userDDCDocs = $query9->get()->toArray();
 
         //query for cv documents
         $query10 = SigneeDocument::select(
@@ -558,7 +559,7 @@ class User extends Authenticatable
             $query10->where('organization_id', Auth::user()->parent_id);
         }
         //$query10->where('organization_id', Auth::user()->id);
-        $userCVDocs = $query10->get();
+        $userCVDocs = $query10->get()->toArray();
 
         //query for employment documents
         $query11 = SigneeDocument::select(
@@ -572,7 +573,7 @@ class User extends Authenticatable
             $query11->where('organization_id', Auth::user()->parent_id);
         }
         //$query11->where('organization_id', Auth::user()->id);
-        $userEmpDocs = $query11->get();
+        $userEmpDocs = $query11->get()->toArray();
 
         //query for address_proof documents
         $query12 = SigneeDocument::select(
@@ -586,7 +587,7 @@ class User extends Authenticatable
             $query12->where('organization_id', Auth::user()->parent_id);
         }
         //$query12->where('organization_id', Auth::user()->id);
-        $userAPDocs = $query12->get();
+        $userAPDocs = $query12->get()->toArray();
 
         //query for passport_photo documents
         $query13 = SigneeDocument::select(
@@ -600,7 +601,7 @@ class User extends Authenticatable
             $query13->where('organization_id', Auth::user()->parent_id);
         }
         //$query13->where('organization_id', Auth::user()->id);
-        $userPPDocs = $query13->get();
+        $userPPDocs = $query13->get()->toArray();
 
         //query for ni_proof documents
         $query14 = SigneeDocument::select(
@@ -614,7 +615,7 @@ class User extends Authenticatable
             $query14->where('organization_id', Auth::user()->parent_id);
         }
         //$query14->where('organization_id', Auth::user()->id);
-        $userNIDocs = $query14->get();
+        $userNIDocs = $query14->get()->toArray();
 
         $result = [];
         $result = $userDetais;
