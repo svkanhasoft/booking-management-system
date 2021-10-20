@@ -19,7 +19,11 @@ use App\Models\Role;
 use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
 use App;
+<<<<<<< HEAD
 use App\Models\SigneeDocument;
+=======
+use Config;
+>>>>>>> 5b12c830469446cf605064eacdbdbc98505247fb
 
 class UserController extends Controller
 {
@@ -60,7 +64,7 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
-        try{
+        try {
             $requestData = $request->all();
             $requestData['password'] = Hash::make(123456);
             $requestData['parent_id'] = $this->userId;
@@ -78,9 +82,7 @@ class UserController extends Controller
             } else {
                 return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 409);
             }
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
@@ -100,8 +102,7 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
-        try
-        {
+        try {
             $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
             if (empty($checkRecord)) {
                 return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
@@ -118,9 +119,7 @@ class UserController extends Controller
             } else {
                 return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 401);
             }
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
@@ -165,8 +164,7 @@ class UserController extends Controller
      */
     public function getDetails()
     {
-        try
-        {
+        try {
             $UserObj = new User();
             $user = $UserObj->getOrganizationDetails($this->userId);
             if (!empty($user)) {
@@ -174,12 +172,9 @@ class UserController extends Controller
             } else {
                 return response()->json(['message' => 'something will be wrong', 'status' => false], 409);
             }
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-
     }
     /** 
      * Get User list
@@ -392,7 +387,7 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 422);
         }
         $requestData = $request->all();
-       // print_r($requestData);exit();
+        // print_r($requestData);exit();
         // if ($request->hasFile('cv')) {
         //     $files1 = $request->file('cv');
         //     $name = time() . '_signee_' . $files1->getClientOriginalName();
@@ -445,7 +440,7 @@ class UserController extends Controller
     {
         $requestData = $request->all();
         //print_r($requestData);exit();
-        $validator = Validator::make($request->all(), [    
+        $validator = Validator::make($request->all(), [
             "first_name" => 'required',
             "last_name" => 'required',
         ]);
@@ -536,17 +531,16 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
-        try{
-            if(Auth::user()->role == 'ORGANIZATION'){
-                $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->id]);
+        try {
+            if (Auth::user()->role == 'ORGANIZATION') {
+                $booking = Booking::firstOrNew(['id' => $requestData['booking_id'], 'user_id' => Auth::user()->id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
                 // $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->id]);
                 // $objBookingMatch->booking_status = $requestData['status'];
                 // $objBookingMatch->save();
-            }
-            else{
-                $booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=> Auth::user()->parent_id]);
+            } else {
+                $booking = Booking::firstOrNew(['id' => $requestData['booking_id'], 'user_id' => Auth::user()->parent_id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
                 // $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id'], 'organization_id' => Auth::user()->parent_id]);
@@ -555,15 +549,12 @@ class UserController extends Controller
             }
             //$booking = Booking::firstOrNew(['id'=>$requestData['booking_id'], 'user_id'=>$this->userId]);
             //print_r($booking);exit();
-            if(!empty($booking))
-            {
+            if (!empty($booking)) {
                 return response()->json(['status' => true, 'message' => 'Shift status changed successfully', 'data' => $booking], $this->successStatus);
-            } 
-            else {
+            } else {
                 return response()->json(['message' => 'Shift status not changed!', 'status' => false], 404);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
@@ -579,19 +570,16 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
-        try
-        {
+        try {
             $data = User::findOrFail($requestData['signee_id']);
             $data->status = $requestData['status'];
             $res = $data->save();
-            if(!empty($res))
-            {
+            if (!empty($res)) {
                 return response()->json(['status' => true, 'message' => 'Signee profile status changed successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
@@ -599,7 +587,7 @@ class UserController extends Controller
     public function confirmBooking(Request $request)
     {
         $requestData = $request->all();
-        
+
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required',
             'signee_id' => 'required',
@@ -608,9 +596,8 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 422);
         }
-        try{
-            if($requestData['status'] == 'CANCEL')
-            {
+        try {
+            if ($requestData['status'] == 'CANCEL') {
                 $objBooking = new Booking();
                 $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
                 //print_r($signee);exit();
@@ -631,24 +618,19 @@ class UserController extends Controller
                 // //print_r($objBookingMatch);exit();
                 // $objBookingMatch['booking_status'] = $requestData['status'];
                 // $objBookingMatch->save();
-                if($update)
-                {
+                if ($update) {
                     return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
-                }
-                else
-                {
+                } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
                 }
                 // $objBookingMatch = new BookingMatch();
                 // $bookingMatch = $objBookingMatch->addBookingMatch($booking, $requestData['booking_id']);
                 //print_r($signee);exit();
-            }
-            else if($requestData['status'] == 'CONFIRMED')
-            {
+            } else if ($requestData['status'] == 'CONFIRMED') {
                 //echo "hi";exit();
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-                
+
                 $objBooking->sendBookingConfirmEmail($matchSignee);
 
                 $booking = booking::findOrFail($requestData['booking_id']);
@@ -658,64 +640,17 @@ class UserController extends Controller
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->booking_status = $requestData['status'];
                 $objBookingMatch->save();
-                if($objBookingMatch)
-                {
+                if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
-                }
-                else
-                {
+                } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
                 }
             }
-            
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-
-    // public function pdf(Request $request)
-    // {
-    //     $requestData = $request->all();
-    //     //print_r($requestData);exit();
-    //     $userObj = new User();
-    //     $userArray = [];
-
-    //     $objBooking = new Booking();
-    //     $booking = $objBooking->getBooking($requestData['booking_id'])->toArray();
-    //    // print_r($booking);exit();
-    //     foreach($requestData['signee_id'] as $key=>$val)
-    //     {
-    //         //print_r($val);exit();
-    //         $user = $userObj->getSigneeById($val)->toArray();
-    //         $userArray['user'][$key] = $user;   
-    //     }
-    //     $bookingSigneeData = array_merge($booking, $userArray);
-    //     //print_r($bookingSigneeData);exit();
-
-    //     $result = [
-    //         'title' => 'Signee Details',
-    //         'date' => date('m/d/Y'),
-    //         'data' => $bookingSigneeData
-    //     ];
-
-    //     //print_r($result);exit();
-    //     // $pdf = PDF::loadView('signee', $data);
-    //     // return $pdf->download('itsolutionstuff.pdf');
-
-    //     $pdf = App::make('dompdf.wrapper');
-    //     // load from other pages use object or array by comma like (pdf-view,$user) 
-    //     $pdf->loadView('signee', $result);
-    //     // return $pdf->stream();
-    //     $filePath = public_path().'/uploads/signee_pdf/';
-    //     //print_r($filePath);exit();
-    //     $time = date('Ymdhms');
-    //     $file = $filePath ."$time-offerLetter.pdf";
-    //     file_put_contents($file, $pdf->output());
-    //     //unlink($file);
-    //     return response()->json(['status' => true, 'message' => $file], 200);
-    // }
-
+    
     public function changeDocStatus(Request $request)
     {
         $requestData = $request->all();
@@ -745,5 +680,35 @@ class UserController extends Controller
         {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
+    }
+
+    public function pdf(Request $request)
+    {
+        try {
+            $downloadPath = Config::get('constants.path.pdf_download');
+            $requestData = $request->all();
+            $objBooking = new Booking();
+            $result['data'] = $objBooking->getSigneeForPDF($requestData);
+            if (!empty($result['data'])) {
+                $result['title'] = 'Signee Details';
+                $result['date'] = date('m/d/Y');
+                $pdf = App::make('dompdf.wrapper');
+                // load from other pages use object or array by comma like (pdf-view,$user) 
+                $pdf->loadView('signee', $result);
+                // return $pdf->stream();
+                $filePath = public_path() . '/uploads/signee_pdf/';
+                $time = date('Ymdhms');
+                $file = $filePath . "$time-offerLetter.pdf";
+                file_put_contents($file, $pdf->output());
+                $data['pdf_path'] = $downloadPath . "$time-offerLetter.pdf";
+                return response()->json(['status' => true, 'data' => $data, 'message' => 'pdf successfully generated'], $this->successStatus);
+            }else{
+                return response()->json(['message' => 'something will be wrong', 'status' => false], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+        //unlink($file);
+        // return response()->json(['status' => true, 'message' => $file], 200);
     }
 }
