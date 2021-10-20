@@ -683,7 +683,7 @@ class Booking extends Model
             'users.address_line_1',
             'users.address_line_2',
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
-            DB::raw('GROUP_CONCAT(specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
