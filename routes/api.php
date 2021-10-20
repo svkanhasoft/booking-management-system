@@ -120,6 +120,7 @@ Route::prefix('organization')->group(function () {
                 Route::put('/change-signee-profile-status', [UserController::class, 'changeSigneeProfileStatus']);
                 Route::post('/confirm-booking', [UserController::class, 'confirmBooking']);
                 Route::post('/pdf', [UserController::class, 'pdf']);
+                Route::post('/change-document-status', [UserController::class, 'changeDocStatus']);
             });
         });
     });

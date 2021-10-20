@@ -19,6 +19,7 @@ use App\Models\Role;
 use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
 use App;
+use App\Models\SigneeDocument;
 
 class UserController extends Controller
 {
@@ -673,44 +674,76 @@ class UserController extends Controller
         }
     }
 
-    public function pdf(Request $request)
+    // public function pdf(Request $request)
+    // {
+    //     $requestData = $request->all();
+    //     //print_r($requestData);exit();
+    //     $userObj = new User();
+    //     $userArray = [];
+
+    //     $objBooking = new Booking();
+    //     $booking = $objBooking->getBooking($requestData['booking_id'])->toArray();
+    //    // print_r($booking);exit();
+    //     foreach($requestData['signee_id'] as $key=>$val)
+    //     {
+    //         //print_r($val);exit();
+    //         $user = $userObj->getSigneeById($val)->toArray();
+    //         $userArray['user'][$key] = $user;   
+    //     }
+    //     $bookingSigneeData = array_merge($booking, $userArray);
+    //     //print_r($bookingSigneeData);exit();
+
+    //     $result = [
+    //         'title' => 'Signee Details',
+    //         'date' => date('m/d/Y'),
+    //         'data' => $bookingSigneeData
+    //     ];
+
+    //     //print_r($result);exit();
+    //     // $pdf = PDF::loadView('signee', $data);
+    //     // return $pdf->download('itsolutionstuff.pdf');
+
+    //     $pdf = App::make('dompdf.wrapper');
+    //     // load from other pages use object or array by comma like (pdf-view,$user) 
+    //     $pdf->loadView('signee', $result);
+    //     // return $pdf->stream();
+    //     $filePath = public_path().'/uploads/signee_pdf/';
+    //     //print_r($filePath);exit();
+    //     $time = date('Ymdhms');
+    //     $file = $filePath ."$time-offerLetter.pdf";
+    //     file_put_contents($file, $pdf->output());
+    //     //unlink($file);
+    //     return response()->json(['status' => true, 'message' => $file], 200);
+    // }
+
+    public function changeDocStatus(Request $request)
     {
         $requestData = $request->all();
         //print_r($requestData);exit();
-        $userObj = new User();
-        $userArray = [];
-
-        $objBooking = new Booking();
-        $booking = $objBooking->getBooking($requestData['booking_id'])->toArray();
-       // print_r($booking);exit();
-        foreach($requestData['signee_id'] as $key=>$val)
-        {
-            //print_r($val);exit();
-            $user = $userObj->getSigneeById($val)->toArray();
-            $userArray['user'][$key] = $user;   
+        $validator = Validator::make($request->all(), [
+            'signee_id' => 'required',
+            'organization_id' => 'required',
+            'key' => 'required'
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
-        $bookingSigneeData = array_merge($booking, $userArray);
-        //print_r($bookingSigneeData);exit();
-
-        $result = [
-            'title' => 'Signee Details',
-            'date' => date('m/d/Y'),
-            'data' => $bookingSigneeData
-        ];
-
-        //print_r($result);exit();
-        // $pdf = PDF::loadView('signee', $data);
-        // return $pdf->download('itsolutionstuff.pdf');
-
-        $pdf = App::make('dompdf.wrapper');
-        // load from other pages use object or array by comma like (pdf-view,$user) 
-        $pdf->loadView('signee', $result);
-        // return $pdf->stream();
-        $filePath = public_path().'/uploads/signee_pdf/';
-        $time = date('Ymdhms');
-        $file = $filePath ."$time-offerLetter.pdf";
-        file_put_contents($file, $pdf->output());
-        //unlink($file);
-        return response()->json(['status' => true, 'message' => $file], 200);
+        try{
+            $signeeDocs = SigneeDocument::where(['signee_id'=>$requestData['signee_id'], 'organization_id'=>$requestData['organization_id'], 'key'=>$requestData['key']])->get()->toArray();
+            $idArrray = array_column($signeeDocs, 'id');
+            $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status']));
+            if($update)
+            {
+                return response()->json(['status' => true, 'message' => 'Document status successfully'], $this->successStatus);
+            }
+            else
+            {
+                return response()->json(['message' => 'Sorry, Document status not changed.', 'status' => false], 200);
+            }
+        } catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
     }
 }
