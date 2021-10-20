@@ -676,15 +676,21 @@ class UserController extends Controller
     public function pdf(Request $request)
     {
         $requestData = $request->all();
-        
+        //print_r($requestData);exit();
+        $userObj = new User();
+        $userArray = [];
+
         $objBooking = new Booking();
         $booking = $objBooking->getBooking($requestData['booking_id'])->toArray();
-
-        $userObj = new User();
-        $user = $userObj->getSigneeById($requestData['signee_id'])->toArray();
-        
-        $bookingSigneeData = array_merge($booking, $user);
-        // print_r($data);exit();
+       // print_r($booking);exit();
+        foreach($requestData['signee_id'] as $key=>$val)
+        {
+            //print_r($val);exit();
+            $user = $userObj->getSigneeById($val)->toArray();
+            $userArray['user'][$key] = $user;   
+        }
+        $bookingSigneeData = array_merge($booking, $userArray);
+        //print_r($bookingSigneeData);exit();
 
         $result = [
             'title' => 'Signee Details',
@@ -704,7 +710,7 @@ class UserController extends Controller
         $time = date('Ymdhms');
         $file = $filePath ."$time-offerLetter.pdf";
         file_put_contents($file, $pdf->output());
-        
+        //unlink($file);
         return response()->json(['status' => true, 'message' => $file], 200);
     }
 }

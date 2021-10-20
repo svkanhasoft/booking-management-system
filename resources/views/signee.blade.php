@@ -15,8 +15,10 @@
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 65%;
             }
-
-            .break {page-break-after: always}
+            .page-break {
+                page-break-after: always;
+            }
+            /* .break {page-break-after: always} */
 
             #container {
                 /*width: 800px;*/  
@@ -524,14 +526,15 @@
                 <!-- <div style="margin-top: 8rem;">
                     <p style="float: right; font-size : 16px">Date : {{ $date }}</p></h3>
                 </div> -->
-                    <div class="content-block">
+                    @foreach($data['user'] as $key=>$val)
+                    <div class="content-block ">
                             <table class="table-block">
                                 <tr>
                                     <td class="blue-text">
                                         Name
                                     </td>
                                     <td>
-                                        <span id="lblAccName">{{ $data['first_name'] }} {{ $data['last_name'] }}</span>
+                                        <span id="lblAccName">{{ $data['user'][$key]['first_name'] }} {{ $data['user'][$key]['last_name'] }}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -539,7 +542,7 @@
                                         Email
                                     </td>
                                     <td>
-                                        <span id="lblBSB">{{ $data['email'] }}</span>
+                                        <span id="lblBSB">{{ $data['user'][$key]['email'] }}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -547,7 +550,7 @@
                                         Contact Number
                                     </td>
                                     <td>
-                                        <span id="lblAccNo">{{ $data['contact_number'] }}</span>
+                                        <span id="lblAccNo">{{ $data['user'][$key]['contact_number'] }}</span>
                                     </td>
                                 </tr>
                                 
@@ -556,7 +559,7 @@
                                         Address
                                     </td>
                                     <td>
-                                        <span id="lblAccNo">{{ $data['address_line_1'] }} {{ $data['address_line_2'] }}</span>
+                                        <span id="lblAccNo">{{ $data['user'][$key]['address_line_1'] }} {{ $data['user'][$key]['address_line_2'] }}</span>
                                     </td>
                                 </tr>
                                 
@@ -572,15 +575,19 @@
                                     <td class="blue-text">
                                         Speciality
                                     </td>
-                                    @foreach($data['speciality'] as $key=>$val)
+                                    @foreach($data['user'][$key]['speciality'] as $key=>$val)
                                     <td>
-                                        <span id="lblSwift">{{ $data['speciality'][$key]['speciality_name'] }}</span>
+                                        <span id="lblSwift">{{ $val['speciality_name'] }}</span>
                                     </td>
                                     @endforeach
                                 </tr>
                             </table>
-
                     </div>
+                    @if($key < count($data['user']))
+                    <div class="page-break"></div>
+                   
+                    @endif
+                    @endforeach
                 </div>
             </div>
         </form>

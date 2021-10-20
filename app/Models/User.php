@@ -399,7 +399,7 @@ class User extends Authenticatable
     {
        // print_r(Auth::user()->id);exit();
         $query = User::select(
-            'users.id',
+            'users.id as user_id',
             'users.first_name',
             'users.last_name',
             'users.email',
