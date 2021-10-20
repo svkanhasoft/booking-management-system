@@ -19,19 +19,16 @@ use App\Models\Role;
 use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
 use App;
-<<<<<<< HEAD
 use App\Models\SigneeDocument;
-=======
 use Config;
->>>>>>> 5b12c830469446cf605064eacdbdbc98505247fb
 
 class UserController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -157,10 +154,10 @@ class UserController extends Controller
         }
     }
 
-    /** 
-     * Get User details 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Get User details
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getDetails()
     {
@@ -176,10 +173,10 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-    /** 
+    /**
      * Get User list
-     * 
-     * @return \Illuminate\Http\Response 
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getuserlist(Request $request)
     {
@@ -196,10 +193,10 @@ class UserController extends Controller
         }
     }
 
-    /** 
+    /**
      * Get User list
-     * 
-     * @return \Illuminate\Http\Response 
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getuserById($userId)
     {
@@ -217,10 +214,10 @@ class UserController extends Controller
     }
 
 
-    /** 
-     * Change Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Change Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function changePassword(Request $request)
     {
@@ -248,10 +245,10 @@ class UserController extends Controller
         }
     }
 
-    /** 
-     * reset Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * reset Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function resetPassword(Request $request)
     {
@@ -283,10 +280,10 @@ class UserController extends Controller
         }
     }
 
-    /** 
-     * update user/staff 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * update user/staff
+     *
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
     {
@@ -650,7 +647,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-    
+
     public function changeDocStatus(Request $request)
     {
         $requestData = $request->all();
@@ -693,7 +690,7 @@ class UserController extends Controller
                 $result['title'] = 'Signee Details';
                 $result['date'] = date('m/d/Y');
                 $pdf = App::make('dompdf.wrapper');
-                // load from other pages use object or array by comma like (pdf-view,$user) 
+                // load from other pages use object or array by comma like (pdf-view,$user)
                 $pdf->loadView('signee', $result);
                 // return $pdf->stream();
                 $filePath = public_path() . '/uploads/signee_pdf/';
