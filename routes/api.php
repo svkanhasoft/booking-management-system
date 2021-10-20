@@ -82,7 +82,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/update-match/{id}', [BookingController::class, 'updateMatchBySignee']);
         Route::get('/get-booking/{id}', [BookingController::class, 'show']);
         Route::get('/booking-by-status/{search?}/{status?}', [BookingController::class, 'bookingStatus']);
-        Route::post('/change-booking-status', [BookingController::class, 'changeBookingStatus']);
+        // Route::post('/change-booking-status', [BookingController::class, 'changeBookingStatus']);
         Route::delete('/delete-booking/{id?}', [BookingController::class, 'destroy']);
         Route::get('/get-shift-type/{id?}', [ShiftTypeController::class, 'show']);
         Route::get('/get-all-shift-type', [ShiftTypeController::class, 'showAll']);
