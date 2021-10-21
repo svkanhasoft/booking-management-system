@@ -194,7 +194,7 @@ class User extends Authenticatable
 
             'signees_detail.nationality',
             'signees_detail.nmc_dmc_pin',
-            
+
             'signees_detail.date_of_birth',
             'signee_organization.status'
         );
@@ -463,12 +463,12 @@ class User extends Authenticatable
         }
         $userPassportDocs = $query3->get()->toArray();
 
-        //query for immunisation_record documents
+        //query for immunisation_records documents
         $query4 = SigneeDocument::select(
             'file_name'
         );
         $query4->where('signee_id', $userId);
-        $query4->where('key', '=','immunisation_record');
+        $query4->where('key', '=','immunisation_records');
         if(Auth::user()->role == 'ORGANIZATION'){
             $query4->where('organization_id', Auth::user()->id);
         }else{
@@ -476,7 +476,7 @@ class User extends Authenticatable
         }
         $userIRDocs = $query4->get()->toArray();
         // print_r($userIRDocs);exit();
-        
+
         //query for training_certificates documents
         $query5 = SigneeDocument::select(
             'file_name'
@@ -603,12 +603,12 @@ class User extends Authenticatable
         //$query13->where('organization_id', Auth::user()->id);
         $userPPDocs = $query13->get()->toArray();
 
-        //query for ni_proof documents
+        //query for proof_of_ni documents
         $query14 = SigneeDocument::select(
             'file_name'
         );
         $query14->where('signee_id', $userId);
-        $query14->where('key', '=','ni_proof');
+        $query14->where('key', '=','proof_of_ni');
         if(Auth::user()->role == 'ORGANIZATION'){
             $query14->where('organization_id', Auth::user()->id);
         }else{
@@ -621,7 +621,7 @@ class User extends Authenticatable
         $result = $userDetais;
         $result->speciality = $userSpec;
         $result->documents = array('passport'=>$userPassportDocs);
-        $result->documents += array('immunisation_record'=>$userIRDocs);
+        $result->documents += array('immunisation_records'=>$userIRDocs);
         $result->documents += array('training_certificates'=>$userTCDocs);
         $result->documents += array('nursing_certificates'=>$userNCDocs);
         $result->documents += array('professional_indemnity_insurance'=>$userPIIDocs);
@@ -631,7 +631,7 @@ class User extends Authenticatable
         $result->documents += array('employment'=>$userEmpDocs);
         $result->documents += array('address_proof'=>$userAPDocs);
         $result->documents += array('passport_photo'=>$userPPDocs);
-        $result->documents += array('ni_proof'=>$userNIDocs);
+        $result->documents += array('proof_of_ni'=>$userNIDocs);
         //$result->passport = $userPassportDocs;
         return $result;
     }
