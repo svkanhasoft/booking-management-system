@@ -627,11 +627,19 @@ class SigneesController extends Controller
 
     public function updateSpeciality(Request $request, $userId)
     {
-        //echo $userId;
+        //dd(Auth::user()->parent_id);
         try{
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
             $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, Auth::user()->parent_id,true);
+
+            $bookingArray = new Booking();
+            $booking = $bookingArray->editMetchBySigneeId($userId);
+           // print_r($booking);exit();
+
+            $objBookingMatch = new BookingMatch();
+            $bookingMatch = $objBookingMatch->editBookingMatchBySignee($booking, $userId);
+            //print_r($bookingMatch);exit();
 
             if ($objSpeciality) {
                 return response()->json(['status' => true, 'message' => 'Speciality updated successfully'], $this->successStatus);
@@ -643,7 +651,6 @@ class SigneesController extends Controller
         catch(\Exception $e){
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-
     }
 
     public function getSigneeSpeciality()

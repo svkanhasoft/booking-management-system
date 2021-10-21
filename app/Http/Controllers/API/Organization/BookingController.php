@@ -21,10 +21,10 @@ use DB;
 class BookingController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -55,7 +55,7 @@ class BookingController extends Controller
             'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
         ]);
-        
+
         if ($validator->fails()) {
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
@@ -153,7 +153,7 @@ class BookingController extends Controller
             // {
             //     return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             // }
-            
+
             if ($booking) {
                 $bookingShift = OrganizationShift::findOrFail($requestData["shift_id"]);
                 //print_r($bookinghift);exit();
@@ -163,6 +163,14 @@ class BookingController extends Controller
                 $booking->update($requestData);
                 $objBookingSpeciality = new BookingSpeciality();
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData["id"], true);
+
+                //added by me
+                $objBooking = new Booking();
+                $bookings = $objBooking->getMetchByBookingId($booking['id']);
+
+                $objBookingMatch = new BookingMatch();
+                $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $requestData["id"]);
+
                 return response()->json(['status' => true, 'message' => 'Booking update Successfully.', 'data' => $booking], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Booking update failed!', 'status' => false], 409);
@@ -336,7 +344,7 @@ class BookingController extends Controller
         } else {
             return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
         }
-        
+
     }
 
     public function getWardByHospitalAndTrust(Request $request)

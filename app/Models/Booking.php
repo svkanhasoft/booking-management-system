@@ -522,31 +522,82 @@ class Booking extends Model
     public function editMetchBySigneeId($signeeId = null)
     {
         $subQuery = Booking::select(
-            'users.id as signeeId',
+            'users.email',
+            'signee_preference.user_id as signeeId',
             'bookings.id as booking_id',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
             'users.role',
             'bookings.user_id as organization_id',
             'bookings.*',
+            'shift_type.shift_type',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
-            DB::raw('COUNT(signee_speciality.speciality_id)  as signeeBookingCount'),
+            DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
-            DB::raw('GROUP_CONCAT(booking_specialities.id SEPARATOR ", ") AS bookingSpecialityId'),
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT(specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
+        //$subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
+        $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->leftJoin('signee_preference',  'signee_preference.user_id', '=', 'users.id');
 
-        $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('users.id', $signeeId);
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
-        $subQuery->groupBy('bookings.id');
+        $subQuery->groupBy('signee_speciality.id','booking_specialities.id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $subQuery->whereRaw("(
+            IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
+        )");
         $res = $subQuery->get()->toArray();
         return $res;
+
+        // $subQuery = Booking::select(
+        //     'users.id as signeeId',
+        //     'bookings.id as booking_id',
+        //     'users.role',
+        //     'bookings.user_id as organization_id',
+        //     'bookings.*',
+        //     DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+        //     DB::raw('COUNT(signee_speciality.speciality_id)  as signeeBookingCount'),
+        //     DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+        //     DB::raw('GROUP_CONCAT(booking_specialities.id SEPARATOR ", ") AS bookingSpecialityId'),
+        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+        //     DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        // );
+
+        // $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        // $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        // $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        // $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
+        // $subQuery->where('users.id', $signeeId);
+        // $subQuery->whereNull('signee_speciality.deleted_at');
+        // $subQuery->whereNull('booking_specialities.deleted_at');
+        // $subQuery->whereNull('bookings.deleted_at');
+        // $subQuery->groupBy('bookings.id');
+        // $subQuery->orderBy('signeeBookingCount', 'DESC');
+        // $res = $subQuery->get()->toArray();
+        // //print_r(gettype($res));exit();
+        // return $res;
     }
 
     public function getSigneeByIdAndBookingId($bookingId = null, $signeeId = null)

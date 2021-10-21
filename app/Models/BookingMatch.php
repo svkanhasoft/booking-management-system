@@ -36,13 +36,13 @@ class BookingMatch extends Model
 
     public function addBookingMatch($bookingArray, $bookingId)
     {
-       // print_r($bookingArray);exit();
+        //print_r($bookingArray);exit();
         $signeeidArray = array_column($bookingArray, 'signeeId');
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
-            // print_r($values);
+            //print_r($values);
             // exit;
-            $this->sendMatchEmail($values);
+            //$this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
                 'signee_id' =>  $values['signeeId'],
@@ -65,11 +65,12 @@ class BookingMatch extends Model
 
     public function editBookingMatchByUser($bookingArray, $bookingId)
     {
-
+        //print_r($bookingArray);exit();
         $signeeidArray = array_column($bookingArray, 'signeeId');
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);
+            // echo "";exit();
             // exit;
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
@@ -82,13 +83,39 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            // $objBookingMatch->booking_status = 'OPEN';
+            $objBookingMatch->booking_status = 'CREATED';
             $objBookingMatch->save();
             $objBookingMatch = '';
         }
         return true;
     }
 
+    public function editBookingMatchBySignee($bookingArray, $signeeId)
+    {
+        //print_r($bookingArray);exit();
+        $bookingIdArray = array_column($bookingArray, 'booking_id');
+        $objBookingMatchDelete = BookingMatch::where('signee_id', '=', $signeeId)->whereNotIn('booking_id', $bookingIdArray)->delete();
+        foreach ($bookingArray as $keys => $values) {
+            // print_r($values);
+            // echo "";exit();
+            // exit;
+            $objBookingMatch = BookingMatch::where([
+                'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
+                'booking_id' => $values['booking_id'], 'trust_id' => $values['trust_id'],
+            ])->firstOrNew();
+            $objBookingMatch->organization_id = $values['organization_id'];
+            $objBookingMatch->signee_id = $values['signeeId'];
+            $objBookingMatch->booking_id = $values['booking_id'];
+            $objBookingMatch->trust_id = $values['trust_id'];
+            $objBookingMatch->match_count = $values['signeeBookingCount'];
+            $objBookingMatch->booking_date = $values['date'];
+            $objBookingMatch->shift_id = $values['shift_id'];
+            $objBookingMatch->booking_status = 'CREATED';
+            $objBookingMatch->save();
+            $objBookingMatch = '';
+        }
+        return true;
+    }
     public function sendMatchEmail($result)
     {
        // print_r($result);exit();
@@ -201,7 +228,7 @@ class BookingMatch extends Model
         // $dayArray = $requestData['day'];
         // $hospitalIdArray = $requestData['hospital_id'];
         // $specialityIdArray = $requestData['speciality_id'];
-        
+
         //print_r($hospitalIdArray);exit();
         //print_r(gettype($requestData));exit();
         $perPage = Config::get('constants.pagination.perPage');
@@ -268,7 +295,7 @@ class BookingMatch extends Model
         //     'trusts.address_line_2',
         //     'trusts.city',
         //     'trusts.post_code',
-        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'), 
+        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         // );
         // $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         // $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
