@@ -169,7 +169,7 @@ class Booking extends Model
     }
     public function getStaffBooking(Request $request, $status = null)
     {
-       
+
         $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
         $status = $request->get('status');
@@ -362,10 +362,9 @@ class Booking extends Model
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
-        
+
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $matchiId);
-        //$subQuery->where('booking_matches.signee_status', 'Interested');
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
@@ -443,7 +442,7 @@ class Booking extends Model
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         //$subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
-        
+
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('users.id', $signeeId);
@@ -535,7 +534,7 @@ class Booking extends Model
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
-        
+
         $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
@@ -625,7 +624,7 @@ class Booking extends Model
                 'signees_detail.nationality',
                 'signees_detail.candidate_referred_from',
                 'signees_detail.date_registered',
-                
+
                 'signees_detail.nmc_dmc_pin',
                 DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
                 DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
