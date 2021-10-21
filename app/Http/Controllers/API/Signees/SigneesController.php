@@ -27,10 +27,10 @@ class SigneesController extends Controller
 {
 
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -143,7 +143,7 @@ class SigneesController extends Controller
             $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Web';
             $checkRecord->save();
 
-            
+
             $userResult = Auth::user();
             $this->userId = Auth::user()->id;
             $this->organizationId = Auth::user()->parent_id;
@@ -158,10 +158,10 @@ class SigneesController extends Controller
         }
     }
 
-    /** 
-     * Get User details 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Get User details
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getDetails()
     {
@@ -175,10 +175,10 @@ class SigneesController extends Controller
         }
     }
 
-    /** 
-     * Change Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Change Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function changePassword(Request $request)
     {
@@ -211,10 +211,10 @@ class SigneesController extends Controller
 
 
 
-    /** 
-     * Change profile 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Change profile
+     *
+     * @return \Illuminate\Http\Response
      */
     public function profileUpdate(Request $request)
     {
@@ -248,10 +248,10 @@ class SigneesController extends Controller
         }
     }
 
-    /** 
-     * Forgot api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Forgot api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function forgot(Request $request)
     {
@@ -263,10 +263,10 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 200);
         }
     }
-    /** 
-     * reset Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * reset Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function resetPassword(Request $request)
     {
@@ -293,10 +293,10 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, Invalid user id.', 'status' => false], 200);
         }
     }
-    /** 
-     * delete Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * delete Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function delete(Request $request)
     {
@@ -322,10 +322,10 @@ class SigneesController extends Controller
         }
     }
 
-    /** 
+    /**
      * Candidate Referred From
-     * 
-     * @return \Illuminate\Http\Response 
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getCandidateReferredFrom(Request $request)
     {
@@ -381,8 +381,8 @@ class SigneesController extends Controller
     //     foreach ($count as $key=>$spe){
     //         $speciality=Speciality::where('user_id', $count->id)->toArray();
     //         array_push($spe[$key],$speciality);
-    //     } 
-    //     dd($count);  
+    //     }
+    //     dd($count);
     //     //print_r($count);exit();
     //    // $speciality = Speciality::where('user_id', $count['id'])->get();
     //     if ($count) {
@@ -426,7 +426,7 @@ class SigneesController extends Controller
     }
 
     public function logout(Request $request)
-    { 
+    {
         $user = Auth::user()->token();
         try {
             if (Auth::user()) {
@@ -475,7 +475,7 @@ class SigneesController extends Controller
         $start_time = strtotime($result['start_time']);
         $end_time = strtotime($result['end_time']);
         $diff = gmdate('H:i:s', $end_time - $start_time);
-        $result['duration'] = $diff;   
+        $result['duration'] = $diff;
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
         } else {
@@ -569,7 +569,7 @@ class SigneesController extends Controller
         catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-        
+
     }
 
     public function documentUpload(Request $request)
@@ -585,7 +585,7 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try
-        { 
+        {
             $user = User::where('id', $this->userId)->first();
             if($request->hasfile('files'))
             {
@@ -607,7 +607,7 @@ class SigneesController extends Controller
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
                         $image->organization_id = $user->parent_id;
-                        $docUpload = $image->save(); 
+                        $docUpload = $image->save();
                     }
                     if($docUpload)
                     {
@@ -632,7 +632,7 @@ class SigneesController extends Controller
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
             $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, Auth::user()->parent_id,true);
-            
+
             if ($objSpeciality) {
                 return response()->json(['status' => true, 'message' => 'Speciality updated successfully'], $this->successStatus);
             }
@@ -643,7 +643,7 @@ class SigneesController extends Controller
         catch(\Exception $e){
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-        
+
     }
 
     public function getSigneeSpeciality()
@@ -655,20 +655,20 @@ class SigneesController extends Controller
             'specialities.id as speciality_id'
         );
         $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
-        
+
         $query->where('signee_speciality.user_id', Auth::user()->id);
         $query->whereNull('signee_speciality.deleted_at');
         $res = $query->get()->toArray();
-        
+
         //$array = explode(',', $res);
-        
+
         // $array = [];
         // foreach ($array as $key => $value) {
         //     $array[] = $value;
         // }
-        
+
        // $speciality_id['speciality_id'] = $res;
-        
+
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data'=> $res], $this->successStatus);
         }
@@ -717,7 +717,7 @@ class SigneesController extends Controller
         else {
             return response()->json(['status' => true, 'message' => 'Organisation listed successfully', 'data'=>$data], $this->successStatus);
         }
-        //proper working 
+        //proper working
         //     $requestData = $request->all();
         //     $email = $requestData['email'];
         //     //$userData = User::where('email', $email)->first();
@@ -753,6 +753,7 @@ class SigneesController extends Controller
                 "key",
                 "file_name",
                 "organization_id",
+                "document_status",
                 DB::raw('date(created_at) as date_added'),
             );
             $signeeDocument->where(['signee_id'=> $this->userId, 'organization_id'=>Auth::user()->parent_id]);
@@ -760,7 +761,7 @@ class SigneesController extends Controller
                 // echo $keyword;exit;
                 $signeeDocument->Where(['key'=> $key, 'signee_id'=>$this->userId, 'organization_id'=>Auth::user()->parent_id]);
             }
-    
+
             $data = $signeeDocument->get();
             $count =  $data->count();
             if ($count) {
@@ -784,11 +785,11 @@ class SigneesController extends Controller
             $document = SigneeDocument::where("id", $document->id)->delete();
             if($document)
             {
-                return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);           
+                return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);
             }
             else
             {
-                return response()->json(['status' => false, 'message' => 'Image deleting failed'], 409);           
+                return response()->json(['status' => false, 'message' => 'Image deleting failed'], 409);
             }
         } catch(\Exception $e)
         {
@@ -816,12 +817,12 @@ class SigneesController extends Controller
                     $userObj = new User();
                     $user = $userObj->getSigneeDetails($signee_id, $organization_id);
                     $user['token'] =  $userResult->createToken('User')->accessToken;
-                    return response()->json(['status' => true, 'message' => 'Organization successfully changed', 'data' => $user], $this->successStatus);           
-                }         
+                    return response()->json(['status' => true, 'message' => 'Organization successfully changed', 'data' => $user], $this->successStatus);
+                }
             }
             else
             {
-                return response()->json(['status' => false, 'message' => 'No user found in selected organization'], 404);           
+                return response()->json(['status' => false, 'message' => 'No user found in selected organization'], 404);
             }
         }
         catch(\Exception $e)
@@ -833,7 +834,7 @@ class SigneesController extends Controller
     public function applyShift(Request $request)
     {
         $requestData = $request->all();
-        
+
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required',
             'signee_status' => 'required',
@@ -848,9 +849,9 @@ class SigneesController extends Controller
             $res = $objBookingMatch->save();
             if($res)
             {
-                return response()->json(['status' => true, 'message' => 'Congratulations, You have successfully apply for the shift'], $this->successStatus);           
+                return response()->json(['status' => true, 'message' => 'Congratulations, You have successfully apply for the shift'], $this->successStatus);
             } else{
-                return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);           
+                return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);
             }
             //print_r($objBookingMatch->signee_status);exit();
             //$objBookingMatch->booking_status = "OPEN";
