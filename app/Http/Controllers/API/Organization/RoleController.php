@@ -13,12 +13,12 @@ use Hash;
 use App\Models\Role;
 use Illuminate\Validation\Rule;
 class RoleController extends Controller
-{   
+{
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -29,14 +29,14 @@ class RoleController extends Controller
             return $next($request);
         });
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\View\View
      */
     public function create(Request $request)
-    { 
+    {
         $res = Role::withTrashed()->whereNotNull('deleted_at')->where(['role_name' => $request->all('role_name'), 'user_id' => $this->userId])->restore();
         if ($res == 1) {
             return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $request->all()], $this->successStatus);
@@ -44,13 +44,14 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'role_name' => 'unique:roles,role_name,NULL,id,user_id,'.$this->userId
         ]);
-        
-        if ($validator->fails()) {  
+
+        if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
         $requestData['user_id'] = $this->userId;
+        $requestData['created_by'] = $this->userId;
         $roleCreated = Role::create($requestData);
         if ($roleCreated) {
             return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $roleCreated], $this->successStatus);
@@ -58,7 +59,7 @@ class RoleController extends Controller
             return response()->json(['message' => 'Sorry, Role added failed!', 'status' => false], 409);
         }
     }
- 
+
 
     /**
      * Display the specified resource.
@@ -96,6 +97,7 @@ class RoleController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $role = Role::findOrFail($requestData["id"]);
+        $role->updated_by = $this->userId;
         $roleUpdated = $role->update($requestData);
         if ($roleUpdated) {
             return response()->json(['status' => true, 'message' => 'Role update Successfully.', 'data' => $role], $this->successStatus);
