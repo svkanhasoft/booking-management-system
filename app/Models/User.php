@@ -306,10 +306,6 @@ class User extends Authenticatable
     {
         //print_r($userId);exit();
         $keyword = $request->get('search');
-<<<<<<< HEAD
-        //$perPage = 40;
-=======
->>>>>>> 0468bcfd65dbfc706d4af2fe53576ad01853a49e
         $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
             'users.id',
