@@ -750,6 +750,7 @@ class Booking extends Model
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status',$status );
+        $subQuery->where('booking_matches.deleted_at');;
         $res = $subQuery->get()->toArray();
 
         return $res;

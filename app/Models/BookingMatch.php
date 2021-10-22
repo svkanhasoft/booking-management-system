@@ -174,6 +174,12 @@ class BookingMatch extends Model
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
 
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+
+        // $booking->join('booking_matches', function($join)
+        // {
+        //     $join->on('booking_matches.booking_id', '=', 'bookings.id');
+        //     $join->where('booking_matches.deleted_at');
+        // });
         // $booking->Join('signee_organization',  'signee_organization.user_id', '=', 'booking_matches.signee_id');
         // $booking->Join('signee_organization', 'signee_organization.user_id', '=', 'booking_matches.signee_id')->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         $booking->join('signee_organization', function($join)
@@ -181,12 +187,14 @@ class BookingMatch extends Model
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
+
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
 
         $booking->where('bookings.status', 'CREATED');
         $booking->where('bookings.date', '>=', date('y-m-d'));
         $booking->whereIn('bookings.user_id', $staffIdArray);
 
+        // $booking->whereNull('booking_matches.deleted_at');
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
@@ -200,11 +208,6 @@ class BookingMatch extends Model
     {
         $booking = Booking::select(
             'bookings.*',
-            // 'bookings.id',
-            // 'bookings.date',
-            // 'bookings.start_time',
-            // 'bookings.end_time',
-            //'specialities.speciality_name',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
@@ -217,26 +220,29 @@ class BookingMatch extends Model
             'users.status as profile_status',
             'booking_matches.signee_status',
             'signee_organization.status as compliance_status',
+            DB::raw('GROUP_CONCAT( specialities.id SEPARATOR ", ") AS speciality_id'),
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-            //'bookings.rate',
+            'bookings.rate',
         );
+        $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
-
-        $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
-        $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-        $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-        $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
-
-        //$booking->Join('signee_organization',  'signee_organization.user_id', '=', 'booking_matches.signee_id');
+        $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
+        $booking->Join('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $booking->Join('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->join('signee_organization', function($join)
+        {
+            $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
+            $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
+        });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.id', $id);
+        $booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
-        $booking->groupBy('bookings.id');
         $booking->groupBy('specialities.id');
-        $res = $booking->get()->toArray();
+        $res = $booking->first();
         return $res;
     }
 
