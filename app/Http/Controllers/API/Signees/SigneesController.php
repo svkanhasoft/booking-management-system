@@ -457,7 +457,7 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-
+   /*  GET SIGNEE LOGIN MY BROWSER LIST.  */
     public function shiftList()
     {
         $booking = new BookingMatch();
@@ -468,6 +468,21 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, Booking not available.', 'status' => false], 200);
         }
     }
+
+    /*  GET SIGNEE LOGIN MY SHIFT LIST.  */
+    public function myshift()
+    {
+        $booking = new BookingMatch();
+        $result = [];
+        $result['upcoming'] = $booking->getMyShift('upcoming');
+        $result['past'] = $booking->getMyShift('past');
+        if ($result) {
+            return response()->json(['status' => true, 'message' => 'Booking listed successfully', 'data' => $result], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Booking not available.', 'status' => false], 200);
+        }
+    }
+
     public function viewShiftDetails($id)
     {
         $booking = new BookingMatch();

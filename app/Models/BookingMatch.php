@@ -332,4 +332,57 @@ class BookingMatch extends Model
         // $res = $booking->latest('bookings.created_at')->paginate($perPage);
         // return $res;
     }
+
+    public function getMyShift($shiftType)
+    {
+        $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
+        $staffIdArray = array_column($staff, 'id');
+        $staffIdArray[] = Auth::user()->parent_id;
+        //print_r($staffIdArray);exit();
+        $perPage = Config::get('constants.pagination.perPage');
+        $booking = Booking::select(
+            'bookings.*',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
+            'shift_type.shift_type',
+            'trusts.trust_portal_url',
+            'trusts.address_line_1',
+            'trusts.address_line_2',
+            'trusts.city',
+            'trusts.post_code',
+            'users.status as profile_status',
+            'signee_organization.status as compliance_status',
+            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+        );
+        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $booking->join('signee_organization', function($join)
+        {
+            $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
+            $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
+        });
+        $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
+        $booking->where('bookings.status', 'CREATED');
+        if($shiftType == 'past'){
+            $booking->where('bookings.date', '<', date('y-m-d'));
+        }else{
+            $booking->where('bookings.date', '>=', date('y-m-d'));
+        }
+        $booking->whereIn('bookings.user_id', $staffIdArray);
+        $booking->whereNull('bookings.deleted_at');
+        $booking->whereNull('booking_specialities.deleted_at');
+        $booking->groupBy('bookings.id');
+        $booking->orderBy('bookings.date');
+        $res = $booking->get();
+        $res = $booking->latest('bookings.created_at')->paginate($perPage);
+        return $res;
+    }
+
 }

@@ -741,6 +741,7 @@ class Booking extends Model
             'users.first_name',
             'users.last_name',
             'users.email',
+            'booking_matches.signee_booking_status',
             'bookings.user_id as organization_id',
             'bookings.*',
         );
