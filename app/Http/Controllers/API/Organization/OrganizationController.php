@@ -300,7 +300,7 @@ class OrganizationController extends Controller
         // }
         $keyword = $request->get('search');
         $status = $request->get('status');
-        $perPage = 30;
+        $perPage = Config::get('constants.pagination.perPage');
         try {
             $qr = User::select(
                 "users.*",
