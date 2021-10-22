@@ -460,26 +460,26 @@ class SigneesController extends Controller
    /*  GET SIGNEE LOGIN MY BROWSER LIST.  */
     public function shiftList()
     {
-        $booking = new BookingMatch();
-        $result = $booking->getShiftList();
+        $bookingMatching = new BookingMatch();
+        $result = $bookingMatching->getShiftList();
         if ($result) {
-            return response()->json(['status' => true, 'message' => 'Booking listed successfully', 'data' => $result], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'shift listed successfully', 'data' => $result], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not available.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, shift not available.', 'status' => false], 200);
         }
     }
 
     /*  GET SIGNEE LOGIN MY SHIFT LIST.  */
     public function myshift()
     {
-        $booking = new BookingMatch();
         $result = [];
-        $result['upcoming'] = $booking->getMyShift('upcoming');
-        $result['past'] = $booking->getMyShift('past');
+        $bookingMatching = new BookingMatch();
+        $result['upcoming'] = $bookingMatching->getMyShift('upcoming');
+        $result['past'] = $bookingMatching->getMyShift('past');
         if ($result) {
-            return response()->json(['status' => true, 'message' => 'Booking listed successfully', 'data' => $result], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Your listed successfully', 'data' => $result], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not available.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Your shift is not available.', 'status' => false], 200);
         }
     }
 
