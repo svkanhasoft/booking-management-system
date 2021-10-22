@@ -16,7 +16,7 @@
     <!--<![endif]-->
 </head>
 
-<body class="clean-body" style="margin: 0; padding: 0; -webkit-text-size-adjust: 100%; background-color: #F9F9F9;">
+<body class="clean-body" style="border-bottom: 10px solid #f9f9f9;margin: 0; padding: 0; -webkit-text-size-adjust: 100%; background-color: #F9F9F9;">
     <table class="nl-container" style="table-layout: fixed; vertical-align: top; min-width: 320px; Margin: 0 auto; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #F9F9F9; width: 100%;" cellpadding="0" cellspacing="0" role="presentation" width="100%" bgcolor="#F9F9F9" valign="top">
         <tbody>
             <tr style="vertical-align: top;" valign="top">
@@ -39,7 +39,7 @@
                     <div style="background-color:transparent;">
                         <div class="block-grid " style="Margin: 0 auto; min-width: 320px; max-width: 500px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #FFFFFF;">
                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#FFFFFF;">
-                                <div class="col num12" style="min-width: 320px; max-width: 500px; display: table-cell; vertical-align: top; width: 500px;">
+                            <div class="col num12" style="min-width: 320px; max-width: 500px;padding-bottom: 25px; display: table-cell; vertical-align: top; width: 500px;">
                                     <div style="width:100% !important;">
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 15px; padding-left: 20px;">
                                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#;">
