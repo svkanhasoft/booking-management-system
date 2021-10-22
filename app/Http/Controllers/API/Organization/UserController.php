@@ -20,6 +20,7 @@ use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
 use App;
 use App\Models\SigneeDocument;
+use Carbon\Carbon;
 use Config;
 
 class UserController extends Controller
@@ -606,7 +607,7 @@ class UserController extends Controller
                 $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
                 $signeeIdArray = array_column($objBookingMatch, 'signee_id');
 
-                $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->update(array('booking_status' => $requestData['status']));
+                $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->where(['booking_id'=>$requestData['booking_id']])->update(array('signee_booking_status' => $requestData['status'], 'booking_cancel_date'=>Carbon::now()));
                 $objBooking->sendBookingCancelEmail($signee);
 
                 if ($update) {
@@ -627,7 +628,7 @@ class UserController extends Controller
                 $bookingUpdate = $booking->update($requestData);
 
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
-                $objBookingMatch->booking_status = $requestData['status'];
+                $objBookingMatch->signee_booking_status = $requestData['status'];
                 $objBookingMatch->save();
                 if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);

@@ -236,34 +236,34 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function changeBookingStatus(Request $request)
-    {
-        $requestData = $request->all();
-        //print_r($requestData);exit();
-        $validator = Validator::make($request->all(), [
-            'status' => 'required',
-            'signee_id' => 'required',
-            'booking_id' => 'required'
-        ]);
-        if ($validator->fails()) {
-            $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
-        }
+    // public function changeBookingStatus(Request $request)
+    // {
+    //     $requestData = $request->all();
+    //     //print_r($requestData);exit();
+    //     $validator = Validator::make($request->all(), [
+    //         'status' => 'required',
+    //         'signee_id' => 'required',
+    //         'booking_id' => 'required'
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $error = $validator->messages()->first();
+    //         return response()->json(['status' => false, 'message' => $error], 200);
+    //     }
 
-        $booking = booking::findOrFail($requestData['booking_id']);
-        $bookingUpdate = $booking->update($requestData);
+    //     $booking = booking::findOrFail($requestData['booking_id']);
+    //     $bookingUpdate = $booking->update($requestData);
 
-        $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
-        $objBookingMatch->booking_status = "OPEN";
+    //     $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
+    //     $objBookingMatch->booking_status = "OPEN";
 
-        $objBookingMatch->save();
+    //     $objBookingMatch->save();
 
-        if ($objBookingMatch) {
-            return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
-        }
-    }
+    //     if ($objBookingMatch) {
+    //         return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+    //     } else {
+    //         return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
+    //     }
+    // }
 
     /**
      * add signee by match with speciality.
