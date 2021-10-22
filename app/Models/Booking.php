@@ -471,6 +471,7 @@ class Booking extends Model
         return $res;
     }
 
+    //booking confirm email
     public function sendBookingConfirmEmail($result)
     {
         //print_r($result);exit();
@@ -492,6 +493,8 @@ class Booking extends Model
             return false;
         }
     }
+
+    //booking cancel email
     public function sendBookingCancelEmail($result)
     {
        // print_r($result);exit();
@@ -518,6 +521,36 @@ class Booking extends Model
             return false;
         }
     }
+
+    //booking invitation email
+    public function sendBookingInvitationMail($result)
+    {
+       // print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            foreach($result as $key=>$val)
+            {
+                //print_r($result[$key]['email']);exit();
+                $details = [
+                    'title' => '',
+                    'body' => 'Hello ',
+                    'mailTitle' => 'bookingCancel',
+                    'subject' => 'Booking Management System: Your booking is canceled',
+                    'data' => $val
+                ];
+               // print_r($details['data']);exit();
+                $emailRes = \Mail::to($result)
+                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+
 
     public function editMetchBySigneeId($signeeId = null)
     {
@@ -746,5 +779,31 @@ class Booking extends Model
         $query->groupBy('booking_matches.signee_id');
         return $query->get()->toArray();
     }
-
+    public function getMatchSigneeByBooking($bookingId = null)
+    {
+        $query = Booking::select(
+            'bookings.*',
+            'booking_matches.signee_id',
+            'booking_matches.signee_status',
+            'users.contact_number',
+            'users.email',
+            'users.postcode',
+            'users.city',
+            'users.address_line_1',
+            'users.address_line_2',
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR " , ") AS speciality_name'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $query->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
+        $query->leftJoin('signee_speciality',  'signee_speciality.user_id', '=', 'booking_matches.signee_id');
+        $query->leftJoin('specialities',  'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query->whereNull('signee_speciality.deleted_at');
+        $query->where('bookings.id', $bookingId);
+        $query->where('booking_matches.signee_status', "Matching");
+        //$query->groupBy('signee_speciality.id');
+        // print_r($query->get()->toArray());
+        return $query->get()->toArray();
+    }
 }
