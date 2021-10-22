@@ -330,7 +330,7 @@ class OrganizationController extends Controller
                 // if ($res) {
                 return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $res], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
