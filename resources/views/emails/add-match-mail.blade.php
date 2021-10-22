@@ -125,7 +125,7 @@
 
                     <div style="background-color:transparent;">
                         <div class="block-grid " style="Margin: 0 auto; min-width: 320px; max-width: 500px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;">
-                            <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;background-color:#2B68A4;">
                                 <div class="col num12" style="min-width: 320px; max-width: 500px; display: table-cell; vertical-align: top; width: 500px;">
                                     <div style="width:100% !important;">
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:10px; padding-bottom:10px; padding-right: 0px; padding-left: 0px;">

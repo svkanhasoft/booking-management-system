@@ -23,7 +23,7 @@
                 <td style="word-break: break-word; vertical-align: top;" valign="top">
                     <div style="background-color:transparent;">
                         <div class="block-grid " style="Margin: 0 auto; min-width: 320px; max-width: 500px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;">
-                            <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;background-color:#2B68A4;">
                                 <div class="col num12" style="min-width: 320px; max-width: 500px; display: table-cell; vertical-align: top; width: 500px;">
                                     <div style="width:100% !important;">
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
@@ -49,7 +49,7 @@
                                                         {{ $details['data']['email'] }} <br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Password:
                                                         {{ $details['data']['password'] }} <br></span></p>
-                                                
+
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
                                                         @if( $details['data']['role'] == 'SIGNEE' )
@@ -59,7 +59,7 @@
                                                         <a href="http://adminbooking.kanhasoftdev.com/login">Click here to login.</a>
                                                         @endif
                                                     </span>
-                                                </p>                                                
+                                                </p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
                                                         you for being a part of the booking management system family.</span></p>
                                             </div>

@@ -595,34 +595,26 @@ class UserController extends Controller
         }
         try {
             if ($requestData['status'] == 'CANCEL') {
+                //print_r($requestData);exit;
                 $objBooking = new Booking();
                 $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
-                //print_r($signee);exit();
-                //$objBooking->sendBookingCancelEmail($signee);
+
                 $booking = booking::findOrFail($requestData['booking_id']);
                 $booking['status'] = $requestData['status'];
                 $bookingUpdate = $booking->update($requestData);
 
                 $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
                 $signeeIdArray = array_column($objBookingMatch, 'signee_id');
-                //$emailArray = array_column($signee, 'email');
-                //print_r($emailArray);exit();
+
                 $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->update(array('booking_status' => $requestData['status']));
                 $objBooking->sendBookingCancelEmail($signee);
-                //$objBooking->sendBookingCancelEmail($emailArray);
-                //print_r($bookingIdArray);exit();
-                // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
-                // //print_r($objBookingMatch);exit();
-                // $objBookingMatch['booking_status'] = $requestData['status'];
-                // $objBookingMatch->save();
+
                 if ($update) {
                     return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
                 } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
                 }
-                // $objBookingMatch = new BookingMatch();
-                // $bookingMatch = $objBookingMatch->addBookingMatch($booking, $requestData['booking_id']);
-                //print_r($signee);exit();
+
             } else if ($requestData['status'] == 'CONFIRMED') {
                 //echo "hi";exit();
                 $objBooking = new Booking();
@@ -709,20 +701,25 @@ class UserController extends Controller
         // return response()->json(['status' => true, 'message' => $file], 200);
     }
 
-    // public function inviteSigneeForTheShift(Request $request)
-    // {
-    //     try
-    //     {
-    //         $requestData = $request->all();
-    //         print_r($requestData);exit();
-    //         $objBooking = new Booking();
-    //         $matchSignee = $objBooking->getMetchByBookingId($requestData['booking_id']);
-    //         print_r($matchSignee);exit;
-    //         $objBooking->sendBookingInvitationMail($matchSignee);
-    //     }
-    //     catch(\Exception $e)
-    //     {
-    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
-    //     }
-    // }
+    public function inviteSigneeForTheShift(Request $request)
+    {
+        try
+        {
+            $requestData = $request->all();
+            // print_r($requestData);exit();
+            $objBooking = new Booking();
+            $result = $objBooking->getSigneeForInvite($requestData);
+            $res = $objBooking->sendBookingInvitationMail($result);
+            if($res)
+            {
+                return response()->json(['status' => true, 'message' => 'Signee Invited Successfully for the shift'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 409);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
 }

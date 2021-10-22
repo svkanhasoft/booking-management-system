@@ -124,7 +124,7 @@
                 <td style="word-break: break-word; vertical-align: top;" valign="top">
 
                     <div style="background-color:transparent;">
-                        <div class="block-grid " style="Margin: 0 auto; min-width: 320px; max-width: 500px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;">
+                        <div class="block-grid " style="Margin: 0 auto; min-width: 320px; max-width: 500px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #2B68A4;">
                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
                                 <div class="col num12" style="min-width: 320px; max-width: 500px; display: table-cell; vertical-align: top; width: 500px;">
                                     <div style="width:100% !important;">
@@ -155,7 +155,7 @@
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Email:
                                                         {{ $details['data']['email'] }} <br></span>
                                                 </p>
-                                                
+
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Rate:
                                                         {{ $details['data']['rate'] }} <br></span>

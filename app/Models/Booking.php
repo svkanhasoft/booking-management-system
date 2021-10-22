@@ -525,7 +525,7 @@ class Booking extends Model
     //booking invitation email
     public function sendBookingInvitationMail($result)
     {
-       // print_r($result);exit();
+       //print_r($result);exit();
         if (isset($result) && !empty($result)) {
             foreach($result as $key=>$val)
             {
@@ -533,11 +533,11 @@ class Booking extends Model
                 $details = [
                     'title' => '',
                     'body' => 'Hello ',
-                    'mailTitle' => 'bookingCancel',
-                    'subject' => 'Booking Management System: Your booking is canceled',
+                    'mailTitle' => 'bookingInvite',
+                    'subject' => 'Booking Management System: Invitation Mail',
                     'data' => $val
                 ];
-               // print_r($details['data']);exit();
+                //print_r($details);exit();
                 $emailRes = \Mail::to($result)
                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
                 ->cc('maulik.kanhasoft@gmail.com')
@@ -779,31 +779,36 @@ class Booking extends Model
         $query->groupBy('booking_matches.signee_id');
         return $query->get()->toArray();
     }
-    public function getMatchSigneeByBooking($bookingId = null)
+
+    public function getSigneeForInvite($postData)
     {
         $query = Booking::select(
             'bookings.*',
             'booking_matches.signee_id',
-            'booking_matches.signee_status',
             'users.contact_number',
             'users.email',
             'users.postcode',
             'users.city',
             'users.address_line_1',
             'users.address_line_2',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
-            DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR " , ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR "  | ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $query->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
         $query->leftJoin('signee_speciality',  'signee_speciality.user_id', '=', 'booking_matches.signee_id');
         $query->leftJoin('specialities',  'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $query->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $query->whereIn('booking_matches.signee_id',$postData['signee_id']);
         $query->whereNull('signee_speciality.deleted_at');
-        $query->where('bookings.id', $bookingId);
-        $query->where('booking_matches.signee_status', "Matching");
-        //$query->groupBy('signee_speciality.id');
-        // print_r($query->get()->toArray());
+        $query->where('bookings.id', $postData['booking_id']);
+        $query->groupBy('booking_matches.signee_id');
         return $query->get()->toArray();
     }
 }

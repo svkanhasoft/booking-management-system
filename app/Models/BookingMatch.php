@@ -234,6 +234,7 @@ class BookingMatch extends Model
         $booking->where('bookings.id', $id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
+        $booking->groupBy('specialities.id');
         $res = $booking->first()->toArray();
         return $res;
     }
