@@ -476,8 +476,9 @@ class SigneesController extends Controller
         $bookingMatching = new BookingMatch();
         $result['upcoming'] = $bookingMatching->getMyShift('upcoming');
         $result['past'] = $bookingMatching->getMyShift('past');
+        //print_r($result);exit();
         if ($result) {
-            return response()->json(['status' => true, 'message' => 'Your listed successfully', 'data' => $result], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Your shift listed successfully', 'data' => $result], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Your shift is not available.', 'status' => false], 200);
         }

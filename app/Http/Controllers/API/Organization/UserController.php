@@ -596,24 +596,53 @@ class UserController extends Controller
         }
         try {
             if ($requestData['status'] == 'CANCEL') {
-                //print_r($requestData);exit;
+
+                //print_r(Auth::user()->role);exit;
                 $objBooking = new Booking();
                 $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
 
-                $booking = booking::findOrFail($requestData['booking_id']);
-                $booking['status'] = $requestData['status'];
-                $bookingUpdate = $booking->update($requestData);
+                if(Auth::user()->role == 'SIGNEE')
+                {
+                    $booking = booking::findOrFail($requestData['booking_id']);
+                    $booking['status'] = "CREATED";
+                    $bookingUpdate = $booking->update();
 
-                $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
-                $signeeIdArray = array_column($objBookingMatch, 'signee_id');
+                    $bookingMatch = BookingMatch::where(['signee_id'=>$this->userId, 'booking_id'=>$requestData['booking_id']])->first();
+                    $bookingMatch->signee_booking_status = $requestData['status'];
+                    $bookingMatch->booking_cancel_date = Carbon::now();
+                    $bookingMatch->save();
+                    $update = $objBooking->sendBookingCancelEmail($signee);
 
-                $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->where(['booking_id'=>$requestData['booking_id']])->update(array('signee_booking_status' => $requestData['status'], 'booking_cancel_date'=>Carbon::now()));
-                $objBooking->sendBookingCancelEmail($signee);
+                    if ($update) {
+                        return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
+                    } else {
+                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+                    }
+                }
+                else if(Auth::user()->role == 'STAFF')
+                {
+                    $booking = booking::findOrFail($requestData['booking_id']);
+                    // print_r($booking);exit();
+                    $booking['status'] = $requestData['status'];
+                    $bookingUpdate = $booking->update();
 
-                if ($update) {
-                    return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
-                } else {
-                    return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+                    // $newBookingMatchObj = BookingMatch::where(['booking_id'=>$requestData['booking_id']])->get();
+                    // $newBookingMatchObj->signee_booking_status = "PENDING";
+                    // $newBookingMatchObj->save();
+                    $update = $objBooking->sendBookingCancelEmail($signee);
+
+
+
+                    // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
+                    // $signeeIdArray = array_column($objBookingMatch, 'signee_id');
+
+                    // $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->where(['booking_id'=>$requestData['booking_id']])->update(array('signee_booking_status' => $requestData['status'], 'booking_cancel_date'=>Carbon::now()));
+
+                    if ($update) {
+                        return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
+                    } else {
+                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+                    }
                 }
 
             } else if ($requestData['status'] == 'CONFIRMED') {
