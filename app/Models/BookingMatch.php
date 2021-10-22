@@ -161,6 +161,7 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
+            'signee_organization.status as compliance_status',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
@@ -170,6 +171,15 @@ class BookingMatch extends Model
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+
+        $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        // $booking->Join('signee_organization',  'signee_organization.user_id', '=', 'booking_matches.signee_id');
+        // $booking->Join('signee_organization', 'signee_organization.user_id', '=', 'booking_matches.signee_id')->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
+        $booking->join('signee_organization', function($join)
+        {
+            $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
+            $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
+        });
         $booking->where('bookings.status', 'CREATED');
         $booking->where('bookings.date', '>=', date('y-m-d'));
         $booking->whereIn('bookings.user_id', $staffIdArray);
@@ -202,17 +212,20 @@ class BookingMatch extends Model
             'trusts.city',
             'trusts.post_code',
             'booking_matches.signee_status',
+            'signee_organization.status as compliance_status',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             //'bookings.rate',
         );
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
+
         $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $booking->Join('signee_organization',  'signee_organization.user_id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.id', $id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
