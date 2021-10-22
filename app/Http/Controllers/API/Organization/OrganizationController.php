@@ -14,10 +14,10 @@ use Config;
 class OrganizationController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -54,10 +54,10 @@ class OrganizationController extends Controller
             return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 401);
         }
     }
-    /** 
-     * Register api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function signup(Request $request)
     {
@@ -106,10 +106,10 @@ class OrganizationController extends Controller
             return response()->json(['status' => false, 'message' => "something will be wrong"], 500);
         }
     }
-    /** 
-     * details api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * details api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function details(Request $request)
     {
@@ -124,10 +124,10 @@ class OrganizationController extends Controller
     }
 
 
-    /** 
-     * Logout api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Logout api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function logout(Request $request)
     {
@@ -147,10 +147,10 @@ class OrganizationController extends Controller
         }
     }
 
-    /** 
-     * Forgot api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Forgot api
+     *
+     * @return \Illuminate\Http\Response
      */
     // public function forgot(Request $request)
     // {
@@ -163,10 +163,10 @@ class OrganizationController extends Controller
     //     }
     // }
 
-    /** 
-     * otp verify 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * otp verify
+     *
+     * @return \Illuminate\Http\Response
      */
     public function otpVerify(Request $request)
     {
@@ -184,10 +184,10 @@ class OrganizationController extends Controller
         }
     }
 
-    /** 
-     * Change Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Change Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function changePassword(Request $request)
     {
@@ -218,10 +218,10 @@ class OrganizationController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-    /** 
-     * change Status 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * change Status
+     *
+     * @return \Illuminate\Http\Response
      */
     public function changeStatus(Request $request)
     {
@@ -300,7 +300,7 @@ class OrganizationController extends Controller
         // }
         $keyword = $request->get('search');
         $status = $request->get('status');
-        $perPage = Config::get('constants.pagination.perPage');
+        $perPage = 30;
         try {
             $qr = User::select(
                 "users.*",
@@ -337,10 +337,10 @@ class OrganizationController extends Controller
         }
     }
 
-    /** 
-     * reset Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * reset Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function resetPassword(Request $request)
     {
@@ -370,10 +370,10 @@ class OrganizationController extends Controller
     }
 
 
-    /** 
-     * update profile api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * update profile api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
     {

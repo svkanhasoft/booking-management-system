@@ -504,7 +504,7 @@ class SigneesController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try
         {
@@ -536,7 +536,7 @@ class SigneesController extends Controller
         // ]);
         // if ($validator->fails()) {
         //     $error = $validator->messages()->first();
-        //     return response()->json(['status' => false, 'message' => $error], 422);
+        //     return response()->json(['status' => false, 'message' => $error], 200);
         // }
         // try {
         //     $bookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['id']]);
@@ -848,7 +848,7 @@ class SigneesController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try{
             $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']]);

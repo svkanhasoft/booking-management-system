@@ -121,6 +121,7 @@ Route::prefix('organization')->group(function () {
                 Route::post('/confirm-booking', [UserController::class, 'confirmBooking']);
                 Route::post('/pdf', [UserController::class, 'pdf']);
                 Route::post('/change-document-status', [UserController::class, 'changeDocStatus']);
+                Route::post('/send-invitation', [UserController::class, 'inviteSigneeForTheShift']);
             });
         });
     });
@@ -149,7 +150,7 @@ Route::prefix('signee')->group(function () {
         Route::put('/add-preferences', [SigneePreferencesController::class, 'addPreferences']);
         Route::get('/get-preferences', [SigneePreferencesController::class, 'getPreferences']);
         Route::get('/shift-list', [SigneesController::class, 'shiftList']);
-        Route::get('/view-shift-details/{id}', [SigneesController::class, 'viewShiftDetails']);    
+        Route::get('/view-shift-details/{id}', [SigneesController::class, 'viewShiftDetails']);
         Route::get('/logout', [SigneesController::class, 'logout']);
         Route::put('/filter-shift', [SigneesController::class, 'filterBookings']);
         Route::get('/show-all-speciality', [HospitalController::class, 'showAllSpeciality']);

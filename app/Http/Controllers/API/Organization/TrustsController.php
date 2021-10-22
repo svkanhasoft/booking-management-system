@@ -63,7 +63,7 @@ class TrustsController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $requestData = $request->all();
@@ -139,7 +139,7 @@ class TrustsController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $requestData = $request->all();
