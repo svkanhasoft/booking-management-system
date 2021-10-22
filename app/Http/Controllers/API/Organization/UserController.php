@@ -667,11 +667,11 @@ class UserController extends Controller
             $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status']));
             if($update)
             {
-                return response()->json(['status' => true, 'message' => 'Document status successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Document  status updated successfully'], $this->successStatus);
             }
             else
             {
-                return response()->json(['message' => 'Sorry, Document status not changed.', 'status' => false], 200);
+                return response()->json(['message' => 'Sorry, Document status not updated.', 'status' => false], 200);
             }
         } catch(\Exception $e)
         {
@@ -708,4 +708,21 @@ class UserController extends Controller
         //unlink($file);
         // return response()->json(['status' => true, 'message' => $file], 200);
     }
+
+    // public function inviteSigneeForTheShift(Request $request)
+    // {
+    //     try
+    //     {
+    //         $requestData = $request->all();
+    //         print_r($requestData);exit();
+    //         $objBooking = new Booking();
+    //         $matchSignee = $objBooking->getMetchByBookingId($requestData['booking_id']);
+    //         print_r($matchSignee);exit;
+    //         $objBooking->sendBookingInvitationMail($matchSignee);
+    //     }
+    //     catch(\Exception $e)
+    //     {
+    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+    //     }
+    // }
 }
