@@ -45,7 +45,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'SUPERADMIN')->count();
@@ -75,7 +75,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
 
@@ -156,7 +156,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
 
         $input = $request->all();
@@ -260,7 +260,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         if (!(Hash::check($request->old_password, Auth::user()->password))) {
             return response()->json(['status' => false, 'message' => "Your old password can't be match"], 400);
@@ -306,7 +306,7 @@ class SuperAdminController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $requestData = $request->all();
@@ -342,7 +342,7 @@ class SuperAdminController extends Controller
         if ($validator->fails()) {
             $error = $validator->messages();
 
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
 
         $requestData = $request->all();

@@ -59,7 +59,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $requestData = $request->all();
@@ -97,7 +97,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
@@ -133,7 +133,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'STAFF')->first();
@@ -227,7 +227,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $user = User::where('role', 'STAFF')->where('id', $this->userId)->first();
@@ -259,7 +259,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $user = Auth::user();
@@ -299,7 +299,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $user = User::findOrFail($requestData['id']);
@@ -351,7 +351,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
         if (!empty($request->post('password'))) {
@@ -381,7 +381,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
         // print_r($requestData);exit();
@@ -443,7 +443,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             // print_r($requestData);exit();
@@ -526,7 +526,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             if (Auth::user()->role == 'ORGANIZATION') {
@@ -565,7 +565,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             $data = User::findOrFail($requestData['signee_id']);
@@ -591,7 +591,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
             if ($requestData['status'] == 'CANCEL') {
@@ -659,7 +659,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
         try{
             $signeeDocs = SigneeDocument::where(['signee_id'=>$requestData['signee_id'], 'organization_id'=>$requestData['organization_id'], 'key'=>$requestData['key']])->get()->toArray();

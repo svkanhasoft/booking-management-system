@@ -247,7 +247,7 @@ class BookingController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 422);
+            return response()->json(['status' => false, 'message' => $error], 200);
         }
 
         $booking = booking::findOrFail($requestData['booking_id']);
