@@ -32,7 +32,7 @@ class BookingMatch extends Model
      *
      * @var array
      */
-    protected $fillable = ['organization_id', 'signee_id', 'booking_id', 'trust_id', 'match_count', 'booking_date', 'booking_status', 'shift_id', 'signee_status'];
+    protected $fillable = ['organization_id', 'signee_id', 'booking_id', 'trust_id', 'match_count', 'booking_date', 'signee_booking_status', 'shift_id', 'signee_status'];
 
     public function addBookingMatch($bookingArray, $bookingId)
     {
@@ -56,7 +56,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->booking_status = 'CREATED';
+            $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
         }
@@ -83,7 +83,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->booking_status = 'CREATED';
+            $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
         }
@@ -110,7 +110,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->booking_status = 'CREATED';
+            $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
         }
