@@ -101,7 +101,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-candidate', [UserController::class, 'getCandidate']);
         Route::get('/get-my-signee/{id}', [UserController::class, 'getMySigneeById']);    //get signee by id from org
         Route::post('/change-signee-compliance-status', [SigneesController::class, 'changeSigneeComplianceStatus']);
-
+        Route::post('/confirm-booking', [UserController::class, 'bookingStatus']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
         Route::prefix('user')->group(function () {

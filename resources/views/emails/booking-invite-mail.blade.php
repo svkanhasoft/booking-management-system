@@ -187,12 +187,12 @@
                                                 <p>
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
                                                         <a href="http://clientbooking.kanhasoftdev.com/shifts/{{ $details['data']['id'] }}">Click
-                                                            Here to view shift.
+                                                            click here to view more shift <details></details>.
                                                         </a>
                                                     </span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        You are invited for the shift.</span></p>
+                                                        you are invited for this shift, click above link to view more details and appliy for thay.</span></p>
                                             </div>
                                         </div>
                                     </div>
