@@ -110,6 +110,9 @@ class Booking extends Model
         }
 
         $query->where('bookings.status', $status);
+        if($status == 'CREATED'){
+            $query->where('bookings.date', '<', date('y-m-d'));
+        }
         // $query->where('bookings.user_id',Auth::user()->id);
 
         if(Auth::user()->role == 'ORGANIZATION'){

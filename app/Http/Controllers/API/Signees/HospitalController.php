@@ -40,7 +40,7 @@ class HospitalController extends Controller
         $trusts = Trust::whereIn('user_id', $staffIdArray)->get()->toArray();
         $trustIdArray = array_column($trusts, 'id');
         //print_r($trustIdArray);exit();
-        $hospitals = Hospital::whereIn('trust_id', $trustIdArray)->get()->toArray();
+        $hospitals = Hospital::whereNotNull('hospital_name')->whereIn('trust_id', $trustIdArray)->get()->toArray();
         if ($hospitals) {
             return response()->json(['status' => true, 'message' => 'Hospital get successfully', 'data' => $hospitals], $this->successStatus);
         } else {

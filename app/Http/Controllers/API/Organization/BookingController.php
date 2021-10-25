@@ -225,7 +225,7 @@ class BookingController extends Controller
         if (count($booking) > 0) {
             return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         }
     }
 
