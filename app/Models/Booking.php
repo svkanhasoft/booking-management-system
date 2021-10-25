@@ -111,7 +111,7 @@ class Booking extends Model
 
         $query->where('bookings.status', $status);
         if($status == 'CREATED'){
-            $query->where('bookings.date', '<', date('y-m-d'));
+            $query->where('bookings.date', '>=', date('y-m-d'));
         }
         // $query->where('bookings.user_id',Auth::user()->id);
 
@@ -126,7 +126,8 @@ class Booking extends Model
         }
 
         $query->whereNull('bookings.deleted_at');
-        $query->groupBy ('bookings.id');
+        $query->orderBy('bookings.id', 'DESC');
+        $query->groupBy('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);
         return $bookingList;
         // $bookingList = $query->get();
