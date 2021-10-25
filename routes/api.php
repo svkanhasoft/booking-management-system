@@ -128,6 +128,7 @@ Route::prefix('organization')->group(function () {
 });
 
 Route::prefix('signee')->group(function () {
+    Route::get('/add-signee-match/{id}', [SigneesController::class, 'addsigneeMatch']);
     Route::post('/signup', [SigneesController::class, 'signup']);
     Route::post('/signin', [SigneesController::class, 'signin']);
     Route::post('/forgot-signee', [SigneesController::class, 'forgot']);

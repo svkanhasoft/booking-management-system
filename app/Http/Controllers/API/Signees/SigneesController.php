@@ -65,43 +65,47 @@ class SigneesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
-        $requestData = $request->all();
-        //print_r($requestData);exit();
-        if ($request->hasFile('cv')) {
-            $files1 = $request->file('cv');
-            $name = time() . '_signee_' . $files1->getClientOriginalName();
-            $files1->move(public_path() . '/uploads/signee_docs/', $name);
-            $requestData['cv'] = $name;
-        }
-        if ($request->hasFile('profile_pic')) {
-            $files1 = $request->file('profile_pic');
-            $name2 = time() . '_signee_' . $files1->getClientOriginalName();
-            $files1->move(public_path() . '/uploads/signee_docs/', $name2);
-            $requestData['profile_pic'] = $name2;
-        }
-
-        $requestData['password'] = Hash::make($request->post('password'));
-        $requestData['parent_id'] = $request->post('organization_id');
-        $requestData['role'] = 'SIGNEE';
-        $userCreated = User::create($requestData);
-        if ($userCreated) {
-            $requestData['user_id'] = $userCreated['id'];
-            $orgResult = SigneesDetail::create($requestData);
-
-            $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $requestData['parent_id'], false);
-
-            $requestData['organization_id'] = $request->post('organization_id');
-            $requestData['user_id'] = $userCreated['id'];
-            $sing = SigneeOrganization::create($requestData);
-            if ($orgResult) {
-                $UserObj = new User();
-                $mailRes =  $UserObj->sendRegisterEmail($request);
-                return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+        try {
+            $requestData = $request->all();
+            //print_r($requestData);exit();
+            if ($request->hasFile('cv')) {
+                $files1 = $request->file('cv');
+                $name = time() . '_signee_' . $files1->getClientOriginalName();
+                $files1->move(public_path() . '/uploads/signee_docs/', $name);
+                $requestData['cv'] = $name;
             }
-        } else {
-            return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
+            if ($request->hasFile('profile_pic')) {
+                $files1 = $request->file('profile_pic');
+                $name2 = time() . '_signee_' . $files1->getClientOriginalName();
+                $files1->move(public_path() . '/uploads/signee_docs/', $name2);
+                $requestData['profile_pic'] = $name2;
+            }
+
+            $requestData['password'] = Hash::make($request->post('password'));
+            $requestData['parent_id'] = $request->post('organization_id');
+            $requestData['role'] = 'SIGNEE';
+            $userCreated = User::create($requestData);
+            if ($userCreated) {
+                $requestData['user_id'] = $userCreated['id'];
+                $orgResult = SigneesDetail::create($requestData);
+
+                $objSpeciality = new SigneeSpecialitie();
+                $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $requestData['parent_id'], false);
+
+                $requestData['organization_id'] = $request->post('organization_id');
+                $requestData['user_id'] = $userCreated['id'];
+                $sing = SigneeOrganization::create($requestData);
+                if ($orgResult) {
+                    $UserObj = new User();
+                    $mailRes =  $UserObj->sendRegisterEmail($request);
+                    $this->addsigneeMatch($userCreated['id']);
+                    return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
+                }
+            } else {
+                return response()->json(['message' => 'Sorry, User added failed!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
@@ -576,11 +580,13 @@ class SigneesController extends Controller
         //     $error = $validator->messages()->first();
         //     return response()->json(['status' => false, 'message' => $error], 200);
         // }
-       
+
         try {
-            $res = SigneeOrganization::where(['organization_id' => $requestData['organization'][0]['organization_id'],
-            'user_id' => $this->userId])->count();
-            if($res > 0){
+            $res = SigneeOrganization::where([
+                'organization_id' => $requestData['organization'][0]['organization_id'],
+                'user_id' => $this->userId
+            ])->count();
+            if ($res > 0) {
                 return response()->json(['status' => false, 'message' => 'Sorry, you have already register with this organization'], $this->successStatus);
             }
 
@@ -862,6 +868,37 @@ class SigneesController extends Controller
             }
             //print_r($objBookingMatch->signee_status);exit();
             //$objBookingMatch->booking_status = "OPEN";
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    public function addsigneeMatch($id)
+    {
+        // echo $request->get('id');
+        // echo "fdfsd" . $id;
+        // exit;
+        // print_r($_SERVER['HTTP_HOST']);exit;
+
+        // echo "sdas";
+        // $url = $_SERVER['HTTP_HOST'] . "/api/signee/add-signee-match/$id";
+        // $headers = array();
+        // $headers[] = 'Content-Type: application/json';
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "get");
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        // $response = curl_exec($ch);
+        // if ($response === FALSE) {
+        //     die('FCM Send Error: ' . curl_error($ch));
+        // }
+        // curl_close($ch);
+        try {
+            $bookingArray = new Booking();
+            $booking = $bookingArray->editMetchBySigneeId($id);
+
+            $objBookingMatch = new BookingMatch();
+            $bookingMatch = $objBookingMatch->editBookingMatchBySignee($booking, $id);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
