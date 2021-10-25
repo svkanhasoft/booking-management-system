@@ -588,7 +588,8 @@ class Booking extends Model
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
-        $subQuery->groupBy('signee_speciality.id','booking_specialities.id');
+        // $subQuery->groupBy('signee_speciality.id','booking_specialities.id');
+        $subQuery->groupBy('bookings.id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
         $subQuery->whereRaw("(
             IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
@@ -817,4 +818,16 @@ class Booking extends Model
         $query->groupBy('booking_matches.signee_id');
         return $query->get()->toArray();
     }
+
+    public function addsigneeMatch($id)
+    {
+        try {
+            $booking = $this->editMetchBySigneeId($id);
+            $objBookingMatch = new BookingMatch();
+            $bookingMatch = $objBookingMatch->editBookingMatchBySignee($booking, $id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
 }

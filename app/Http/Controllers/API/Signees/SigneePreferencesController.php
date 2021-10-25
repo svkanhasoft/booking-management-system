@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Models\SigneePreferences;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Booking;
 class SigneePreferencesController extends Controller
 {
     public $successStatus = 200;
@@ -36,6 +36,25 @@ class SigneePreferencesController extends Controller
             $signeePreference = new SigneePreferences();
             $res = $signeePreference->addOrUpdatePreference($requestData, $this->userId);
             if ($res) {
+                // $url = $_SERVER['APP_URL'] . "/api/signee/add-signee-match/$this->userId";
+                // $url = $_SERVER['HTTP_HOST'] . "/api/signee/add-signee-match/$this->userId";
+                // echo $url;exit;
+                // $headers = array();
+                // $headers[] = 'Content-Type: application/json';
+                // $ch = curl_init();
+                // curl_setopt($ch, CURLOPT_URL, $url);
+                // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "get");
+                // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                // $responses = curl_exec($ch);
+                // dd($responses);exit;
+                // if ($responses === FALSE) {
+                //     // die('FCM Send Error: ' . curl_error($ch));
+                // }
+                // curl_close($ch);
+
+                
+                $bookingArray = new Booking();
+                $bookingArray->addsigneeMatch($this->userId);
                 return response()->json(['status' => true, 'message' => 'Preferences added Successfully', 'data' => $requestData], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Preferences added Failed!', 'status' => false], 409);
