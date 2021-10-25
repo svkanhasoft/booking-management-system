@@ -174,20 +174,11 @@ class BookingMatch extends Model
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
 
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
-
-        // $booking->join('booking_matches', function($join)
-        // {
-        //     $join->on('booking_matches.booking_id', '=', 'bookings.id');
-        //     $join->where('booking_matches.deleted_at');
-        // });
-        // $booking->Join('signee_organization',  'signee_organization.user_id', '=', 'booking_matches.signee_id');
-        // $booking->Join('signee_organization', 'signee_organization.user_id', '=', 'booking_matches.signee_id')->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         $booking->join('signee_organization', function($join)
         {
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
-
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
 
         $booking->where('bookings.status', 'CREATED');
