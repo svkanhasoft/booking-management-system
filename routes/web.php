@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\DeleteFilesCron;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::resource('organization/shift-type', 'Organization\ShiftTypeController');
+Route::get('/sss', [DeleteFilesCron::class, 'handle']);

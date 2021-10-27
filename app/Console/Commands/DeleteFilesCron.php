@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Config;
 class DeleteFilesCron extends Command
 {
     /**
@@ -38,8 +39,11 @@ class DeleteFilesCron extends Command
     public function handle()
     {
         $file = new Filesystem;
-        $file->cleanDirectory('E:/xampp7.4/htdocs/booking-management-system/public/uploads/signee_pdf');
-        \Log::info("Cron is working fine!");
-        $this->info('Demo:Cron Cummand Run successfully!');
+        $downloadPath = Config::get('constants.path.pdf_download');
+        $file->cleanDirectory($downloadPath);
+        // $file->cleanDirectory('E:/xampp7.4/htdocs/booking-management-system/public/uploads/signee_pdf');
+        \Log::info("Delete Cron is working fine!");
+        $this->info($downloadPath);
+        $this->info('deletefile:cron command Run successfully!');
     }
 }
