@@ -15,10 +15,10 @@ use Config;
 class DesignationController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -29,10 +29,10 @@ class DesignationController extends Controller
             return $next($request);
         });
     }
-     
+
 
     /**
-     * Display a listing of the resource.
+     * Show list of designations.
      *
      * @return \Illuminate\View\View
      */
@@ -48,7 +48,7 @@ class DesignationController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Add new designation.
      *
      * @param \Illuminate\Http\Request $request
      *
@@ -72,7 +72,7 @@ class DesignationController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * how designation by id.
      *
      * @param  int  $id
      *
@@ -89,7 +89,7 @@ class DesignationController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update designation.
      *
      * @param \Illuminate\Http\Request $request
      * @param  int  $id
@@ -109,7 +109,7 @@ class DesignationController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete designation.
      *
      * @param  int  $id
      *

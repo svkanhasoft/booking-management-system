@@ -30,6 +30,13 @@ class TrustsController extends Controller
         });
     }
 
+    /**
+     * Add Trust.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     function add(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -104,6 +111,13 @@ class TrustsController extends Controller
         }
     }
 
+    /**
+     * Update trust.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     function update(Request $request)
     {
         $requestData = $request->all();
@@ -129,7 +143,7 @@ class TrustsController extends Controller
             ]',
             'training' => 'required:training,[]',
             //'ward' => 'required:ward,[]',
-          
+
             'hospital.*.hospital_name' => 'required',
             'hospital.*.ward' => 'required',
             'hospital.*.ward.*.ward_name' => 'required',
@@ -169,6 +183,13 @@ class TrustsController extends Controller
         }
     }
 
+    /**
+     * Get trust details.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     function getTrustDetail($trustId = null, Request $request)
     {
         //print_r(Auth::user()->parent_id);exit();
@@ -177,7 +198,7 @@ class TrustsController extends Controller
 
             $trustObj = new Trust();
             $result = $trustObj->getTrustById($trustId);
-            // print_r($trust);exit(); 
+            // print_r($trust);exit();
 
             // $result = [];
             // $result = Trust::find($trustId);
@@ -211,6 +232,13 @@ class TrustsController extends Controller
         }
     }
 
+    /**
+     * Delete trust.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     function destroy($trustId)
     {
         // echo "$trustId" ;
@@ -225,19 +253,4 @@ class TrustsController extends Controller
             return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted.'], 409);
         }
     }
-
-    // public function generateTrustCode()
-    // {
-    //     try {
-    //         $time = [];
-    //         $time['trust_code'] = date("ymdHis");
-    //         if ($time) {
-    //             return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $time], $this->successStatus);
-    //         } else {
-    //             return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
-    //     }
-    // }
 }

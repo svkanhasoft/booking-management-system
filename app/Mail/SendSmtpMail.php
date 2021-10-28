@@ -42,10 +42,14 @@ class SendSmtpMail extends Mailable
             return $this->subject($this->details['subject'])->view('emails.add-match-mail');
         } else if ($this->details['mailTitle'] == 'bookingConfirm') {
             return $this->subject($this->details['subject'])->view('emails.booking-confirm-mail');
-        } else if ($this->details['mailTitle'] == 'bookingCancel') {
+        } else if ($this->details['mailTitle'] == 'bookingCancelByStaff') {
             return $this->subject($this->details['subject'])->view('emails.booking-cancel-mail');
+        } else if ($this->details['mailTitle'] == 'bookingCancelBySignee') {
+            return $this->subject($this->details['subject'])->view('emails.booking-cancelBySignee-mail');
         } else if ($this->details['mailTitle'] == 'bookingInvite') {
             return $this->subject($this->details['subject'])->view('emails.booking-invite-mail');
+        } else if ($this->details['mailTitle'] == 'bookingOpened') {
+            return $this->subject($this->details['subject'])->view('emails.booking-open-mail');
         }
     }
 }

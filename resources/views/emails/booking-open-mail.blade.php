@@ -146,25 +146,17 @@
                                     <div style="width:100% !important;">
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 15px; padding-left: 20px;">
                                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#;">
-                                                <p class="MsoNormal" style="line-height:145%; padding:7px 0px 7px 0px !important">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Dear
-                                                        {{ $details['data']['user_name'] }} <br>
-                                                    </span>
+
+                                                <p class="MsoNormal" style="line-height:145%; margin:7px 0px 7px 0px !important">
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                        Hello Dear,
                                                 </p>
-                                                <p class="MsoNormal" style="line-height:145%; padding:7px 0px 7px 0px !important"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                    Your booking is confirmed.</span>
-                                                </p>
-                                                <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Email:
-                                                        {{ $details['data']['email'] }} <br></span>
+                                                <p class="MsoNormal" style="line-height:145%; margin:7px 0px 7px 0px !important"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                    Your booking is opened.</span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Booking Name:
                                                         {{ $details['data']['reference_id'] }} <br></span>
-                                                </p>
-                                                <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Rate:
-                                                        {{ $details['data']['rate'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Booking date:
@@ -183,8 +175,12 @@
                                                         {{ $details['data']['ward_type'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Rate:
+                                                        {{ $details['data']['rate'] }} <br></span>
+                                                </p>
+                                                <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Start time:
-                                                        {{-- {{ $details['data']['start_time'] }} <br></span> --}}
+                                                        {{-- {{ $details['data']['start_time'] }} --}}
                                                         {{ date('H:i', strtotime($details['data']['start_time']))  }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
@@ -193,7 +189,7 @@
                                                         {{ date('H:i', strtotime($details['data']['end_time']))  }} <br></span>
                                                 </p>
                                                 {{-- <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        Congratulations your booking is confirm.</span></p> --}}
+                                                        Your booking has been canceled.</span></p> --}}
                                             </div>
                                         </div>
                                     </div>

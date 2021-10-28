@@ -396,15 +396,6 @@ class Booking extends Model
             or
             IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
         )");
-            // $subQuery->whereRaw("(IF(DAYOFWEEK(`bookings`.`date`) = 1, `signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1,'')
-            //     or
-            //     IF(DAYOFWEEK(`bookings`.`date`) = 2, `signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1,'')
-            // )");
-
-        // $subQuery->where(function($q){
-        //     $q->where(DB::raw('IF(DAYOFWEEK(`bookings`.`date`) = 1,`signee_preference`.`sunday_day` = 1 OR `signee_preference`.`sunday_night` = 1,"")'))
-        //     ->orWhere(DB::raw('IF(DAYOFWEEK(`bookings`.`date`) = 2,`signee_preference`.`monday_day` = 1 OR `signee_preference`.`monday_night` = 1,"")'));
-        // });
 
         $res = $subQuery->get()->toArray();
 
@@ -498,10 +489,10 @@ class Booking extends Model
         }
     }
 
-    //booking cancel email
-    public function sendBookingCancelEmail($result)
+    //booking canceled by staff/org email
+    public function sendBookingCancelByStaffEmail($result)
     {
-       // print_r($result);exit();
+        //print_r($result);exit();
         if (isset($result) && !empty($result)) {
             foreach($result as $key=>$val)
             {
@@ -509,7 +500,7 @@ class Booking extends Model
                 $details = [
                     'title' => '',
                     'body' => 'Hello ',
-                    'mailTitle' => 'bookingCancel',
+                    'mailTitle' => 'bookingCancelByStaff',
                     'subject' => 'Booking Management System: Your booking is canceled',
                     'data' => $val
                 ];
@@ -526,6 +517,62 @@ class Booking extends Model
         }
     }
 
+    //booking canceled by signee email
+    public function sendBookingCancelBySigneeEmail($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+                //print_r($result['email']);exit();
+                $details = [
+                    'title' => '',
+                    'body' => 'Hello ',
+                    'mailTitle' => 'bookingCancelBySignee',
+                    'subject' => 'Booking Management System: Your booking is canceled',
+                    'data' => $result
+                ];
+               // print_r($details['data']);exit();
+                $emailRes = \Mail::to($result['email'])
+                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+                return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function sendBookingOpenEmail($result)
+    {
+        //print_r($result);exit();
+
+        if (isset($result) && !empty($result)) {
+            foreach($result as $key=>$val)
+            {
+                if($val['signeeId'] != Auth::user()->id)
+                {
+                    //print_r($val);exit();
+                    $details = [
+                        'title' => '',
+                        'body' => 'Hello ',
+                        'mailTitle' => 'bookingOpened',
+                        'subject' => 'Booking Management System: Your booking is opened',
+                        'data' => $val
+                    ];
+                    //print_r($details);exit();
+                    $emailRes = \Mail::to($val['email'])
+                        // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                    ->cc('maulik.kanhasoft@gmail.com')
+                    ->bcc('suresh.kanhasoft@gmail.com')
+                    ->send(new \App\Mail\SendSmtpMail($details));
+                    return true;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
     //booking invitation email
     public function sendBookingInvitationMail($result)
     {
@@ -533,7 +580,7 @@ class Booking extends Model
         if (isset($result) && !empty($result)) {
             foreach($result as $key=>$val)
             {
-                //print_r($result[$key]['email']);exit();
+                //print_r($val['email']);exit();
                 $details = [
                     'title' => '',
                     'body' => 'Hello ',
@@ -609,33 +656,6 @@ class Booking extends Model
         $res = $subQuery->get()->toArray();
         return $res;
 
-        // $subQuery = Booking::select(
-        //     'users.id as signeeId',
-        //     'bookings.id as booking_id',
-        //     'users.role',
-        //     'bookings.user_id as organization_id',
-        //     'bookings.*',
-        //     DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
-        //     DB::raw('COUNT(signee_speciality.speciality_id)  as signeeBookingCount'),
-        //     DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
-        //     DB::raw('GROUP_CONCAT(booking_specialities.id SEPARATOR ", ") AS bookingSpecialityId'),
-        //     DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-        //     DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
-        // );
-
-        // $subQuery->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        // $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        // $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        // $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
-        // $subQuery->where('users.id', $signeeId);
-        // $subQuery->whereNull('signee_speciality.deleted_at');
-        // $subQuery->whereNull('booking_specialities.deleted_at');
-        // $subQuery->whereNull('bookings.deleted_at');
-        // $subQuery->groupBy('bookings.id');
-        // $subQuery->orderBy('signeeBookingCount', 'DESC');
-        // $res = $subQuery->get()->toArray();
-        // //print_r(gettype($res));exit();
-        // return $res;
     }
 
     public function getSigneeByIdAndBookingId($bookingId = null, $signeeId = null)

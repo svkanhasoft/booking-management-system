@@ -31,6 +31,12 @@ class HospitalController extends Controller
         });
     }
 
+    /**
+     * Show Hospital list at filter shift when signee area.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function showAllHospital()
     {
         $staff = User::select('id')->where(['parent_id' => Auth::user()->parent_id, 'role'=>'STAFF'])->get()->toArray();
@@ -46,9 +52,15 @@ class HospitalController extends Controller
         } else {
             return response()->json(['message' => 'Hospital not available.', 'status' => false], 404);
         }
-        
+
     }
 
+    /**
+     * Show specilality list at filter shift when signee area.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function showAllSpeciality()
     {
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();

@@ -48,6 +48,8 @@ class UserController extends Controller
      *
      * @return \Illuminate\View\View
      */
+
+    /* Used to register user */
     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -195,7 +197,7 @@ class UserController extends Controller
     }
 
     /**
-     * Get User list
+     * Get User by id
      *
      * @return \Illuminate\Http\Response
      */
@@ -322,6 +324,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * delete user/staff
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function destroy($userId)
     {
         try {
@@ -337,6 +344,11 @@ class UserController extends Controller
         }
     }
 
+     /*
+     * Update user/staff profile by himself
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function profileUpdate(Request $request)
     {
         //print_r($this->userId);exit();
@@ -373,6 +385,11 @@ class UserController extends Controller
 
     //////////////////// Signee CRUD By Organisation ///////////////////////
 
+    /*
+     * add new signee by organization
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function addSignee(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -421,6 +438,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * View signee by organization
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function viewSignee(Request $request)    //get all signee by organisation
     {
         //print_r($this->userId);exit();
@@ -434,6 +456,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Edit signee by organization
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function editSignee(Request $request)
     {
         $requestData = $request->all();
@@ -471,6 +498,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Delete signee by organization
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function deleteSignee($id)
     {
         try {
@@ -486,6 +518,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Generate candidate id
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getCandidate(Request $request)
     {
         try {
@@ -501,6 +538,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Get signee by id by organization
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getMySigneeById($id)  //get signee by id from org
     {
         try {
@@ -516,6 +558,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Change shift status
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function changeShiftStatus(Request $request)
     {
         //print_r(Auth::user()->role);exit();
@@ -557,6 +604,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Change signee profile status
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function changeSigneeProfileStatus(Request $request)
     {
         $requestData = $request->all();
@@ -582,91 +634,96 @@ class UserController extends Controller
         }
     }
 
-    public function confirmBooking(Request $request)
-    {
-        $requestData = $request->all();
+    // public function confirmBooking(Request $request)
+    // {
+    //     $requestData = $request->all();
 
-        $validator = Validator::make($request->all(), [
-            'booking_id' => 'required',
-            'signee_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
-        }
-        try {
-            if ($requestData['status'] == 'CANCEL') {
+    //     $validator = Validator::make($request->all(), [
+    //         'booking_id' => 'required',
+    //         'signee_id' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $error = $validator->messages()->first();
+    //         return response()->json(['status' => false, 'message' => $error], 200);
+    //     }
+    //     try {
+    //         if ($requestData['status'] == 'CANCEL') {
 
-                //print_r(Auth::user()->role);exit;
-                $objBooking = new Booking();
-                $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
+    //             //print_r(Auth::user()->role);exit;
+    //             $objBooking = new Booking();
+    //             $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
 
-                if (Auth::user()->role == 'SIGNEE') {
-                    $booking = booking::findOrFail($requestData['booking_id']);
-                    $booking['status'] = "CREATED";
-                    $bookingUpdate = $booking->update();
+    //             if (Auth::user()->role == 'SIGNEE') {
+    //                 $booking = booking::findOrFail($requestData['booking_id']);
+    //                 $booking['status'] = "CREATED";
+    //                 $bookingUpdate = $booking->update();
 
-                    $bookingMatch = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->first();
-                    $bookingMatch->signee_booking_status = $requestData['status'];
-                    $bookingMatch->booking_cancel_date = Carbon::now();
-                    $bookingMatch->save();
-                    $update = $objBooking->sendBookingCancelEmail($signee);
+    //                 $bookingMatch = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->first();
+    //                 $bookingMatch->signee_booking_status = $requestData['status'];
+    //                 $bookingMatch->booking_cancel_date = Carbon::now();
+    //                 $bookingMatch->save();
+    //                 $update = $objBooking->sendBookingCancelEmail($signee);
 
-                    if ($update) {
-                        return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
-                    } else {
-                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
-                    }
-                } else if (Auth::user()->role == 'STAFF') {
-                    $booking = booking::findOrFail($requestData['booking_id']);
-                    // print_r($booking);exit();
-                    $booking['status'] = $requestData['status'];
-                    $bookingUpdate = $booking->update();
+    //                 if ($update) {
+    //                     return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
+    //                 } else {
+    //                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+    //                 }
+    //             } else if (Auth::user()->role == 'STAFF') {
+    //                 $booking = booking::findOrFail($requestData['booking_id']);
+    //                 // print_r($booking);exit();
+    //                 $booking['status'] = $requestData['status'];
+    //                 $bookingUpdate = $booking->update();
 
-                    // $newBookingMatchObj = BookingMatch::where(['booking_id'=>$requestData['booking_id']])->get();
-                    // $newBookingMatchObj->signee_booking_status = "PENDING";
-                    // $newBookingMatchObj->save();
-                    $update = $objBooking->sendBookingCancelEmail($signee);
-
-
-
-                    // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
-                    // $signeeIdArray = array_column($objBookingMatch, 'signee_id');
-
-                    // $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->where(['booking_id'=>$requestData['booking_id']])->update(array('signee_booking_status' => $requestData['status'], 'booking_cancel_date'=>Carbon::now()));
-
-                    if ($update) {
-                        return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
-                    } else {
-                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
-                    }
-                }
-            } else if ($requestData['status'] == 'CONFIRMED') {
-                //echo "hi";exit();
-                $objBooking = new Booking();
-                $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-
-                $objBooking->sendBookingConfirmEmail($matchSignee);
-
-                $booking = booking::findOrFail($requestData['booking_id']);
-                $booking['status'] = $requestData['status'];
-                $bookingUpdate = $booking->update($requestData);
-
-                $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
-                $objBookingMatch->signee_booking_status = $requestData['status'];
-                $objBookingMatch->save();
-                if ($objBookingMatch) {
-                    return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
-                } else {
-                    return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
-                }
-            }
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
-        }
-    }
+    //                 // $newBookingMatchObj = BookingMatch::where(['booking_id'=>$requestData['booking_id']])->get();
+    //                 // $newBookingMatchObj->signee_booking_status = "PENDING";
+    //                 // $newBookingMatchObj->save();
+    //                 $update = $objBooking->sendBookingCancelEmail($signee);
 
 
+
+    //                 // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
+    //                 // $signeeIdArray = array_column($objBookingMatch, 'signee_id');
+
+    //                 // $update = BookingMatch::whereIn('signee_id', $signeeIdArray)->where(['booking_id'=>$requestData['booking_id']])->update(array('signee_booking_status' => $requestData['status'], 'booking_cancel_date'=>Carbon::now()));
+
+    //                 if ($update) {
+    //                     return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
+    //                 } else {
+    //                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+    //                 }
+    //             }
+    //         } else if ($requestData['status'] == 'CONFIRMED') {
+    //             //echo "hi";exit();
+    //             $objBooking = new Booking();
+    //             $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+
+    //             $objBooking->sendBookingConfirmEmail($matchSignee);
+
+    //             $booking = booking::findOrFail($requestData['booking_id']);
+    //             $booking['status'] = $requestData['status'];
+    //             $bookingUpdate = $booking->update($requestData);
+
+    //             $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
+    //             $objBookingMatch->signee_booking_status = $requestData['status'];
+    //             $objBookingMatch->save();
+    //             if ($objBookingMatch) {
+    //                 return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
+    //             } else {
+    //                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+    //             }
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+    //     }
+    // }
+
+
+    /*
+     * Change booking status by signee and organization/staff
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function bookingStatus(Request $request)
     {
         $requestData = $request->all();
@@ -680,39 +737,47 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            // print_r(Auth::user()->role);exit;
 
             if ($requestData['status'] == 'CANCEL') {
-                // print_r(Auth::user()->role);
-                // exit;
                 $objBooking = new Booking();
-                $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
+                //$signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
 
                 if (Auth::user()->role == 'SIGNEE') {
+
+                    $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
 
                     booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
 
                     BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                         'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                     ]);
-                    $update = $objBooking->sendBookingCancelEmail($signee);
+                    $update = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
+
+                    //send booking open mail to other signees
+                    $signeeList = $objBooking->getMetchByBookingId($requestData['booking_id']);
+
+                    $sendBookingOpenMail = $objBooking->sendBookingOpenEmail($signeeList);
+
                     if ($update) {
                         return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
                     } else {
                         return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
                     }
                 } else if (Auth::user()->role == 'STAFF' || Auth::user()->role == 'ORGANIZATION') {
+                    //echo Auth::user()->role;exit;
+                    $signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
+
                     $booking = booking::findOrFail($requestData['booking_id']);
                     if($booking['status'] == 'CREATED'){
                         $booking['status'] = $requestData['status'];
                         $bookingUpdate = $booking->update();
-                    }else{
+                    } else{
                         $booking['status'] = $requestData['status'];
                         $bookingUpdate = $booking->update();
                         BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
                             'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                         ]);
-                        $update = $objBooking->sendBookingCancelEmail($signee);
+                        $update = $objBooking->sendBookingCancelByStaffEmail($signee);
                     }
 
                     // // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
@@ -752,6 +817,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Change signee document status
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function changeDocStatus(Request $request)
     {
         $requestData = $request->all();
@@ -779,6 +849,11 @@ class UserController extends Controller
         }
     }
 
+    /*
+     * Export selected signees in pdf file
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function pdf(Request $request)
     {
         try {
@@ -809,6 +884,11 @@ class UserController extends Controller
         // return response()->json(['status' => true, 'message' => $file], 200);
     }
 
+    /*
+     * Invite signee for shift
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function inviteSigneeForTheShift(Request $request)
     {
         try {

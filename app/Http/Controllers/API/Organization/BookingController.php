@@ -37,7 +37,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Used to create new booking/shifts
      *
      * @return \Illuminate\View\View
      */
@@ -96,7 +96,7 @@ class BookingController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * Used to show booking/shifts by id
      *
      * @param  int  $id
      *
@@ -121,7 +121,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Used to edit booking/shifts
      *
      * @param  int  $id
      *
@@ -130,7 +130,7 @@ class BookingController extends Controller
     public function edit(Request $request)
     {
         $requestData = $request->all();
-       // print_r($requestData);exit();
+
         $validator = Validator::make($request->all(), [
             // 'reference_id' => 'required',
             'trust_id' => 'required',
@@ -167,7 +167,7 @@ class BookingController extends Controller
                 //added by me
                 $objBooking = new Booking();
                 $bookings = $objBooking->getMetchByBookingId($booking['id']);
- 
+
                 $objBookingMatch = new BookingMatch();
                 $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $requestData["id"]);
 
@@ -189,7 +189,7 @@ class BookingController extends Controller
      */
 
     /**
-     * Remove the specified resource from storage.
+     * Used to delete booking/shifts.
      *
      * @param  int  $id
      *
@@ -210,7 +210,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Used to show list of bookings by status.
      *
      * @param  int  $id
      *
@@ -230,43 +230,7 @@ class BookingController extends Controller
     }
 
     /**
-     * change booking status.
-     *
-     * @param  int  $id
-     *
-     * @return \Illuminate\View\View
-     */
-    // public function changeBookingStatus(Request $request)
-    // {
-    //     $requestData = $request->all();
-    //     //print_r($requestData);exit();
-    //     $validator = Validator::make($request->all(), [
-    //         'status' => 'required',
-    //         'signee_id' => 'required',
-    //         'booking_id' => 'required'
-    //     ]);
-    //     if ($validator->fails()) {
-    //         $error = $validator->messages()->first();
-    //         return response()->json(['status' => false, 'message' => $error], 200);
-    //     }
-
-    //     $booking = booking::findOrFail($requestData['booking_id']);
-    //     $bookingUpdate = $booking->update($requestData);
-
-    //     $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
-    //     $objBookingMatch->booking_status = "OPEN";
-
-    //     $objBookingMatch->save();
-
-    //     if ($objBookingMatch) {
-    //         return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
-    //     } else {
-    //         return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
-    //     }
-    // }
-
-    /**
-     * add signee by match with speciality.
+     * Used to get matching signee by booking id.
      *
      * @param  int  $id
      *
@@ -294,7 +258,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Display the update Match By Signee user Id.
+     * Used to update matching signee by signee id.
      *
      * @param  int  $id
      *
@@ -317,6 +281,13 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Used to get signee by signee id and booking id.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     public function getSigneeByIdAndBookingId(Request $request)
     {
         $booking = new Booking();
@@ -330,6 +301,13 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Used to get list of signee whose speciality is matching with booking speciality by booking id.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     public function getBookingSignee($bookingId)
     {
         //echo $bookingId;
@@ -347,6 +325,13 @@ class BookingController extends Controller
 
     }
 
+    /**
+     * Used to get ward list by hospital and trust.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     public function getWardByHospitalAndTrust(Request $request)
     {
         //echo $hospitalId;
@@ -369,6 +354,13 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Used to get list of hospitals.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     public function hospitallist(Request $request, $trustId)
     {
         $ward = Hospital::where(['trust_id' => $trustId])->get();
@@ -379,6 +371,13 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Used to get list of grades.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     public function gradelist(Request $request)
     {
         $grade = Grade::all();
@@ -389,6 +388,13 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * Used to generate reference id.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
     public function reference(Request $request)
     {
         $time = [];

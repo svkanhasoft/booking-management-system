@@ -21,6 +21,12 @@ class SigneePreferencesController extends Controller
         });
     }
 
+    /**
+     * Add signee preferences.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function addPreferences(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -47,6 +53,12 @@ class SigneePreferencesController extends Controller
         }
     }
 
+    /**
+     * Get signee preferences.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function getPreferences(Request $request)
     {
         try {

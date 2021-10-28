@@ -48,7 +48,7 @@ class SpecialitiesController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create new speciality.
      *
      * @param \Illuminate\Http\Request $request
      *
@@ -67,7 +67,7 @@ class SpecialitiesController extends Controller
                 // "speciality_name" => 'required',
                 'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,' . $this->userId
                 // 'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId,'deleted_at,NULL'
-    
+
             ]);
             if ($validator->fails()) {
                 $error = $validator->messages()->first();
@@ -89,7 +89,7 @@ class SpecialitiesController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show specialities by id.
      *
      * @param  int  $id
      *
@@ -109,10 +109,10 @@ class SpecialitiesController extends Controller
         {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
-        
+
     }
     /**
-     * All Display the specified resource.
+     * Display list of specialities.
      *
      * @param  int  $id
      *
@@ -141,7 +141,7 @@ class SpecialitiesController extends Controller
                 // echo $keyword;exit;
                 $query2->Where('specialities.speciality_name',  'LIKE', "%$keyword%");
             }
-            
+
             //$speciality = Speciality::where('user_id', $this->userId)->get()->toArray();
             $speciality = $query2->latest()->paginate($perPage);
             $count =  $speciality->count();
@@ -157,18 +157,25 @@ class SpecialitiesController extends Controller
         }
     }
 
-    public function AllSpeciality(Request $request)
-    {
-        //$query = Speciality::where('user_id', $this->userId)->get()->toArray();
-        if (!empty($query)) {
-            return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, No Speciality Available!', 'status' => false], 404);
-        }
-    }
+    /**
+     * Display list of specialities.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+    // public function AllSpeciality(Request $request)
+    // {
+    //     //$query = Speciality::where('user_id', $this->userId)->get()->toArray();
+    //     if (!empty($query)) {
+    //         return response()->json(['status' => true, 'message' => 'Speciality Get Successfully', 'data' => $query], $this->successStatus);
+    //     } else {
+    //         return response()->json(['message' => 'Sorry, No Speciality Available!', 'status' => false], 404);
+    //     }
+    // }
 
     /**
-     * Update the specified resource in storage.
+     * Update the speciality.
      *
      * @param \Illuminate\Http\Request $request
      * @param  int  $id
@@ -189,7 +196,7 @@ class SpecialitiesController extends Controller
                 $error = $validator->messages()->first();
                 return response()->json(['status' => false, 'message' => $error], 200);
             }
-    
+
             $speciality = Speciality::findOrFail($requestData['speciality_id']);
             $addResult =  $speciality->update($requestData);
             if ($addResult) {
@@ -205,7 +212,7 @@ class SpecialitiesController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete the speciality.
      *
      * @param  int  $id
      *

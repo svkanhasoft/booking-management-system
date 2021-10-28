@@ -31,7 +31,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Create new role.
      *
      * @return \Illuminate\View\View
      */
@@ -62,7 +62,7 @@ class RoleController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * Display role by id.
      *
      * @param  int  $id
      *
@@ -79,7 +79,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Edit role.
      *
      * @param  int  $id
      *
@@ -107,7 +107,7 @@ class RoleController extends Controller
     }
 
      /**
-     * Display the specified resource.
+     * Show all roles.
      *
      * @param  int  $id
      *
@@ -136,7 +136,7 @@ class RoleController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * Update role.
      *
      * @param \Illuminate\Http\Request $request
      * @param  int  $id
@@ -152,7 +152,7 @@ class RoleController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete role.
      *
      * @param  int  $id
      *
