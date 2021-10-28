@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/sss', [DeleteFilesCron::class, 'handle']);
+Route::get('/status-cron', [App\Http\Controllers\API\ScriptController::class, 'statusCron']);
