@@ -708,7 +708,7 @@ class UserController extends Controller
                         $bookingUpdate = $booking->update();
                     }else{
                         $booking['status'] = $requestData['status'];
-                        $bookingUpdate = $booking->update(); 
+                        $bookingUpdate = $booking->update();
                         BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
                             'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                         ]);

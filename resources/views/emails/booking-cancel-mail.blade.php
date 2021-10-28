@@ -155,7 +155,13 @@
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Email:
                                                         {{ $details['data']['email'] }} <br></span>
                                                 </p> -->
-
+                                                <p class="MsoNormal" style="line-height:145%">
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                        Hello Dear,
+                                                </p>
+                                                <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                    Your booking has been canceled.</span>
+                                                </p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Booking date:
                                                         {{ $details['data']['date'] }} <br></span>
@@ -184,8 +190,8 @@
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">End time:
                                                         {{ $details['data']['end_time'] }} <br></span>
                                                 </p>
-                                                <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        Your booking has been canceled.</span></p>
+                                                {{-- <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                        Your booking has been canceled.</span></p> --}}
                                             </div>
                                         </div>
                                     </div>
