@@ -712,8 +712,8 @@ class UserController extends Controller
                         BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
                             'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                         ]);
+                        $update = $objBooking->sendBookingCancelEmail($signee);
                     }
-                    $update = $objBooking->sendBookingCancelEmail($signee);
 
                     // // $objBookingMatch = BookingMatch::where(['booking_id' => $requestData['booking_id']])->get()->toArray();
                     // // $signeeIdArray = array_column($objBookingMatch, 'signee_id');
@@ -795,9 +795,9 @@ class UserController extends Controller
                 // return $pdf->stream();
                 $filePath = public_path() . '/uploads/signee_pdf/';
                 $time = date('Ymdhms');
-                $file = $filePath . "$time-offerLetter.pdf";
+                $file = $filePath . "$time-signee.pdf";
                 file_put_contents($file, $pdf->output());
-                $data['pdf_path'] = $downloadPath . "$time-offerLetter.pdf";
+                $data['pdf_path'] = $downloadPath . "$time-signee.pdf";
                 return response()->json(['status' => true, 'data' => $data, 'message' => 'pdf successfully generated'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'something will be wrong', 'status' => false], 400);
