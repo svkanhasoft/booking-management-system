@@ -39,6 +39,7 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/update-org', [SuperAdminController::class, 'updateorg']);
         Route::post('/signup', [OrganizationController::class, 'signup']);
         Route::get('/organization-list/{search?}/{status?}', [OrganizationController::class, 'organizationlist']);
+        Route::put('/change-org-activity-status', [SuperAdminController::class, 'ChangeOrgActivityStatus']);
     });
 });
 
@@ -59,7 +60,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-role/{id?}', [RoleController::class, 'show']);
         Route::get('/get-all-role', [RoleController::class, 'showAll']);
         Route::delete('/delete-role/{id?}', [RoleController::class, 'destroy']);
-        Route::post('/change-status', [OrganizationController::class, 'changeStatus']);
+        // Route::post('/change-status', [OrganizationController::class, 'changeStatus']);
         Route::post('/search', [OrganizationController::class, 'search']);
         Route::post('/add-speciality', [SpecialitiesController::class, 'create']);
         Route::post('/edit-speciality', [SpecialitiesController::class, 'update']);

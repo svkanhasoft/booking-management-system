@@ -130,46 +130,6 @@ class Booking extends Model
         $query->groupBy('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);
         return $bookingList;
-        // $bookingList = $query->get();
-        //  print_r($bookingList);
-        // exit;
-        // $subArray = [];
-        // foreach ($bookingList as $key => $booking) {
-
-        //     $subArray[$key] = $booking;
-        //     $subQuery = BookingSpeciality::select(
-        //         'users.id',
-        //         'booking_specialities.booking_id',
-        //         'specialities.speciality_name',
-        //         'signees_detail.candidate_id',
-        //         'signees_detail.phone_number',
-        //         'signees_detail.mobile_number',
-        //         'users.address_line_1',
-        //         'users.address_line_2',
-        //         'users.city',
-        //         'users.postcode',
-        //         'signees_detail.date_of_birth',
-        //         'signees_detail.nationality',
-        //         'signees_detail.candidate_referred_from',
-        //         'signees_detail.date_registered',
-        //         'signees_detail.nmc_dmc_pin',
-        //         DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
-        //         DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
-        //         DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-        //         DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
-        //     );
-        //     $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        //     $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        //     $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
-        //     $subQuery->Join('signees_detail',  'signees_detail.user_id', '=', 'users.id');
-
-        //     $subQuery->where('booking_specialities.booking_id', $booking['id']);
-        //     $subQuery->groupBy('users.id');
-        //     $subQuery->orderBy('signeeBookingCount', 'DESC');
-        //     $res = $subQuery->get()->toArray();
-        //     $subArray[$key]['user'] = $res;
-        // }
-        // return $subArray;
     }
     public function getStaffBooking(Request $request, $status = null)
     {
@@ -203,55 +163,13 @@ class Booking extends Model
                     ->orWhere('bookings.status', 'LIKE',  "%$keyword%");
             });
         }
-// echo Auth::user()->id . " dfdf dfd  ";
-// echo Auth::user()->parent_id;
-// exit;
+
         $query->where('bookings.status', $status);
         $query->whereIn('bookings.user_id',array(Auth::user()->id,Auth::user()->parent_id));
         $query->whereNull('bookings.deleted_at');
         $query->groupBy ('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);
         return $bookingList;
-        // $bookingList = $query->get();
-        //  print_r($bookingList);
-        // exit;
-        // $subArray = [];
-        // foreach ($bookingList as $key => $booking) {
-
-        //     $subArray[$key] = $booking;
-        //     $subQuery = BookingSpeciality::select(
-        //         'users.id',
-        //         'booking_specialities.booking_id',
-        //         'specialities.speciality_name',
-        //         'signees_detail.candidate_id',
-        //         'signees_detail.phone_number',
-        //         'signees_detail.mobile_number',
-        //         'users.address_line_1',
-        //         'users.address_line_2',
-        //         'users.city',
-        //         'users.postcode',
-        //         'signees_detail.date_of_birth',
-        //         'signees_detail.nationality',
-        //         'signees_detail.candidate_referred_from',
-        //         'signees_detail.date_registered',
-        //         'signees_detail.nmc_dmc_pin',
-        //         DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
-        //         DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
-        //         DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-        //         DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
-        //     );
-        //     $subQuery->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        //     $subQuery->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        //     $subQuery->Join('users',  'users.id', '=', 'signee_speciality.user_id');
-        //     $subQuery->Join('signees_detail',  'signees_detail.user_id', '=', 'users.id');
-
-        //     $subQuery->where('booking_specialities.booking_id', $booking['id']);
-        //     $subQuery->groupBy('users.id');
-        //     $subQuery->orderBy('signeeBookingCount', 'DESC');
-        //     $res = $subQuery->get()->toArray();
-        //     $subArray[$key]['user'] = $res;
-        // }
-        // return $subArray;
     }
 
     public function getBookingByFilterV2(Request $request, $status = null)
@@ -290,9 +208,7 @@ class Booking extends Model
         $query->whereNull('bookings.deleted_at');
         $query->groupBy ('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);;
-        // $bookingList = $query->get();
-        //  print_r($bookingList);
-        // exit;
+
         $subArray = [];
         foreach ($bookingList as $key => $booking) {
 
@@ -375,12 +291,6 @@ class Booking extends Model
         $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
 
-        // $subQuery->where(function($q){
-        //     $q->when(DB::raw('If(DAYOFWEEK(bookings`.`date`))'== 1) , function ($q) {
-        //         return $q->where('signee_preference.sunday_day','=',1)->orWhere('signee_preference.sunday_night','=',1);
-        //     });
-        // });
-        // $res = $subQuery->toSql();
         $subQuery->whereRaw("(
             IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
             or
@@ -405,7 +315,7 @@ class Booking extends Model
 
     public function getMetchByBookingIdAndSigneeId($bookingId = null, $signeeId = null)
     {
-        //echo 'booking='.$bookingId, 'signee='.$signeeId;exit();
+
         $subQuery = Booking::select(
             'users.email',
             'signee_preference.user_id as signeeId',
@@ -712,8 +622,7 @@ class Booking extends Model
 
         $query->where('bookings.id', $bookingId);
         $bookingList = $query->get();
-        //  print_r($bookingList);
-        // exit;
+
         $subArray = [];
         foreach ($bookingList as $key => $booking) {
 
@@ -757,7 +666,6 @@ class Booking extends Model
     public function getMatchByBooking($bookingId,$status)
     {
         $subQuery = Booking::select(
-            // // $subQuery = BookingSpeciality::select(
             'users.id as signeeId',
             'users.address_line_1',
             'users.address_line_2',

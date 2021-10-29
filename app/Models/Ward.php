@@ -28,8 +28,6 @@ class Ward extends Model
      *
      * @var array
      */
-    // protected $fillable = ['ward_type_id', 'ward_name', 'ward_number', 'hospital_id'];
-    // protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
     protected $fillable = ['ward_type_id', 'ward_name', 'ward_number', 'hospital_id'];
     protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
 
@@ -46,37 +44,17 @@ class Ward extends Model
         return true;
     }
 
-    // function addWard($postData, $trustId, $hospital_id, $isDelete = false)
-    // {
-    //     print_r($postData);exit();
-    //     foreach ($postData as $key => $val) {
-    //         if (isset($val['ward_name']) && !empty($val['ward_number'])) {
-    //             $val['hospital_id'] = $hospital_id;
-    //             Ward::create($val);
-    //             unset($val);
-    //         }
-    //     }
-    //     return true;
-    // }
-
     function addOrUpdateWard($postData, $trustId, $hospitalId)
     {
         $wardidArray = array_column($postData['ward'], 'id');
-        // dd($wardidArray);
-        // exit;
-        // echo $postData['id'];exit;
 
         if (!empty($postData['ward'])) {
             $objBookingMatchDelete = Ward::where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
             foreach ($postData['ward'] as $keys => $values) {
-               // print_r($values);exit();
-                // $objWards = Ward::whereNull('deleted_at')->where(['hospital_id' => $postData['id'], 'ward_name' => $values['ward_name'], 'ward_type_id' => $values['ward_type_id']])->firstOrNew();
                 if (isset($values['ward_name']) && !empty($values['ward_number'])) {
                     if (isset($values['id']) && $values['id'] > 0) {
-                        //echo "in if";exit();
                         $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
                     } else {
-                        //echo "in else";exit();
                         $objWards = new Ward();
                     }
                     //$objWards->trust_id = $trustId;

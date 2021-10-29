@@ -32,13 +32,10 @@ class SigneeOrganization extends Model
 
     function addOrganisation($postData, $userId, $isDelete = false)
     {
-    //print_r(Auth::user()->parent_id);exit();
         if ($isDelete == true) {
-            //print_r(Auth::user()->parent_id);exit();
             SigneeOrganization::where(['user_id' => $userId, 'organization_id'=> Auth::user()->parent_id])->delete();
         }
         foreach ($postData as $key => $val) {
-            //print_r($val);exit();
             $objSigneeOrganization = new SigneeOrganization();
             $objSigneeOrganization->organization_id = $val['organization_id'];
             $objSigneeOrganization->user_id = $userId;

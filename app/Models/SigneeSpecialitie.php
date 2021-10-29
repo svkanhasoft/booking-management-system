@@ -31,12 +31,10 @@ class SigneeSpecialitie extends Model
 
     function updateSpeciality($postData, $userId, $orgId, $isDelete = true)
     {
-        //print_r($postData);exit();
         if ($isDelete == true) {
             SigneeSpecialitie::where(['user_id' => $userId])->delete();
         }
         foreach ($postData as $key => $val) {
-            //print_r($val);exit();
             $objSigneeSpecialitie = new SigneeSpecialitie();
             $objSigneeSpecialitie->speciality_id = $val;
             $objSigneeSpecialitie->user_id = $userId;
@@ -49,13 +47,10 @@ class SigneeSpecialitie extends Model
 
     public function addSpeciality($postData, $userId, $isDelete = false)
     {
-        //print_r($postData);exit();
         if ($isDelete == true) {
             SigneeSpecialitie::where(['user_id' => $userId])->delete();
         }
         foreach ($postData as $key => $val) {
-            //print_r($val);exit();
-            
             foreach($val['speciality'] as $key => $data)
             {
                 $objSigneeSpecialitie = new SigneeSpecialitie();
@@ -64,7 +59,7 @@ class SigneeSpecialitie extends Model
                 $objSigneeSpecialitie->user_id = $userId;
                 $objSigneeSpecialitie->save();
                 $objSigneeSpecialitie = "";
-            }            
+            }
         }
         return true;
     }

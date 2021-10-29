@@ -32,14 +32,8 @@ class BookingSpeciality extends Model
 
     function addSpeciality($postData, $bookingId, $isDelete = false)
     {
-
-        //dd($postData);
-        // exit;
-        // if ($isDelete == true) {
             BookingSpeciality::where('booking_id', '=', $bookingId)->whereNotIn('speciality_id', $postData)->delete();
-            // dd($objBookingMatchDelete);
             foreach ($postData as $key => $val) {
-                //print_r($val);exit();
                 $objBookingSpeciality = BookingSpeciality::where(['speciality_id' => $val, 'booking_id' => $bookingId])->firstOrNew();
                 $objBookingSpeciality->booking_id = $bookingId;
                 $objBookingSpeciality->speciality_id = $val;
@@ -47,19 +41,7 @@ class BookingSpeciality extends Model
                 $objBookingSpeciality = '';
                 // BookingSpeciality::where(['booking_id' => $bookingId])->delete();
             }
-        // } else {
-        //     if (!empty($postData)) {
-        //         foreach ($postData as $key => $val) {
-        //             $objBookingSpeciality = new BookingSpeciality();
-        //             $objBookingSpeciality->speciality_id = $val;
-        //             $objBookingSpeciality->booking_id = $bookingId;
-        //             $objBookingSpeciality->save();
-        //             $objBookingSpeciality = "";
-        //         }
-        //     }
-        // }
-
-        return true;
+            return true;
     }
 
     public function getBookingSpeciality($bookingId = null)
