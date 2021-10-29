@@ -42,7 +42,7 @@ class ShiftTypeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show shift type by id.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -57,6 +57,11 @@ class ShiftTypeController extends Controller
         }
     }
 
+    /*
+     * Show list of shift type
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showAll()
     {
         $shiftTypeList = ShiftType::all()->toArray();

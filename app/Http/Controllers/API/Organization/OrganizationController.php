@@ -55,7 +55,7 @@ class OrganizationController extends Controller
         }
     }
     /**
-     * Register api
+     * Organization signup
      *
      * @return \Illuminate\Http\Response
      */
@@ -107,7 +107,7 @@ class OrganizationController extends Controller
         }
     }
     /**
-     * details api
+     * Organization details
      *
      * @return \Illuminate\Http\Response
      */
@@ -249,7 +249,7 @@ class OrganizationController extends Controller
 
 
     /**
-     * Search user listing of the resource.
+     * Search organization listing.
      *
      * @return \Illuminate\View\View
      */
@@ -289,6 +289,11 @@ class OrganizationController extends Controller
         }
     }
 
+    /*
+     * Organization list
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function organizationlist(Request $request, $status = null)
     {
         // $validator = Validator::make($request->all(), [

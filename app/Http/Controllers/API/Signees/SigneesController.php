@@ -342,6 +342,11 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for get list of all the organizations added by super admin and it is used when new signee registeres.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function getOrganisation()   //while register signee
     {
         $data = [];
@@ -354,8 +359,6 @@ class SigneesController extends Controller
         $data = $query->get()->toArray();
         // print_r($data);exit();
         foreach ($data as $key => $value) {
-            // print_r($value);exit();
-            //$orgSpeciality = Speciality::where('user_id', $value['organization_id'])->get()->toArray();
             $orgSpeciality = Speciality::select(
                 'id',
                 'speciality_name'
@@ -364,37 +367,19 @@ class SigneesController extends Controller
             $res = $orgSpeciality->get()->toArray();
             $data[$key]['speciality'] = $res;
         }
-        //$count =  $data->get();
-        //print_r($count);exit();
+
         if ($data) {
             return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $data], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
         }
-
-
-        //     $query = User::select(
-        //         "users.*",
-        //         'org.organization_name',
-        //     );
-        //     $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-        //     $query->where('users.role', '=', 'ORGANIZATION');
-        //     $count =  $query->orderBy('org.organization_name','asc')->get()->toArray();
-        //     //dd($count);
-        //     foreach ($count as $key=>$spe){
-        //         $speciality=Speciality::where('user_id', $count->id)->toArray();
-        //         array_push($spe[$key],$speciality);
-        //     }
-        //     dd($count);
-        //     //print_r($count);exit();
-        //    // $speciality = Speciality::where('user_id', $count['id'])->get();
-        //     if ($count) {
-        //         return response()->json(['status' => true, 'message' => 'Organizations listed successfully', 'data' => $count], $this->successStatus);
-        //     } else {
-        //         return response()->json(['message' => 'Sorry, organizations not available.', 'status' => false], 200);
-        //     }
     }
 
+    /**
+     * This function is used for get organization list in which signee wants to register except signee already register.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function getOrganisationListAddOrg()  //while signee add multiple org
     {
         $sigOrg = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
@@ -417,7 +402,11 @@ class SigneesController extends Controller
     }
 
 
-
+    /**
+     * This function is used to get specialities of particular organization.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function getOrgSpecialities($id)
     {
         $speciality = Speciality::select('id', 'speciality_name')->where('user_id', $id)->get()->toArray();
@@ -428,6 +417,11 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for logging out the logged-in signee.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function logout(Request $request)
     {
         $user = Auth::user()->token();
@@ -446,6 +440,11 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function generates unique candidate id.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function getCandidateId(Request $request)
     {
         try {
@@ -460,7 +459,12 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-    /*  GET SIGNEE LOGIN MY BROWSER LIST.  */
+
+    /**
+     * This function is for display shift list created by organization and staff user.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function shiftList()
     {
         $bookingMatching = new BookingMatch();
@@ -472,7 +476,11 @@ class SigneesController extends Controller
         }
     }
 
-    /*  GET SIGNEE LOGIN MY SHIFT LIST.  */
+    /**
+     * GET SIGNEE LOGIN MY SHIFT LIST.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function myshift()
     {
         $result = [];
@@ -487,10 +495,15 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for view shift details by signee
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function viewShiftDetails($id)
     {
-        $booking = new BookingMatch();
-        $result = $booking->viewShiftDetails($id);
+        $bookingMatch = new BookingMatch();
+        $result = $bookingMatch->viewShiftDetails($id);
         $start_time = strtotime($result['start_time']);
         $end_time = strtotime($result['end_time']);
         $diff = gmdate('H:i:s', $end_time - $start_time);
@@ -502,10 +515,16 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for filter shifts by signee.
+     * Signee can filter shifts by day of shfts, hospital wise and speciality wise.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function filterBookings(Request $request)
     {
-        $booking = new BookingMatch();
-        $result = $booking->getFilterBookings($request, $this->userId);
+        $bookingMatch = new BookingMatch();
+        $result = $bookingMatch->getFilterBookings($request, $this->userId);
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
         } else {
@@ -513,9 +532,13 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for change the compliance status of the signee by staff user.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function changeSigneeComplianceStatus(Request $request)
     {
-        //print_r(Auth::user()->role);exit();
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             'signee_id' => 'required',
@@ -526,16 +549,13 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            //$requestData['organization_id'] = Auth::user()->parent_id;
             if (Auth::user()->role == 'ORGANIZATION') {
-                //print_r(Auth::user()->role);exit();
-                $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
-                //print_r($data);exit();
+                $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
             } else {
-                $data = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
+                $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
             }
-            $data->status = $requestData['status'];
-            $res = $data->save();
+            $signeeOrg->status = $requestData['status'];
+            $res = $signeeOrg->save();
             if (!empty($res)) {
                 return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);
             } else {
@@ -544,42 +564,16 @@ class SigneesController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-
-
-        // $validator = Validator::make($request->all(), [
-        //     'id' => 'required',
-        //     'status' => 'required',
-        // ]);
-        // if ($validator->fails()) {
-        //     $error = $validator->messages()->first();
-        //     return response()->json(['status' => false, 'message' => $error], 200);
-        // }
-        // try {
-        //     $bookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['id']]);
-        //     $bookingMatch->signee_status = $requestData['status'];
-        //     $res =  $bookingMatch->save();
-        //     if ($res) {
-        //         return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
-        //     } else {
-        //         return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
-        //     }
-        // } catch (\Exception $e) {
-        //     return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
-        // }
     }
 
+    /**
+     * This function is used to register a signee to multiple organization at a time.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function addOrg(Request $request)
     {
         $requestData = $request->all();
-        // $validator = Validator::make($request->all(), [
-        //     // 'organization_id' => 'required',
-        //     "organization.*.organization_id" => 'unique:signee_organization,organization_id,' . $requestData['organization'][0]['organization_id'] . 'NULL,id,user_id,' . $this->userId,
-        //     'organization.*.speciality' => 'required:speciality,[]'
-        // ]);
-        // if ($validator->fails()) {
-        //     $error = $validator->messages()->first();
-        //     return response()->json(['status' => false, 'message' => $error], 200);
-        // }
 
         try {
             $res = SigneeOrganization::where([
@@ -590,9 +584,8 @@ class SigneesController extends Controller
                 return response()->json(['status' => false, 'message' => 'Sorry, you have already register with this organization'], $this->successStatus);
             }
 
-            // print_r($requestData);exit;
             $requestData['user_id'] = $this->userId;
-            //$orgId = $requestData['organization']['organization_id'];
+
             $signeeOrg = new SigneeOrganization();
             $signeeOrg->addOrganisation($requestData['organization'], $this->userId, false);
 
@@ -603,11 +596,15 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-
+    /**
+     * This function is for signee to upload his complience documents.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function documentUpload(Request $request)
     {
         $requestData = $request->all();
-        // print_r($requestData['files']);exit();
+
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
             'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
@@ -650,6 +647,11 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for signee to update his specialities.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
     public function updateSpeciality(Request $request, $userId)
     {
         //dd(Auth::user()->parent_id);
@@ -675,11 +677,13 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-
+    /**
+     * This function is used to get the all the specialities of the signee.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function getSigneeSpeciality()
     {
-        // echo Auth::user()->id;exit;
-        // $query = SigneeSpecialitie::select('speciality_id')->where('user_id', Auth::user()->id)->get()->toArray();
         $query = SigneeSpecialitie::select(
             // DB::raw('GROUP_CONCAT( specialities.id SEPARATOR ",") AS speciality_id'),
             'specialities.id as speciality_id'
@@ -690,15 +694,6 @@ class SigneesController extends Controller
         $query->whereNull('signee_speciality.deleted_at');
         $res = $query->get()->toArray();
 
-        //$array = explode(',', $res);
-
-        // $array = [];
-        // foreach ($array as $key => $value) {
-        //     $array[] = $value;
-        // }
-
-        // $speciality_id['speciality_id'] = $res;
-
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $res], $this->successStatus);
         } else {
@@ -706,17 +701,18 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is for fetching the list of organization in which the signee is registered.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function getEmailOrganisation(Request $request)
     {
         //working
         $data = [];
         $requestData = $request->all();
         $email = $requestData['email'];
-        //$user = User::where('email', $email)->first();
-        //print_r($user);exit();
-        // $sorg = SigneeOrganization::where(['user_id'=> $user['id'], 'organization_id'=>$user['parent_id']])->delete();
 
-        //echo $email;exit();
         $query = SigneeOrganization::select(
             //"users.*",
             DB::raw('DISTINCT(organization_id)'),
@@ -728,7 +724,6 @@ class SigneesController extends Controller
         $query->where('users.email', $email);
         $data = $query->get()->toArray();
         foreach ($data as $key => $value) {
-            //$orgSpeciality = Speciality::where('user_id', $value['organization_id'])->get()->toArray();
             $orgSpeciality = Speciality::select(
                 'id',
                 'speciality_name'
@@ -744,34 +739,18 @@ class SigneesController extends Controller
         } else {
             return response()->json(['status' => true, 'message' => 'Organisation listed successfully', 'data' => $data], $this->successStatus);
         }
-        //proper working
-        //     $requestData = $request->all();
-        //     $email = $requestData['email'];
-        //     //$userData = User::where('email', $email)->first();
-        //    // print_r($userData);exit();
-        //     $query = SigneeOrganization::select(
-        //         //"users.*",
-        //         'organization_id',
-        //         'organizations.organization_name'
-        //     );
-        //     $query->leftJoin('users' , 'users.id', '=', 'signee_organization.user_id');
-        //     $query->leftJoin('organizations' , 'organizations.user_id', '=', 'signee_organization.organization_id');
-        //     $query->where('users.email', $email);
-        //     $res = $query->get();
-        //     $count = count($query->get());
-        //     if ($count == 0) {
-        //         return response()->json(['message' => 'Invalid email address!', 'status' => false], 400);
-        //     }
-        //     else {
-        //         return response()->json(['status' => true, 'message' => 'Organisation listed successfully', 'data'=>$res], $this->successStatus);
-        //     }
     }
 
+     /**
+     * This function is for get signee's documents according to the keys or without key.
+     * If key is passed then documents are fetched by that key only.
+     * If key is not passed then all the documents for that signee will be fetched.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function getSigneeDocument(Request $request)
     {
-        // print_r(Auth::user()->parent_id);exit();
         try {
-            //$perPage = Config::get('constants.pagination.perPage');
             $key = $request->get('key');
             // $signeeDocument = SigneeDocument::where('key', $key)->get()->toArray();
             $signeeDocument = SigneeDocument::select(
@@ -785,7 +764,6 @@ class SigneesController extends Controller
             );
             $signeeDocument->where(['signee_id' => $this->userId, 'organization_id' => Auth::user()->parent_id]);
             if (!empty($key)) {
-                // echo $keyword;exit;
                 $signeeDocument->Where(['key' => $key, 'signee_id' => $this->userId, 'organization_id' => Auth::user()->parent_id]);
             }
 
@@ -801,6 +779,12 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for delete signee documents.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function deleteDocument($id)
     {
         try {
@@ -817,6 +801,11 @@ class SigneesController extends Controller
         }
     }
 
+
+    /*
+        This function is for signee who will switch to the org which they are already registered.
+        Once the signee is logged in to one org then they can switch to an another organization.
+    */
     public function multiOrgLogin(Request $request)
     {
         try {
@@ -827,7 +816,7 @@ class SigneesController extends Controller
             $data = SigneeOrganization::where(['user_id' => $signee_id, 'organization_id' => $organization_id])->first();
             if (!empty($data)) {
                 $signee = User::where('id', $this->userId)->first();
-                //print_r($signee);exit();
+
                 if (Auth::guard('web')->loginUsingId($signee_id)) {
                     $signee->parent_id = $organization_id;
                     $signee->save();
@@ -845,6 +834,12 @@ class SigneesController extends Controller
         }
     }
 
+    /**
+     * This function is used for signee who will apply for the shift..is is use for signee.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function applyShift(Request $request)
     {
         $requestData = $request->all();
@@ -866,8 +861,6 @@ class SigneesController extends Controller
             } else {
                 return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);
             }
-            //print_r($objBookingMatch->signee_status);exit();
-            //$objBookingMatch->booking_status = "OPEN";
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }

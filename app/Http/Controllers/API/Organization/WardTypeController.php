@@ -41,7 +41,7 @@ class WardTypeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show ward by id.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -56,6 +56,12 @@ class WardTypeController extends Controller
         }
     }
 
+    /**
+     * Show ward list.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function showAll()
     {
         $wardTypeList = WardType::select('id as ward_type_id', 'ward_type')->get()->toArray();

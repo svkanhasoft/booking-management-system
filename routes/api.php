@@ -66,7 +66,7 @@ Route::prefix('organization')->group(function () {
         Route::delete('/delete-speciality/{id?}', [SpecialitiesController::class, 'destroy']);
         Route::get('/get-speciality/{id?}', [SpecialitiesController::class, 'show']);
         Route::get('/get-all-speciality/{search?}', [SpecialitiesController::class, 'showAll']);
-        Route::get('/all-speciality', [SpecialitiesController::class, 'AllSpeciality']);
+        // Route::get('/all-speciality', [SpecialitiesController::class, 'AllSpeciality']);
         Route::post('/add-trust', [TrustsController::class, 'add']);
         Route::post('/update-trust', [TrustsController::class, 'update']);
         Route::get('/get-trust/{id?}', [TrustsController::class, 'getTrustDetail']);
@@ -118,7 +118,7 @@ Route::prefix('organization')->group(function () {
                 Route::post('/staff-profile-update', [UserController::class, 'profileUpdate']);
                 Route::post('/change-shift-status', [UserController::class, 'changeShiftStatus']);
                 Route::put('/change-signee-profile-status', [UserController::class, 'changeSigneeProfileStatus']);
-                Route::post('/confirm-booking', [UserController::class, 'confirmBooking']);
+                // Route::post('/confirm-booking', [UserController::class, 'confirmBooking']);
                 Route::post('/pdf', [UserController::class, 'pdf']);
                 Route::post('/change-document-status', [UserController::class, 'changeDocStatus']);
                 Route::post('/send-invitation', [UserController::class, 'inviteSigneeForTheShift']);

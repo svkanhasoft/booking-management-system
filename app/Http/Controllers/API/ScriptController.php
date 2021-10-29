@@ -26,9 +26,14 @@ class ScriptController extends Controller
 
     public function addsignee(Request $request){
         echo "Fsdsd";
-       
+
     }
 
+    /**
+     * change user status
+     *
+     * @return \Illuminate\Http\Response
+     */
     function statusCron()
     {
         \Log::info(" Run Status Inactive cronjob ");

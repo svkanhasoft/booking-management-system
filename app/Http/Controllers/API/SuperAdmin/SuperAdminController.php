@@ -18,10 +18,10 @@ class SuperAdminController extends Controller
 {
     public $successStatus = 200;
     protected $userId;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function __construct()
     {
@@ -61,10 +61,10 @@ class SuperAdminController extends Controller
         }
     }
 
-    /** 
-     * login for super admin and  organization admin api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login for super admin and  organization admin api
+     *
+     * @return \Illuminate\Http\Response
      */
 
     public function signinV2(Request $request)
@@ -142,10 +142,10 @@ class SuperAdminController extends Controller
     //         return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
     //     }
     // }
-    /** 
-     * Register api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
     {
@@ -170,10 +170,10 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => "something will be wrong"], 409);
         }
     }
-    /** 
-     * details api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * details api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function details(Request $request)
     {
@@ -185,10 +185,10 @@ class SuperAdminController extends Controller
     }
 
 
-    /** 
-     * Logout api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Logout api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function logout(Request $request)
     {
@@ -208,10 +208,10 @@ class SuperAdminController extends Controller
         }
     }
 
-    /** 
-     * Forgot api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Forgot api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function forgot(Request $request)
     {
@@ -225,10 +225,10 @@ class SuperAdminController extends Controller
         }
     }
 
-    /** 
-     * otp verify 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * otp verify
+     *
+     * @return \Illuminate\Http\Response
      */
     public function otpVerify(Request $request)
     {
@@ -246,10 +246,10 @@ class SuperAdminController extends Controller
         }
     }
 
-    /** 
-     * Change Password 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * Change Password
+     *
+     * @return \Illuminate\Http\Response
      */
     public function changePassword(Request $request)
     {
@@ -279,10 +279,10 @@ class SuperAdminController extends Controller
 
 
 
-    /** 
-     * get organization details api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * get organization details api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getOrgdetails(Request $request, $id)
     {
@@ -294,6 +294,11 @@ class SuperAdminController extends Controller
         ], $this->successStatus);
     }
 
+    /**
+     * update organization by super admin
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function updateorg(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -329,6 +334,11 @@ class SuperAdminController extends Controller
         }
     }
 
+    /**
+     * Organization updates thair profile
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function updates(Request $request)
     {
         $validator = Validator::make($request->all(), [
