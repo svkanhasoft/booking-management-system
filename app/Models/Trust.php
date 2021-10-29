@@ -90,7 +90,12 @@ class Trust extends Model
     {
         // return $this->hasMany(Hospital::class, "trust_id", "id"); 
 
-        return  $this->belongsToMany(Hospital::class, Ward::class,'hospital_id');
+
+        // return $this->belongsToMany(Ward::class, 'candidate_wards');
+
+        return  $this->hasMany(Hospital::class,'trust_id');
+
+        // return $this->morphOne(Hospital::class, 'trust_id','id','ward');
         
         // return  $this->hasManyThrough(Hospital::class, Ward::class );
 
@@ -106,4 +111,5 @@ class Trust extends Model
         //     'id' // Local key on the hospital table...
         // );
     }
+
 }

@@ -30,7 +30,7 @@ class Ward extends Model
      */
     // protected $fillable = ['ward_type_id', 'ward_name', 'ward_number', 'hospital_id'];
     // protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
-    protected $fillable = ['ward_type_id', 'ward_name','trust_id', 'ward_number', 'hospital_id'];
+    protected $fillable = ['ward_type_id', 'ward_name','ward_number', 'hospital_id'];
     protected $hidden = ['deleted_at', 'updated_at', 'created_at'];
 
     function addWard($postData, $trustId, $hospital_id, $isDelete = false)
@@ -91,15 +91,10 @@ class Ward extends Model
         }
     }
 
-    public function post()
+    public function hospital()
     {
-        return $this->belongsTo(Trust::class);
+        return  $this->belongsToMany( Hospital::class , 'hospital_id');
+        // return $this->hasMany(Ward::class , 'hospital_id');
     }
-
-
-    public function ward() {
-        // return $this->belongsTo(Hospital::class);
-        return $this->hasManyThrough(Hospital::class, Ward::class);
-    }
-
+ 
 }

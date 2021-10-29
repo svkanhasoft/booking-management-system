@@ -19,3 +19,4 @@ Route::get('/', function () {
 });
 
 Route::get('/status-cron', [App\Http\Controllers\API\ScriptController::class, 'statusCron']);
+Route::get('/getData', [App\Http\Controllers\API\TestController::class, 'getData']);

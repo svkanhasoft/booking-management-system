@@ -9,6 +9,7 @@ use App\Http\Requests;
 use App\Models\Hospital;
 use Hash;
 use App\Models\User;
+use App\Models\Trust;
 use Config;
 use DateTime;
 use finfo;
@@ -50,71 +51,19 @@ class TestController extends Controller
             return response()->json(['status' => false, 'message' => $e], 200);
         }
     }
-
-    function inactive()
-    {
-        $userObj = User::select('id', 'email', 'first_name', 'last_login_date')->where('status', 'Active')->where('role', 'SIGNEE')->get()->toArray();
-        foreach ($userObj as $key => $value) {
-            if ($value['last_login_date'] != '' && $value['last_login_date'] != null) {
-                $date1 = new DateTime(date('Y-m-d H:i:s'));
-                $date2 = new DateTime($value['last_login_date']);
-                $interval = $date1->diff($date2);
-                if ($interval->y > 0) {
-                    $userUpdateObj = User::find($value['id']);
-                    $userUpdateObj->status = 'Dormant';
-                    $userUpdateObj->save();
-                } else if ($interval->m > 5) {
-                    $userUpdateObj = User::find($value['id']);
-                    $userUpdateObj->status = 'Inactive';
-                    $userUpdateObj->save();
-                }
-            }
-        }
+    
+    public function getData(){
+        $res = Booking::find(102);
+        // $res->users;
+        // $res->ward;
+        // $res->trust;
+        $res->trust->hospitals;
+        // $res->trust->hospital->ward;
+        // $res->hospital;
+        // $res->shift;
+        // $res->shiftType;
+        echo "<pre/>";
+        dd($res);
     }
-
-    // public function pdf(Request $request)
-    // {
-    //     $requestData = $request->all();
-        
-    //     $objBooking = new Booking();
-    //     $booking = $objBooking->getBooking($requestData['booking_id'])->toArray();
-
-    //     $userObj = new User();
-    //     $user = $userObj->getSigneeById($requestData['signee_id'])->toArray();
-        
-    //     $bookingSigneeData = array_merge($booking, $user);
-    //     // print_r($data);exit();
-
-    //     $result = [
-    //         'title' => 'Signee Details',
-    //         'date' => date('m/d/Y'),
-    //         'data' => $bookingSigneeData
-    //     ];
-
-    //     //print_r($result);exit();
-    //     // $pdf = PDF::loadView('signee', $data);
-    //     // return $pdf->download('itsolutionstuff.pdf');
-
-    //     $pdf = App::make('dompdf.wrapper');
-    //     // load from other pages use object or array by comma like (pdf-view,$user) 
-    //     $pdf->loadView('signee', $result);
-    //     // return $pdf->stream();
-    //     $filePath = public_path().'/uploads/signee_pdf/';
-    //     $time = date('Ymdhms');
-    //     $file = $filePath ."$time-offerLetter.pdf";
-    //     file_put_contents($file, $pdf->output());
-        
-    //     return response()->json(['status' => true, 'message' => $file], 200);
-    // }
-
-    // public function pdf()
-    // {
-    //     $data = [
-    //         'title' => 'Welcome to ItSolutionStuff.com',
-    //         'date' => date('m/d/Y')
-    //     ];
-    //     print_r($data);exit();
-    //     $pdf = PDF::loadView('signee', $data);
-    //     return $pdf->download('itsolutionstuff.pdf');
-    // }
+    
 }
