@@ -15,6 +15,7 @@ use App\Models\Grade;
 use App\Models\BookingMatch;
 use App\Models\BookingSpeciality;
 use App\Models\Hospital;
+use App\Models\Notification;
 use App\Models\OrganizationShift;
 use DB;
 
@@ -84,6 +85,9 @@ class BookingController extends Controller
 
                 $objBookingMatch = new BookingMatch();
                 $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $bookingCreated['id']);
+
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($bookingCreated['id'], $this->userId);
 
                 return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
             } else {

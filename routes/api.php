@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Organization\SpecialitiesController;
 use App\Http\Controllers\API\Organization\{ TrustsController,OrganizationShiftController,BookingController,ShiftTypeController,WardTypeController,UserController };
 use App\Http\Controllers\API\Signees\{ UserController as SigneesUserController,SigneesController,AvailabilityController,SigneePreferencesController,HospitalController };
 use App\Http\Controllers\API\TestController;
+use App\Http\Controllers\API\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -174,4 +175,5 @@ Route::prefix('signee')->group(function () {
 
 Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
+Route::get('/dashboard', [DashboardController::class, 'totalUser']);
 // Route::get('/pdf/{signee_id?}', [TestController::class, 'pdf']);

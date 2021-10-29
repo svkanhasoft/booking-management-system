@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
 use App\Models\SigneeOrganization;
+use App\Models\Notification;
 
 use Hash;
 use App\Models\Role;
@@ -803,6 +804,9 @@ class UserController extends Controller
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->signee_booking_status = $requestData['status'];
                 $objBookingMatch->save();
+
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($requestData['booking_id'], $this->userId);
 
                 $objBooking->sendBookingConfirmEmail($matchSignee);
 
