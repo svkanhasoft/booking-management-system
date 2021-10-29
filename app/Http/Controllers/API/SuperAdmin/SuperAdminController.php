@@ -103,7 +103,9 @@ class SuperAdminController extends Controller
             }
             User::where(['id' => $user->id])->update([
                 'last_login_date' => date('Y-m-d H:i:s'),
-                'password_change' => 1
+                'password_change' => 1,
+                'device_id' => !empty($request->header('device_id')) ? $request->header('device_id') : '',
+                'platform' => !empty($request->header('platform')) ? $request->header('platform') : '',
             ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
