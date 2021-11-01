@@ -86,8 +86,8 @@ class BookingController extends Controller
                 $objBookingMatch = new BookingMatch();
                 $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $bookingCreated['id']);
 
-                $objNotification = new Notification();
-                $notification = $objNotification->addNotification($bookings, $bookingCreated['id']);
+                // $objNotification = new Notification();
+                // $notification = $objNotification->addNotification($bookings, $bookingCreated['id']);
 
                 return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
             } else {
