@@ -336,7 +336,7 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function getWardByHospitalAndTrust(Request $request)
+    public function getWardByHospital(Request $request)
     {
         //echo $hospitalId;
         $hospitalId = $request->get('hospitalId');

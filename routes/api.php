@@ -93,7 +93,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-signee-detail', [BookingController::class, 'getSigneeByIdAndBookingId']);
         Route::get('/get-booking-user/{id?}', [BookingController::class, 'getBookingSignee']);
         Route::get('/get-hospitallist/{trustId?}', [BookingController::class, 'hospitallist']);
-        Route::get('/get-ward-by-hospital', [BookingController::class, 'getWardByHospitalAndTrust']);
+        Route::get('/get-ward-by-hospital', [BookingController::class, 'getWardByHospital']);
         Route::get('/get-gradelist', [BookingController::class, 'gradelist']);
         Route::get('/get-reference', [BookingController::class, 'reference']);
         Route::post('/add-signee', [UserController::class, 'addSignee']);
