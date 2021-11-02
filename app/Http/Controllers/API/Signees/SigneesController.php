@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Signees;
 
+use App\Http\Controllers\API\Organization\BookingController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\Booking;
@@ -14,6 +15,7 @@ use App\Models\SigneePreferences;
 use App\Models\SigneeSpecialitie;
 use App\Models\BookingMatch;
 use App\Models\CandidateReferredFrom;
+use App\Models\Notification;
 use App\Models\Speciality;
 use App\Models\SigneeDocument;
 use Hash;
@@ -413,7 +415,7 @@ class SigneesController extends Controller
         if ($speciality) {
             return response()->json(['status' => true, 'message' => 'Specialities get successfully', 'data' => $speciality], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, No specialities available.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, No specialities available.', 'status' => true], 200);
         }
     }
 
@@ -556,6 +558,10 @@ class SigneesController extends Controller
             }
             $signeeOrg->status = $requestData['status'];
             $res = $signeeOrg->save();
+
+            // $objNotification = new Notification();
+            // $notification = $objNotification->addNotification($requestData);
+
             if (!empty($res)) {
                 return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);
             } else {
