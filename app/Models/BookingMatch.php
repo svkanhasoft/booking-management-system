@@ -49,6 +49,7 @@ class BookingMatch extends Model
                 'booking_id' => $values['booking_id'],
                 'trust_id' => $values['trust_id'],
             ])->firstOrNew();
+            // $objBookingMatch->organization_id = $values['organization_id'];
             $objBookingMatch->organization_id = $values['organization_id'];
             $objBookingMatch->signee_id = $values['signeeId'];
             $objBookingMatch->booking_id = $values['booking_id'];
@@ -59,6 +60,9 @@ class BookingMatch extends Model
             $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
+
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($values);
         }
         return true;
     }
@@ -83,6 +87,8 @@ class BookingMatch extends Model
             $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($values);
         }
         return true;
     }
@@ -93,6 +99,7 @@ class BookingMatch extends Model
         $bookingIdArray = array_column($bookingArray, 'booking_id');
         $objBookingMatchDelete = BookingMatch::where('signee_id', '=', $signeeId)->whereNotIn('booking_id', $bookingIdArray)->delete();
         foreach ($bookingArray as $keys => $values) {
+            // print_r($values);exit;
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
                 'booking_id' => $values['booking_id'], 'trust_id' => $values['trust_id'],

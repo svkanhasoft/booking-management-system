@@ -270,6 +270,7 @@ class BookingController extends Controller
      */
     public function updateMatchBySignee($signeeId)
     {
+        //print_r($signeeId);exit;
         try {
             $objBookingSignee = new Booking();
             $booking = $objBookingSignee->editMetchBySigneeId($signeeId);
