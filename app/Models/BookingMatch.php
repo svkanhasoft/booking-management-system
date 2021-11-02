@@ -42,7 +42,7 @@ class BookingMatch extends Model
         foreach ($bookingArray as $keys => $values) {
             //print_r($values);
             // exit;
-            //$this->sendMatchEmail($values);
+            $this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
                 'signee_id' =>  $values['signeeId'],
@@ -69,9 +69,6 @@ class BookingMatch extends Model
         $signeeidArray = array_column($bookingArray, 'signeeId');
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
-            // print_r($values);
-            // echo "";exit();
-            // exit;
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
                 'booking_id' => $values['booking_id'], 'trust_id' => $values['trust_id'],
@@ -96,9 +93,6 @@ class BookingMatch extends Model
         $bookingIdArray = array_column($bookingArray, 'booking_id');
         $objBookingMatchDelete = BookingMatch::where('signee_id', '=', $signeeId)->whereNotIn('booking_id', $bookingIdArray)->delete();
         foreach ($bookingArray as $keys => $values) {
-            // print_r($values);
-            // echo "";exit();
-            // exit;
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
                 'booking_id' => $values['booking_id'], 'trust_id' => $values['trust_id'],
@@ -282,9 +276,7 @@ class BookingMatch extends Model
         $booking->whereNull('hospitals.deleted_at');
         $booking->where('users.parent_id', Auth::user()->parent_id);
         $booking->groupBy('bookings.id');
-        // $res = $booking->get()->toArray();
-        // $res = $booking->toSql();
-        // print_r($res);die;
+
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         return $res;
     }
@@ -294,7 +286,7 @@ class BookingMatch extends Model
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
-        //print_r($staffIdArray);exit();
+
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',

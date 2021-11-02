@@ -103,7 +103,9 @@ class SuperAdminController extends Controller
             }
             User::where(['id' => $user->id])->update([
                 'last_login_date' => date('Y-m-d H:i:s'),
-                'password_change' => 1
+                'password_change' => 1,
+                'device_id' => !empty($request->header('device_id')) ? $request->header('device_id') : '',
+                'platform' => !empty($request->header('platform')) ? $request->header('platform') : '',
             ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
@@ -363,6 +365,43 @@ class SuperAdminController extends Controller
             return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['status' => false, 'message' => "something will be wrong"], 409);
+        }
+    }
+
+    /**
+     * Change organization activity status [Active/Inactive]
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function ChangeOrgActivityStatus(Request $request)
+    {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try
+        {
+            $userList = User::where('parent_id', $requestData['id'])->get()->toArray();
+            $userArray = array_column($userList, 'id');
+            $userArray[] = $requestData['id'];
+            $userUpdate = User::whereIn('id', $userArray)->update([
+                'status' => $requestData['status'],
+            ]);
+            if($userUpdate)
+            {
+                // \Log::info("Organization status changed successfully");
+                return response()->json(['status' => true, 'message' => 'Organization status changed successfully'], $this->successStatus);
+            } else{
+                return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 }

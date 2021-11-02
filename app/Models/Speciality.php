@@ -36,11 +36,9 @@ class Speciality extends Model
         //$signeeidArray = array_column($postData['speciality'], 'id');
         SigneeSpecialitie::where('user_id', '=', $userId)->whereNotIn('speciality_id', $postData)->delete();
         foreach ($postData as $keys => $values) {
-            //print_r($values);exit();
             if (!empty($values)) {
                 $res = SigneeSpecialitie::withTrashed()->where(['speciality_id' => $values, 'user_id' => $userId])->restore();
                 $objSpeciality = SigneeSpecialitie::where(['speciality_id' => $values, 'user_id' => $userId])->firstOrNew();
-                //print_r($objSpeciality);exit();
                 $objSpeciality->organization_id = $orgId;
                 $objSpeciality->speciality_id = $values;
                 $objSpeciality->user_id = $userId;
@@ -50,5 +48,5 @@ class Speciality extends Model
         }
         return true;
     }
-    
+
 }

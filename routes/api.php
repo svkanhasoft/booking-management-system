@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Organization\SpecialitiesController;
 use App\Http\Controllers\API\Organization\{ TrustsController,OrganizationShiftController,BookingController,ShiftTypeController,WardTypeController,UserController };
 use App\Http\Controllers\API\Signees\{ UserController as SigneesUserController,SigneesController,AvailabilityController,SigneePreferencesController,HospitalController };
 use App\Http\Controllers\API\TestController;
+use App\Http\Controllers\API\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,6 +40,7 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/update-org', [SuperAdminController::class, 'updateorg']);
         Route::post('/signup', [OrganizationController::class, 'signup']);
         Route::get('/organization-list/{search?}/{status?}', [OrganizationController::class, 'organizationlist']);
+        Route::put('/change-org-activity-status', [SuperAdminController::class, 'ChangeOrgActivityStatus']);
     });
 });
 
@@ -59,7 +61,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-role/{id?}', [RoleController::class, 'show']);
         Route::get('/get-all-role', [RoleController::class, 'showAll']);
         Route::delete('/delete-role/{id?}', [RoleController::class, 'destroy']);
-        Route::post('/change-status', [OrganizationController::class, 'changeStatus']);
+        // Route::post('/change-status', [OrganizationController::class, 'changeStatus']);
         Route::post('/search', [OrganizationController::class, 'search']);
         Route::post('/add-speciality', [SpecialitiesController::class, 'create']);
         Route::post('/edit-speciality', [SpecialitiesController::class, 'update']);
@@ -91,7 +93,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-signee-detail', [BookingController::class, 'getSigneeByIdAndBookingId']);
         Route::get('/get-booking-user/{id?}', [BookingController::class, 'getBookingSignee']);
         Route::get('/get-hospitallist/{trustId?}', [BookingController::class, 'hospitallist']);
-        Route::get('/get-ward-by-hospital', [BookingController::class, 'getWardByHospitalAndTrust']);
+        Route::get('/get-ward-by-hospital', [BookingController::class, 'getWardByHospital']);
         Route::get('/get-gradelist', [BookingController::class, 'gradelist']);
         Route::get('/get-reference', [BookingController::class, 'reference']);
         Route::post('/add-signee', [UserController::class, 'addSignee']);
@@ -101,6 +103,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/get-candidate', [UserController::class, 'getCandidate']);
         Route::get('/get-my-signee/{id}', [UserController::class, 'getMySigneeById']);    //get signee by id from org
         Route::post('/change-signee-compliance-status', [SigneesController::class, 'changeSigneeComplianceStatus']);
+        Route::put('/change-signee-payment-status', [UserController::class, 'changeSigneePaymentStatus']);
         Route::post('/confirm-booking', [UserController::class, 'bookingStatus']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
@@ -172,4 +175,5 @@ Route::prefix('signee')->group(function () {
 
 Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
+Route::get('/dashboard', [DashboardController::class, 'totalUser']);
 // Route::get('/pdf/{signee_id?}', [TestController::class, 'pdf']);

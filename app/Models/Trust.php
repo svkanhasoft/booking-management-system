@@ -90,7 +90,7 @@ class Trust extends Model
     {
         // return $this->hasMany(Hospital::class, "trust_id", "id"); 
 
-
+        // return  $this->belongsToMany(Hospital::class, Ward::class,'hospital_id');   OLD code
         // return $this->belongsToMany(Ward::class, 'candidate_wards');
 
         return  $this->hasMany(Hospital::class,'trust_id');

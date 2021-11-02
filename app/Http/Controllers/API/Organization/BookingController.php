@@ -15,6 +15,7 @@ use App\Models\Grade;
 use App\Models\BookingMatch;
 use App\Models\BookingSpeciality;
 use App\Models\Hospital;
+use App\Models\Notification;
 use App\Models\OrganizationShift;
 use DB;
 
@@ -70,10 +71,10 @@ class BookingController extends Controller
             {
                 return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             }
-            $requestData['user_id'] = $this->userId;
+            $requestData['user_id'] = Auth::user()->id;
             $requestData['start_time'] = $shift['start_time'];
             $requestData['end_time'] = $shift['end_time'];
-            $requestData['created_by'] = $this->userId;
+            $requestData['created_by'] = Auth::user()->id;
             $bookingCreated = Booking::create($requestData);
             if ($bookingCreated) {
                 $objBookingSpeciality = new BookingSpeciality();
@@ -81,9 +82,12 @@ class BookingController extends Controller
 
                 $objBooking = new Booking();
                 $bookings = $objBooking->getMetchByBookingId($bookingCreated['id']);
-
+                //print_r($bookings);exit;
                 $objBookingMatch = new BookingMatch();
                 $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $bookingCreated['id']);
+
+                // $objNotification = new Notification();
+                // $notification = $objNotification->addNotification($bookings, $bookingCreated['id']);
 
                 return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
             } else {
@@ -332,20 +336,20 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function getWardByHospitalAndTrust(Request $request)
+    public function getWardByHospital(Request $request)
     {
         //echo $hospitalId;
         $hospitalId = $request->get('hospitalId');
         $trustId = $request->get('trustId');
         if ($hospitalId == null) {
-            $wardAll = Ward::where('trust_id', $trustId)->get();
+            $wardAll = Ward::where('hospital_id', $hospitalId)->get();
             if ($wardAll) {
                 return response()->json(['status' => true, 'message' => 'wards get successfully', 'data' => $wardAll], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Wards not available!', 'status' => false], 404);
             }
         } else {
-            $ward = Ward::where(['hospital_id' => $hospitalId, 'trust_id' => $trustId])->get();
+            $ward = Ward::where(['hospital_id' => $hospitalId])->get();
             if ($ward) {
                 return response()->json(['status' => true, 'message' => 'Ward get successfully', 'data' => $ward], $this->successStatus);
             } else {

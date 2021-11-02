@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
 use App\Models\SigneeOrganization;
+use App\Models\Notification;
 
 use Hash;
 use App\Models\Role;
@@ -804,6 +805,9 @@ class UserController extends Controller
                 $objBookingMatch->signee_booking_status = $requestData['status'];
                 $objBookingMatch->save();
 
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($requestData['booking_id'], $this->userId);
+
                 $objBooking->sendBookingConfirmEmail($matchSignee);
 
                 if ($objBookingMatch) {
@@ -892,8 +896,16 @@ class UserController extends Controller
      */
     public function inviteSigneeForTheShift(Request $request)
     {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'signee_id' => 'required',
+            'booking_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
         try {
-            $requestData = $request->all();
             // print_r($requestData);exit();
             $objBooking = new Booking();
             $result = $objBooking->getSigneeForInvite($requestData);
@@ -901,7 +913,43 @@ class UserController extends Controller
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'Signee Invited Successfully for the shift'], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 409);
+                return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    /**
+     * Change signee's payment status
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function changeSigneePaymentStatus(Request $request)
+    {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'signee_id' => 'required',
+            'booking_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try
+        {
+            $booking = booking::findOrFail($requestData['booking_id']);
+            if($booking['status'] == 'CONFIRMED'){
+                $bookingMatch = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
+                    'payment_status' => $requestData['payment_status'],
+                ]);
+                if($bookingMatch)
+                {
+                    return response()->json(['status' => true, 'message' => 'Payment status changed successfully'], $this->successStatus);
+                } else {
+                    return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
+                }
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);

@@ -223,29 +223,29 @@ class OrganizationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function changeStatus(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'status' => 'required',
-            'user_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 200);
-        }
-        try {
-            $userObj = User::find($request->post('user_id'));
-            $userObj['status'] = $request->post('status');
-            $res =  $userObj->save();
-            if ($res) {
-                return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
-            } else {
-                return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
-            }
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
-        }
-    }
+    // public function changeStatus(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'status' => 'required',
+    //         'user_id' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         $error = $validator->messages()->first();
+    //         return response()->json(['status' => false, 'message' => $error], 200);
+    //     }
+    //     try {
+    //         $userObj = User::find($request->post('user_id'));
+    //         $userObj['status'] = $request->post('status');
+    //         $res =  $userObj->save();
+    //         if ($res) {
+    //             return response()->json(['status' => true, 'message' => 'Status changed successfully'], $this->successStatus);
+    //         } else {
+    //             return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+    //     }
+    // }
 
 
     /**
