@@ -69,15 +69,10 @@ class Ward extends Model
         }
     }
 
-    public function post()
+    public function hospital()
     {
-        return $this->belongsTo(Trust::class);
+        return  $this->belongsToMany( Hospital::class , 'hospital_id');
+        // return $this->hasMany(Ward::class , 'hospital_id');
     }
-
-
-    public function ward() {
-        // return $this->belongsTo(Hospital::class);
-        return $this->hasManyThrough(Hospital::class, Ward::class);
-    }
-
+ 
 }

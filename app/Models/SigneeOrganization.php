@@ -45,4 +45,9 @@ class SigneeOrganization extends Model
         }
         return true;
     }
+
+    public function specialitys()
+    {
+        return  $this->hasManyThrough(SigneeSpecialitie::class,User::class,'id','user_id');
+    }
 }

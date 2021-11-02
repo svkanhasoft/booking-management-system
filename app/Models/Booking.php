@@ -775,4 +775,28 @@ class Booking extends Model
         }
     }
 
+    public function users(){
+        return $this->hasOne(User::class,'id');
+    }
+    
+    public function ward(){
+        return $this->hasOne(Ward::class,'id');
+    }
+
+    public function shift(){
+        return $this->hasOne(OrganizationShift::class,'id','shift_id');
+    }
+
+    public function hospital(){
+        return $this->hasOne(Hospital::class,'id','hospital_id');
+    }
+
+    public function shiftType(){
+        return $this->hasOne(ShiftType::class,'id','shift_type_id');
+    }
+
+    public function trust(){
+        return $this->hasOne(Trust::class,'id','trust_id');
+    }
+
 }
