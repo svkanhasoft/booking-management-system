@@ -355,21 +355,21 @@ class Booking extends Model
         $subQuery->whereNull('bookings.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
-        $subQuery->whereRaw("(
-            IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
-            or
-            IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
-            or
-            IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
-            or
-            IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
-            or
-            IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
-            or
-            IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
-            or
-            IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
-        )");
+        // $subQuery->whereRaw("(
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
+        //     or
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
+        //     or
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
+        //     or
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
+        //     or
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
+        //     or
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
+        //     or
+        //     IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
+        // )");
         $res = $subQuery->first();
         //print_r($res);exit();
         return $res;
@@ -392,6 +392,10 @@ class Booking extends Model
             ->cc('maulik.kanhasoft@gmail.com')
             ->bcc('suresh.kanhasoft@gmail.com')
             ->send(new \App\Mail\SendSmtpMail($details));
+
+            //send notification
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
             return true;
         } else {
             return false;
@@ -406,6 +410,7 @@ class Booking extends Model
             foreach($result as $key=>$val)
             {
                 //print_r($result[$key]['email']);exit();
+                //print_r($val);exit();
                 $details = [
                     'title' => '',
                     'body' => 'Hello ',
@@ -413,14 +418,17 @@ class Booking extends Model
                     'subject' => 'Booking Management System: Your booking is canceled',
                     'data' => $val
                 ];
-               // print_r($details['data']);exit();
+                // print_r($details['data']);exit();
                 $emailRes = \Mail::to($result)
                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
                 ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
-                return true;
+
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($val);
             }
+            return true;
         } else {
             return false;
         }
@@ -445,6 +453,9 @@ class Booking extends Model
                 ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
+
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($result);
                 return true;
         } else {
             return false;
@@ -458,6 +469,7 @@ class Booking extends Model
         if (isset($result) && !empty($result)) {
             foreach($result as $key=>$val)
             {
+                //print_r($val);exit();
                 if($val['signeeId'] != Auth::user()->id)
                 {
                     //print_r($val);exit();
@@ -474,6 +486,9 @@ class Booking extends Model
                     ->cc('maulik.kanhasoft@gmail.com')
                     ->bcc('suresh.kanhasoft@gmail.com')
                     ->send(new \App\Mail\SendSmtpMail($details));
+
+                    $objNotification = new Notification();
+                    $notification = $objNotification->addNotification($val);
                     return true;
                 }
             }
@@ -525,6 +540,8 @@ class Booking extends Model
             'bookings.user_id as organization_id',
             'bookings.*',
             'shift_type.shift_type',
+            'hospitals.hospital_name',
+            'ward.ward_name',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
@@ -538,6 +555,8 @@ class Booking extends Model
         $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
         $subQuery->leftJoin('signee_preference',  'signee_preference.user_id', '=', 'users.id');
+        $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
 
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('users.id', $signeeId);
@@ -564,7 +583,6 @@ class Booking extends Model
         )");
         $res = $subQuery->get()->toArray();
         return $res;
-
     }
 
     public function getSigneeByIdAndBookingId($bookingId = null, $signeeId = null)
