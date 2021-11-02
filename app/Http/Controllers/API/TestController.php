@@ -9,6 +9,7 @@ use App\Http\Requests;
 use App\Models\Hospital;
 use Hash;
 use App\Models\User;
+use App\Models\SigneeOrganization;
 use App\Models\Trust;
 use Config;
 use DateTime;
@@ -64,6 +65,28 @@ class TestController extends Controller
         // $res->shiftType;
         echo "<pre/>";
         dd($res);
+    }
+
+    public function getOrg(){
+        // $res = User::where(['user_id' => 138]);
+        $res = User::find(138);
+        $res->organizations;
+        // foreach($res->organizations as $key => $val){
+        //     print_r($key . " == ");
+        //     print_r($val->id);
+        //     // dd($val);
+        //     // exit;
+        //     //  dd($res->specialitys($val->id)); 
+        //     // $res->organizations[$key]['organization'] = $res->specialitys($val->organization_id); 
+        //     echo "$val->organization_id >>>";
+        //     print_r($res->specialitys($val->organization_id));
+        // }
+        // $res->organizations->specialitys;
+        // $res->specialitys;
+        // $res->user;
+        echo "<pre/>";
+        dd($res);
+        return response()->json(['message' => 'Sorry, Availablity update failed!', 'data'=>$res,'status' => false], 409);
     }
     
 }

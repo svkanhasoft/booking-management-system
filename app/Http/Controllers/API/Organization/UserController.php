@@ -873,14 +873,15 @@ class UserController extends Controller
                 $file = $filePath . "$time-signee.pdf";
                 file_put_contents($file, $pdf->output());
                 $data['pdf_path'] = $downloadPath . "$time-signee.pdf";
-                return response()->json(['status' => true, 'data' => $data, 'message' => 'pdf successfully generated'], $this->successStatus);
+                return response()->download($file ,  "$time-signee.pdf");
+                // return response()->json(['status' => true, 'data' => $data, 'message' => 'pdf successfully generated'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'something will be wrong', 'status' => false], 400);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-        //unlink($file);
+        unlink($file);
         // return response()->json(['status' => true, 'message' => $file], 200);
     }
 

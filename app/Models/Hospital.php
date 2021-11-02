@@ -84,8 +84,8 @@ class Hospital extends Model
     
     public function ward()
     {
-        // return  $this->belongsToMany( Ward::class,'hospital_id');
-        return $this->hasMany(Ward::class , 'hospital_id');
+        return  $this->belongsToMany( Ward::class,'hospital_id');
+        // return $this->hasMany(Ward::class , 'hospital_id');
         
     }
 

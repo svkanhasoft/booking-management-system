@@ -646,4 +646,24 @@ class User extends Authenticatable
         //$result->passport = $userPassportDocs;
         return $result;
     }
+
+    public function organizations()
+    {
+        // return  $this->hasManyThrough(SigneeOrganization::class, User::class );
+        // return  $this->hasManyThrough(SigneeOrganization::class, User::class,'id','user_id','id');
+        
+        return  $this->hasManyThrough( User::class,SigneeOrganization::class,'user_id','id');  // Working
+        
+        // return  $this->belongsToMany( User::class,SigneeOrganization::class,'user_id','id');  // Working
+
+        // return  $this->morphMany( SigneeOrganization::class,'specialitys','user_id');
+        
+        // return $this->hasMany(SigneeOrganization::class,'user_id');
+        return $this->hasMany(SigneeSpecialitie::class,'user_id');
+    }
+
+    public function specialitys($id)
+    {
+        return  Speciality::where(['user_id',$id])->get()->toArray();
+    }
 }
