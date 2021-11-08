@@ -119,7 +119,7 @@ class BookingMatch extends Model
     }
     public function sendMatchEmail($result)
     {
-       // print_r($result);exit();
+        // print_r($result);exit();
         if (isset($result) && !empty($result)) {
             $details = [
                 'title' => '',
@@ -130,9 +130,9 @@ class BookingMatch extends Model
             ];
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-            ->cc('maulik.kanhasoft@gmail.com')
-            ->bcc('suresh.kanhasoft@gmail.com')
-            ->send(new \App\Mail\SendSmtpMail($details));
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
             return false;
@@ -177,8 +177,7 @@ class BookingMatch extends Model
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
 
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
-        $booking->join('signee_organization', function($join)
-        {
+        $booking->join('signee_organization', function ($join) {
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
             $join->where('signee_organization.user_id', '=',  Auth::user()->id);
@@ -194,8 +193,11 @@ class BookingMatch extends Model
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
-        $res = $booking->get();
+        // $res = $booking->get();
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
+        foreach ($res as $keys => $values) {
+            $res[$keys]['permission'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
+        }
         return $res;
     }
 
@@ -227,8 +229,7 @@ class BookingMatch extends Model
         $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->Join('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->Join('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-        $booking->join('signee_organization', function($join)
-        {
+        $booking->join('signee_organization', function ($join) {
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
@@ -241,7 +242,7 @@ class BookingMatch extends Model
         return $res;
     }
 
-    public function getFilterBookings($request,$userId)
+    public function getFilterBookings($request, $userId)
     {
         $requestData = $request->all();
         $perPage = Config::get('constants.pagination.perPage');
@@ -321,16 +322,15 @@ class BookingMatch extends Model
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
-        $booking->join('signee_organization', function($join)
-        {
+        $booking->join('signee_organization', function ($join) {
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.status', 'CONFIRMED');
-        if($shiftType == 'past'){
+        if ($shiftType == 'past') {
             $booking->where('bookings.date', '<', date('y-m-d'));
-        }else{
+        } else {
             $booking->where('bookings.date', '>=', date('y-m-d'));
         }
         $booking->whereIn('bookings.user_id', $staffIdArray);
@@ -343,4 +343,45 @@ class BookingMatch extends Model
         return $res;
     }
 
+    public function managePermission($compliance_status,$profile_status)
+    {
+        $booking_record_perm_for_signees = array(
+            "view_new_shifts" => false,
+            "review_shifts" => false, "book_shifts" => false, 'cancel_shifts' => false
+        );
+        if ($compliance_status == "NEW SIGNUP" && $profile_status == "Active") {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+        } else if ($compliance_status == "Compliance Review" && $profile_status == "Active") {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+        }
+        else if ($compliance_status == "Compliant" && $profile_status == "Active") {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+            $booking_record_perm_for_signees['review_shifts'] = true;
+            $booking_record_perm_for_signees['book_shifts'] = true;
+            $booking_record_perm_for_signees['cancel_shifts'] = true;
+        } else if ($compliance_status == "Not Compliant" && $profile_status == "Active") {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+            $booking_record_perm_for_signees['review_shifts'] = true;
+        } else if ($compliance_status == "On Hold" && $profile_status == "Active") {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+        } else if ($compliance_status == "New Signup" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+            $booking_record_perm_for_signees['review_shifts'] = true;
+        } else if ($compliance_status == "Compliance Review" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+            $booking_record_perm_for_signees['review_shifts'] = true;
+        } else if ($compliance_status == "Compliant" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+            $booking_record_perm_for_signees['review_shifts'] = true;
+        } else if ($compliance_status == "Not Compliant" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+            $booking_record_perm_for_signees['view_new_shifts'] = true;
+            $booking_record_perm_for_signees['review_shifts'] = true;
+        } else if ($compliance_status == "On Hold" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+            $booking_record_perm_for_signees['view_new_shifts'] = false;
+            $booking_record_perm_for_signees['review_shifts'] = false;
+            $booking_record_perm_for_signees['book_shifts'] = false;
+            $booking_record_perm_for_signees['cancel_shifts'] = false;
+        }
+        return $booking_record_perm_for_signees;
+    }
 }
