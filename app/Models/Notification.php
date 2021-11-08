@@ -40,7 +40,7 @@ class Notification extends Model
 
         if($postData['status'] != 'COMPLIANT')
         {
-            $data = User::where('id', $postData['signee_id'])->first();
+            $data = User::where('id', $postData['signeeId'])->first();
             $postData['organization_id'] = $data->parent_id;
             //print_r($postData);exit();
             $complientMsg = 'Your compliant status has been changed to '. $postData['status'];
