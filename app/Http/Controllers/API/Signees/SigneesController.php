@@ -861,6 +861,7 @@ class SigneesController extends Controller
         try {
             $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']]);
             $objBookingMatch->signee_status = $requestData['signee_status'];
+            $objBookingMatch->signee_booking_status = 'APPLY';
             $res = $objBookingMatch->save();
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'Congratulations, You have successfully apply for the shift'], $this->successStatus);
