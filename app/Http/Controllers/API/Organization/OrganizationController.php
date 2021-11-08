@@ -202,7 +202,7 @@ class OrganizationController extends Controller
         }
         try {
             if (!(Hash::check($request->old_password, Auth::user()->password))) {
-                return response()->json(['status' => false, 'message' => "Your old password can't be match"], 403);
+                return response()->json(['status' => false, 'message' => "Your old password can't be match"], 200);
             }
             $user = User::where('id', $this->userId)->first();
             // $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
@@ -410,7 +410,7 @@ class OrganizationController extends Controller
                 ]);
                 return response()->json(['status' => true, 'message' => 'Profile updated successfully.', 'data' => $requestData], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => "something will be wrong"], 403);
+                return response()->json(['status' => false, 'message' => "something will be wrong"], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);

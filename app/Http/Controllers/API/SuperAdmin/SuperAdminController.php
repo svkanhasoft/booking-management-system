@@ -91,7 +91,7 @@ class SuperAdminController extends Controller
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 404);
         }
         if ($checkRecord->status !== 'Active') {
-            return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 403);
+            return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
         }
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {

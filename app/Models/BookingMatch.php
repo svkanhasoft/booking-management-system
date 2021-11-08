@@ -157,7 +157,9 @@ class BookingMatch extends Model
             'trusts.post_code',
             'users.status as profile_status',
             'signee_organization.status as compliance_status',
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            'signee_organization.organization_id',
+            'signee_organization.user_id as aaaaa',
+            DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
@@ -172,6 +174,7 @@ class BookingMatch extends Model
         {
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
+            $join->where('signee_organization.user_id', '=',  Auth::user()->id);
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
 
