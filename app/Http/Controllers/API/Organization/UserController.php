@@ -657,6 +657,8 @@ class UserController extends Controller
                     //print_r(Auth::user()->role);exit();
                     return $this->cancelShiftBYStaffOrOrg($requestData);
                 }
+            } elseif ($requestData['status'] == 'ACCEPT') {
+                return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
@@ -684,6 +686,22 @@ class UserController extends Controller
         }
     }
 
+    public function acceptShiftBySignee($requestData)
+    {
+        try {
+            $update = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
+                'signee_booking_status' => $requestData['status']
+            ]);
+
+            if ($update) {
+                return response()->json(['status' => true, 'message' => 'Offer accepted successfully'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
     public function cancelShiftBySignee($requestData)
     {
         $objBooking = new Booking();
