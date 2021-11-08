@@ -36,6 +36,8 @@ class Notification extends Model
 
     public function addNotification($postData)
     {
+
+        return true;
         //print_r($postData);exit();
 
         if($postData['status'] != 'COMPLIANT')
