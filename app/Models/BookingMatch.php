@@ -239,6 +239,10 @@ class BookingMatch extends Model
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
         $res = $booking->first();
+        // print_r($res);
+       
+        $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
+        
         return $res;
     }
 
