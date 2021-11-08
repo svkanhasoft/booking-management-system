@@ -344,6 +344,9 @@ class BookingMatch extends Model
         $booking->orderBy('bookings.date');
         $res = $booking->get();
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
+        foreach ($res as $keys => $values) {
+            $res[$keys]['permission'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
+        }
         return $res;
     }
 
