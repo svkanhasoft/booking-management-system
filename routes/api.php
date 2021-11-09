@@ -125,7 +125,8 @@ Route::prefix('organization')->group(function () {
                 Route::post('/pdf', [UserController::class, 'pdf']);
                 Route::post('/change-document-status', [UserController::class, 'changeDocStatus']);
                 Route::post('/send-invitation', [UserController::class, 'inviteSigneeForTheShift']);
-                Route::get('/get-all-notification', [UserController::class, 'getAllNotifications']);
+                Route::post('/get-all-notification', [UserController::class, 'getAllNotifications']);
+                Route::post('/update-notification', [UserController::class, 'updateNotifications']);
             });
         });
     });
