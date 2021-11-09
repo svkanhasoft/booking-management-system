@@ -37,7 +37,7 @@ class Notification extends Model
     public function addNotification($postData)
     {
         //print_r($postData);exit;
-        if($postData['status'] != 'COMPLIANT' && $postData['status'] != 'CREATED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'CONFIRMED' )
+        if($postData['status'] != 'CREATED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'CONFIRMED' )
         {
             // dd($postData['signee_booking_status']);
             $data = User::where('id', $postData['signeeId'])->first();
