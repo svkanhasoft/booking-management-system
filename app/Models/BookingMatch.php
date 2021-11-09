@@ -196,7 +196,7 @@ class BookingMatch extends Model
         // $res = $booking->get();
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         foreach ($res as $keys => $values) {
-            $res[$keys]['permission'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
+            $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
         return $res;
     }
@@ -240,9 +240,9 @@ class BookingMatch extends Model
         $booking->groupBy('specialities.id');
         $res = $booking->first();
         // print_r($res);
-       
+
         $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
-        
+
         return $res;
     }
 
@@ -345,7 +345,7 @@ class BookingMatch extends Model
         $res = $booking->get();
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         foreach ($res as $keys => $values) {
-            $res[$keys]['permission'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
+            $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
         return $res;
     }
