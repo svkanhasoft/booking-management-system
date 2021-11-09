@@ -919,12 +919,13 @@ class UserController extends Controller
         }
     }
 
-    public function getAllNotifications()
+    public function getAllNotifications(Request $request)
     {
+        $requestData = $request->all();
         try{
-            $notifications = Notification::latest()->get();
+            $notifications = Notification::where('signee_id', $requestData['signee_id'])->get();
             // $res=$notifications->get();
-            //print_r($notifications);exit;
+           // print_r($notifications);exit;
             if ($notifications) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notifications], $this->successStatus);
             } else {
