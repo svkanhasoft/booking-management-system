@@ -235,15 +235,15 @@ class BookingMatch extends Model
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.id', $id);
-        $booking->where('booking_matches.signee_id', Auth::user()->id);
+        //$booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
         $res = $booking->first();
-        // print_r($res);
-
+        //print_r($res);exit();
         $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
 
         return $res;
+        //print_r($res);exit();
     }
 
     public function getFilterBookings($request, $userId)
@@ -352,6 +352,7 @@ class BookingMatch extends Model
 
     public function managePermission($compliance_status,$profile_status)
     {
+        //echo $compliance_status, $profile_status;exit();
         $booking_record_perm_for_signees = array(
             "view_new_shifts" => false,
             "review_shifts" => false, "book_shifts" => false, 'cancel_shifts' => false

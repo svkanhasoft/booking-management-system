@@ -506,6 +506,7 @@ class SigneesController extends Controller
     {
         $bookingMatch = new BookingMatch();
         $result = $bookingMatch->viewShiftDetails($id);
+       // print_r($result);exit();
         $start_time = strtotime($result['start_time']);
         $end_time = strtotime($result['end_time']);
         $diff = gmdate('H:i:s', $end_time - $start_time);
