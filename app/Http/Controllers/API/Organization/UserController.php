@@ -923,7 +923,7 @@ class UserController extends Controller
     {
         $requestData = $request->all();
         try{
-            $notifications = Notification::where('signee_id', $requestData['signee_id'])->get();
+            $notifications = Notification::where('signee_id', $requestData['signee_id'])->orderBy('id','DESC')->get();
             // $res=$notifications->get();
            // print_r($notifications);exit;
             if ($notifications) {
