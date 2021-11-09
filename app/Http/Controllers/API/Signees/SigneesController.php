@@ -552,14 +552,16 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
+            //print_r($requestData);exit();
             if (Auth::user()->role == 'ORGANIZATION') {
                 $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signeeId'], 'organization_id' => Auth::user()->id]);
             } else {
                 $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signeeId'], 'organization_id' => Auth::user()->parent_id]);
             }
             $signeeOrg->status = $requestData['status'];
-            $res = $signeeOrg->save();
 
+            $res = $signeeOrg->save();
+            //print_r($res);exit;
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($requestData);
 

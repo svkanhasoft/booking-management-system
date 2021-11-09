@@ -47,7 +47,7 @@ class Notification extends Model
         }
         else
         {
-            $bookingDetails = Booking::findOrFail($postData['id']);
+            $bookingDetails = Booking::findOrFail(isset($postData['id']));
             //print_r($bookingDetails);exit();
             $date = date("d-m-Y", strtotime($bookingDetails['date']));
             $time = date("h:i A", strtotime($bookingDetails['start_time'])).' '.'To'.' '.date("h:i A", strtotime($bookingDetails['end_time']));
