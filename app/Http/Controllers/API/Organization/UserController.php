@@ -928,7 +928,7 @@ class UserController extends Controller
             if ($notifications) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notifications], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, Notification not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
