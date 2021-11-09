@@ -941,7 +941,7 @@ class UserController extends Controller
         // dd($this->userId);
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            'signeeId' => 'required',
+            //'signeeId' => 'required',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
@@ -950,10 +950,10 @@ class UserController extends Controller
         try{
             $requestData = $request->all();
             $requestData['organization_id'] = $this->userId;
-            $notification = Notification::where(['signee_id' => $requestData['signeeId'], 'organization_id' => $requestData['organization_id']])->first();
-            $res = Notification::find($notification['id']);
-            $res->is_read = true;
-            $update = $res->update();
+            $notification = Notification::where('id', $requestData['notification_id'])->first();
+            // $res = Notification::find($notification['id']);
+            $notification->is_read = $requestData['is_read'];
+            $update = $notification->update();
             if($update)
             {
                 return response()->json(['status' => true, 'message' => 'Notifications Update Successfully'], $this->successStatus);

@@ -78,10 +78,10 @@ class Notification extends Model
         $notification->booking_id = isset($postData['id']) ? $postData['id'] : NULL;
         $notification->message = isset($msg) ? $msg :  $complientMsg;
         if(isset($postData['signee_booking_status'])){
-            $notification->status=$postData['signee_booking_status'] ;
+            $notification->status=$postData['signee_booking_status'];
         }else{
             $notification->status=$postData['status'];
-         }
+        }
         $notification->is_read = 0;
         $notification->is_sent = 0;
         $notification->save();
