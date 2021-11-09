@@ -936,33 +936,33 @@ class UserController extends Controller
         }
     }
 
-    // public function updateNotifications(Request $request)
-    // {
-    //     // dd($this->userId);
-    //     $requestData = $request->all();
-    //     $validator = Validator::make($request->all(), [
-    //         //'signeeId' => 'required',
-    //     ]);
-    //     if ($validator->fails()) {
-    //         $error = $validator->messages()->first();
-    //         return response()->json(['status' => false, 'message' => $error], 200);
-    //     }
-    //     try{
-    //         $requestData = $request->all();
-    //         $requestData['organization_id'] = $this->userId;
-    //         $notification = Notification::where(['signee_id' => $requestData['signeeId'], 'organization_id' => $requestData['organization_id']])->first();
-    //         $res = Notification::find($notification['id']);
-    //         $res->is_read = true;
-    //         $update = $res->update();
-    //         if($update)
-    //         {
-    //             return response()->json(['status' => true, 'message' => 'Notifications Update Successfully'], $this->successStatus);
-    //         }
-    //         else {
-    //             return response()->json(['message' => 'Sorry, Notification Not Updated!', 'status' => false], 404);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
-    //     }
-    // }
+    public function updateNotifications(Request $request)
+    {
+        // dd($this->userId);
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'signeeId' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try{
+            $requestData = $request->all();
+            $requestData['organization_id'] = $this->userId;
+            $notification = Notification::where(['signee_id' => $requestData['signeeId'], 'organization_id' => $requestData['organization_id']])->first();
+            $res = Notification::find($notification['id']);
+            $res->is_read = true;
+            $update = $res->update();
+            if($update)
+            {
+                return response()->json(['status' => true, 'message' => 'Notifications Update Successfully'], $this->successStatus);
+            }
+            else {
+                return response()->json(['message' => 'Sorry, Notification Not Updated!', 'status' => false], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
 }
