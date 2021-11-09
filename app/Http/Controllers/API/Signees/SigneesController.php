@@ -543,7 +543,7 @@ class SigneesController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            'signee_id' => 'required',
+            'signeeId' => 'required',
             'status' => 'required',
         ]);
         if ($validator->fails()) {
@@ -552,15 +552,15 @@ class SigneesController extends Controller
         }
         try {
             if (Auth::user()->role == 'ORGANIZATION') {
-                $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->id]);
+                $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signeeId'], 'organization_id' => Auth::user()->id]);
             } else {
-                $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signee_id'], 'organization_id' => Auth::user()->parent_id]);
+                $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signeeId'], 'organization_id' => Auth::user()->parent_id]);
             }
             $signeeOrg->status = $requestData['status'];
             $res = $signeeOrg->save();
 
-            // $objNotification = new Notification();
-            // $notification = $objNotification->addNotification($requestData);
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($requestData);
 
             if (!empty($res)) {
                 return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);

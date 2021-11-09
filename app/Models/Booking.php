@@ -326,6 +326,7 @@ class Booking extends Model
             'users.role',
             'bookings.user_id as organization_id',
             'bookings.*',
+            'booking_matches.signee_booking_status',
             'shift_type.shift_type',
             'hospitals.hospital_name',
             'ward.ward_name',
@@ -345,6 +346,7 @@ class Booking extends Model
         $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
 
         $subQuery->where('users.role', 'SIGNEE');
@@ -437,6 +439,7 @@ class Booking extends Model
     //booking canceled by signee email
     public function sendBookingCancelBySigneeEmail($result)
     {
+        // print_r($result);exit;
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
                 //print_r($result['email']);exit();
@@ -778,7 +781,7 @@ class Booking extends Model
     public function users(){
         return $this->hasOne(User::class,'id');
     }
-    
+
     public function ward(){
         return $this->hasOne(Ward::class,'id');
     }

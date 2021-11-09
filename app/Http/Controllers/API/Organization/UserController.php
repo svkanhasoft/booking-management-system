@@ -649,9 +649,11 @@ class UserController extends Controller
         }
         try {
             $objBooking = new Booking();
+            //dd(Auth::user()->role);
             if ($requestData['status'] == 'CANCEL' || $requestData['status'] == 'DECLINE') {
                 //$signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
                 if (Auth::user()->role == 'SIGNEE') {
+                    // dd($requestData);
                     return $this->cancelShiftBySignee($requestData);
                 } else if (Auth::user()->role == 'STAFF' || Auth::user()->role == 'ORGANIZATION') {
                     //print_r(Auth::user()->role);exit();
@@ -704,28 +706,32 @@ class UserController extends Controller
     }
     public function cancelShiftBySignee($requestData)
     {
+        // print_r($requestData);exit;
         $objBooking = new Booking();
         try {
             //print_r(Auth::user()->role);exit();
+
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-
-            // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
-
             BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
             ]);
+            // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
+
+            //echo "hi";
+            //print_r($signeeMatch);exit;
             $update = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
             //send booking open mail to other signees
-            $signeeList = $objBooking->getMetchByBookingId($requestData['booking_id']);
-            //print_r($signeeList);exit();
-            $sendBookingOpenMail = $objBooking->sendBookingOpenEmail($signeeList);
+            //  $signeeList = $objBooking->getMetchByBookingId($requestData['booking_id']);
+            // // //print_r($signeeList);exit();
+            //  $sendBookingOpenMail = $objBooking->sendBookingOpenEmail($signeeList);
             if ($update) {
-                return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Booking cancelled successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
+            //echo "123";exit;
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
@@ -909,6 +915,16 @@ class UserController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    public function getAllNotifications()
+    {
+        $notifications = Notification::latest()->get()->toArray();
+        if ($notifications) {
+            return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notifications], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, Role not available!', 'status' => false], 404);
         }
     }
 }
