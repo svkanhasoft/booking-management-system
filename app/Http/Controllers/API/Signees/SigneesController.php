@@ -544,7 +544,7 @@ class SigneesController extends Controller
     {
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
-            'signeeId' => 'required',
+            //'signeeId' => 'required',
             'status' => 'required',
         ]);
         if ($validator->fails()) {
