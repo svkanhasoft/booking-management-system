@@ -47,10 +47,12 @@ class Notification extends Model
         }
         else
         {
-            $bookingDetails = Booking::findOrFail(isset($postData['id']));
+            //print_r($postData['id']);exit;
+            $bookingDetails = Booking::findOrFail($postData['id']);
             //print_r($bookingDetails);exit();
             $date = date("d-m-Y", strtotime($bookingDetails['date']));
             $time = date("h:i A", strtotime($bookingDetails['start_time'])).' '.'To'.' '.date("h:i A", strtotime($bookingDetails['end_time']));
+
             //signee cancel his shift
             if($postData['signeeId'] == Auth::user()->id && isset($postData['signee_booking_status']) == "CANCEL")
             {

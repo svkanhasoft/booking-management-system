@@ -803,4 +803,15 @@ class Booking extends Model
         return $this->hasOne(Trust::class,'id','trust_id');
     }
 
+    public function getAppliedShift()
+    {
+        $query = Booking::select(
+            'bookings.*',
+            'booking_matches.signee_booking_status'
+        );
+        $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $query->where('booking_matches.signee_booking_status', 'APPLY');
+        $query->where('booking_matches.organization_id', Auth::user()->id);
+        return $query->get()->toArray();
+    }
 }

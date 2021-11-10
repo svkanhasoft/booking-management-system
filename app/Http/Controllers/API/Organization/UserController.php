@@ -663,10 +663,12 @@ class UserController extends Controller
             } elseif ($requestData['status'] == 'ACCEPT') {
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
+                // print_r('123');exit;
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-                //print_r($matchSignee);exit();
+                // print_r($matchSignee);exit();
                 $booking = booking::findOrFail($requestData['booking_id']);
+                //print_r($booking);exit();
                 $booking['status'] = $requestData['status'];
                 $bookingUpdate = $booking->update($requestData);
 
@@ -969,6 +971,18 @@ class UserController extends Controller
 
     public function getAppliedShift()
     {
-        echo "123";
+        try{
+            $booking = new Booking();
+            $getAppliedShift = $booking->getAppliedShift();
+            if($getAppliedShift)
+            {
+                return response()->json(['status' => true, 'message' => 'Applied Shifts Get Successfully', 'data'=>$getAppliedShift], $this->successStatus);
+            } else{
+                return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
+            }
+        } catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
     }
 }
