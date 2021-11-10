@@ -253,6 +253,7 @@ class BookingMatch extends Model
             'trusts.post_code',
             'users.status as profile_status',
             'booking_matches.signee_status',
+            'booking_matches.signee_booking_status',
             'signee_organization.status as compliance_status',
             'signee_organization.user_id as signeeid',
             'signee_organization.organization_id as orgid',
