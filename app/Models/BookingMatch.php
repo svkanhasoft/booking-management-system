@@ -140,12 +140,13 @@ class BookingMatch extends Model
             return false;
         }
     }
-    public function getShiftList()
+    public function getShiftList($request, $userId)
     {
         //print_r(Auth::user()->id);exit;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
+        $requestData = $request->all();
         //print_r($staffIdArray);exit();
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
@@ -188,6 +189,18 @@ class BookingMatch extends Model
         $booking->where('bookings.status', 'CREATED');
         $booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
+        if (!empty($requestData['day'])) {
+            $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
+            $booking->where('users.parent_id', Auth::user()->parent_id);
+        }
+        if (!empty($requestData['speciality_id'])) {
+            $booking->whereIn('booking_specialities.speciality_id', $requestData['speciality_id']);
+            $booking->where('users.parent_id', Auth::user()->parent_id);
+        }
+        if (!empty($requestData['hospital_id'])) {
+            $booking->whereIn('bookings.hospital_id', $requestData['hospital_id']);
+            $booking->where('users.parent_id', Auth::user()->parent_id);
+        }
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('booking_matches.deleted_at');
         $booking->whereNull('bookings.deleted_at');
