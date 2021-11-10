@@ -151,7 +151,7 @@ class BookingMatch extends Model
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
-            // 'bookings.id',
+            'bookings.id as bid',
             // 'bookings.date',
             // 'bookings.start_time',
             // 'bookings.end_time',
@@ -171,10 +171,20 @@ class BookingMatch extends Model
             'signee_organization.organization_id',
             'signee_organization.user_id as sId',
             DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS saaaaa'),
         );
-        $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+
+        // $booking->whereRaw("(
+        //     (bookings.id = booking_specialities.booking_id AND  or `booking_specialities`.`deleted_at` = null),'')
+        //      and
+        //      (signee_speciality.speciality_id = booking_specialities.speciality_id AND  or `booking_specialities`.`deleted_at` = null),'')
+        //      and
+        //      (specialities.id = booking_specialities.speciality_id AND  or `specialities`.`deleted_at` = null),'')
+        // )");
+
         $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->leftJoin('hospitals', 'hospitals.id', '=', 'bookings.hospital_id');
         $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -204,6 +214,7 @@ class BookingMatch extends Model
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('booking_matches.deleted_at');
         $booking->whereNull('bookings.deleted_at');
+        $booking->whereNull('signee_speciality.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
@@ -267,6 +278,7 @@ class BookingMatch extends Model
             'trusts.post_code',
             'users.status as profile_status',
             'booking_matches.signee_status',
+            'booking_matches.signee_booking_status',
             'signee_organization.status as compliance_status',
             'signee_organization.user_id as signeeid',
             'signee_organization.organization_id as orgid',
