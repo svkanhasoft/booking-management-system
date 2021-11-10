@@ -467,10 +467,10 @@ class SigneesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
-    public function shiftList()
+    public function shiftList(Request $request)
     {
         $bookingMatching = new BookingMatch();
-        $result = $bookingMatching->getShiftList();
+        $result = $bookingMatching->getShiftList($request, $this->userId);
         if ($result) {
             return response()->json(['status' => true, 'message' => 'shift listed successfully', 'data' => $result], $this->successStatus);
         } else {

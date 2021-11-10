@@ -156,7 +156,8 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-availability', [AvailabilityController::class, 'getAvailability']);
         Route::put('/add-preferences', [SigneePreferencesController::class, 'addPreferences']);
         Route::get('/get-preferences', [SigneePreferencesController::class, 'getPreferences']);
-        Route::get('/shift-list', [SigneesController::class, 'shiftList']);
+        // Route::post('/shift-list', [SigneesController::class, 'shiftList']);
+        Route::match(['get', 'post'], '/shift-list', [SigneesController::class, 'shiftList']);
         Route::get('/my-shift', [SigneesController::class, 'myshift']);
         Route::get('/view-shift-details/{id}', [SigneesController::class, 'viewShiftDetails']);
         Route::get('/logout', [SigneesController::class, 'logout']);
