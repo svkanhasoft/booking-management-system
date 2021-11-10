@@ -140,6 +140,7 @@ class BookingMatch extends Model
     }
     public function getShiftList()
     {
+       //print_r(Auth::user()->id);exit;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
@@ -185,8 +186,8 @@ class BookingMatch extends Model
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.status', 'CREATED');
+        //$booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
-        $booking->where('users.id', Auth::user()->id );
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
@@ -237,7 +238,6 @@ class BookingMatch extends Model
 
     public function viewShiftDetails($id = null)
     {
-        // print_r($id);exit;
         $booking = Booking::select(
             'bookings.*',
             'hospitals.hospital_name',
@@ -260,7 +260,7 @@ class BookingMatch extends Model
         );
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        //$booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
@@ -275,8 +275,8 @@ class BookingMatch extends Model
         });
 
         $booking->where('bookings.id', $id);
-        $booking->where('users.id', Auth::user()->id );
-        //$booking->where('booking_matches.signee_id', Auth::user()->id);
+        $booking->where('users.id', Auth::user()->id);
+        $booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
         $res = $booking->first();
