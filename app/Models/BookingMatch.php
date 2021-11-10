@@ -253,6 +253,7 @@ class BookingMatch extends Model
 
     public function viewShiftDetails($id = null)
     {
+        //print_r(Auth::user()->id);exit;
         $booking = Booking::select(
             'bookings.*',
             'hospitals.hospital_name',
@@ -275,7 +276,7 @@ class BookingMatch extends Model
         );
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        //$booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
@@ -291,15 +292,13 @@ class BookingMatch extends Model
 
         $booking->where('bookings.id', $id);
         $booking->where('users.id', Auth::user()->id);
-        $booking->where('booking_matches.signee_id', Auth::user()->id);
+        //$booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
         $res = $booking->first();
 
         $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
-
         return $res;
-        //print_r($res);exit();
     }
 
     public function getFilterBookings($request, $userId)
@@ -347,13 +346,14 @@ class BookingMatch extends Model
         $booking->whereNull('hospitals.deleted_at');
         $booking->where('users.parent_id', Auth::user()->parent_id);
         $booking->groupBy('bookings.id');
-
+        $booking->orderBy('bookings.date');
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         return $res;
     }
 
     public function getMyShift($shiftType)
     {
+        //print_r(Auth::user());exit;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
@@ -371,6 +371,8 @@ class BookingMatch extends Model
             'trusts.city',
             'trusts.post_code',
             'users.status as profile_status',
+            'signee_organization.user_id as sid',
+            "signee_organization.organization_id as orgid",
             'signee_organization.status as compliance_status',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
@@ -398,11 +400,13 @@ class BookingMatch extends Model
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
+        $booking->where('users.id', Auth::user()->id);
         $res = $booking->get();
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         foreach ($res as $keys => $values) {
             $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
+        //print_r($res);exit;
         return $res;
     }
 
