@@ -379,7 +379,7 @@ class User extends Authenticatable
     {
     //    print_r(Auth::user()->id);exit();
         $query = User::select(
-            'users.id as user_id',
+            'users.id as id',
             'users.first_name',
             'users.last_name',
             'users.email',
@@ -427,7 +427,7 @@ class User extends Authenticatable
         $query2 = SigneeSpecialitie::select(
             //'specialities.id',
             //'specialities.speciality_name',
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT( DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query2->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query2->where('signee_speciality.user_id', $userId);
@@ -635,13 +635,13 @@ class User extends Authenticatable
     {
         // return  $this->hasManyThrough(SigneeOrganization::class, User::class );
         // return  $this->hasManyThrough(SigneeOrganization::class, User::class,'id','user_id','id');
-        
+
         return  $this->hasManyThrough( User::class,SigneeOrganization::class,'user_id','id');  // Working
-        
+
         // return  $this->belongsToMany( User::class,SigneeOrganization::class,'user_id','id');  // Working
 
         // return  $this->morphMany( SigneeOrganization::class,'specialitys','user_id');
-        
+
         // return $this->hasMany(SigneeOrganization::class,'user_id');
         return $this->hasMany(SigneeSpecialitie::class,'user_id');
     }
