@@ -825,6 +825,7 @@ class UserController extends Controller
      */
     public function pdf(Request $request)
     {
+        // echo "123";exit;
         try {
             $downloadPath = Config::get('constants.path.pdf_download');
             $requestData = $request->all();
@@ -964,5 +965,10 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
+    }
+
+    public function getAppliedShift()
+    {
+        echo "123";
     }
 }

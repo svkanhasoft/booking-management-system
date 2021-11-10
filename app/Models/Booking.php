@@ -711,6 +711,7 @@ class Booking extends Model
 
     public function getSigneeForPDF($postData)
     {
+        //print_r($postData);exit;
         $query = Booking::select(
             'bookings.*',
             'booking_matches.signee_id',
@@ -728,7 +729,7 @@ class Booking extends Model
         $query->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
         $query->leftJoin('signee_speciality',  'signee_speciality.user_id', '=', 'booking_matches.signee_id');
         $query->leftJoin('specialities',  'specialities.id', '=', 'signee_speciality.speciality_id');
-        $query->whereIn('booking_matches.signee_id',$postData['signee_id']);
+        $query->where('booking_matches.signee_id',$postData['signee_id']);
         $query->whereNull('signee_speciality.deleted_at');
         $query->where('bookings.id', $postData['booking_id']);
         $query->groupBy('booking_matches.signee_id');
