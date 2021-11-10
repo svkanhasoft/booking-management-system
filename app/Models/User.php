@@ -377,7 +377,7 @@ class User extends Authenticatable
 
     public function getSigneeById($userId = null)
     {
-       // print_r(Auth::user()->id);exit();
+    //    print_r(Auth::user()->id);exit();
         $query = User::select(
             'users.id as user_id',
             'users.first_name',
@@ -399,6 +399,8 @@ class User extends Authenticatable
             'users.address_line_1',
             'users.address_line_2',
             'users.city',
+            'users.status as signee_status',
+            'signee_organization.status as compliance_status',
             'users.postcode',
             'signees_detail.nationality',
             'signees_detail.date_of_birth',
@@ -417,9 +419,10 @@ class User extends Authenticatable
         $query->Join('users as parentUser',  'parentUser.id', '=', 'users.parent_id');
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
+        $query->leftJoin('signee_organization',  'signee_organization.user_id', '=', 'users.id');
         $query->where('users.id', $userId);
+        $query->where('signee_organization.organization_id', Auth::user()->id);
         $userDetais = $query->first();
-
         //query for speciality
         $query2 = SigneeSpecialitie::select(
             //'specialities.id',
