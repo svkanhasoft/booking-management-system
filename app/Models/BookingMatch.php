@@ -165,7 +165,7 @@ class BookingMatch extends Model
             'users.status as profile_status',
             'signee_organization.status as compliance_status',
             'signee_organization.organization_id',
-            'signee_organization.user_id as aaaaa',
+            'signee_organization.user_id as sId',
             DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
@@ -186,6 +186,7 @@ class BookingMatch extends Model
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.status', 'CREATED');
         $booking->where('bookings.date', '>=', date('y-m-d'));
+        $booking->where('users.id', Auth::user()->id );
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
@@ -274,6 +275,7 @@ class BookingMatch extends Model
         });
 
         $booking->where('bookings.id', $id);
+        $booking->where('users.id', Auth::user()->id );
         //$booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
