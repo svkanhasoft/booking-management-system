@@ -38,6 +38,7 @@ class BookingMatch extends Model
     {
         //print_r($bookingArray);exit();
         $signeeidArray = array_column($bookingArray, 'signeeId');
+        //print_r($signeeidArray);exit;
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             //print_r($values);
@@ -59,7 +60,8 @@ class BookingMatch extends Model
             $objBookingMatch->shift_id = $values['shift_id'];
             $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
-            $objBookingMatch = '';
+            //print_r($objBookingMatch);exit;
+            //$objBookingMatch = '';
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($values);
@@ -140,7 +142,6 @@ class BookingMatch extends Model
     }
     public function getShiftList()
     {
-       //print_r(Auth::user()->id);exit;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
@@ -186,7 +187,7 @@ class BookingMatch extends Model
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $booking->where('bookings.status', 'CREATED');
-        //$booking->where('users.id', Auth::user()->id);
+        $booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('bookings.deleted_at');
@@ -198,6 +199,7 @@ class BookingMatch extends Model
         foreach ($res as $keys => $values) {
             $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
+
         return $res;
 
         // $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
