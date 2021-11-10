@@ -185,7 +185,7 @@ class BookingMatch extends Model
             $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
-        $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
+        $booking->Join('users',  'users.id', '=', 'bookings.user_id');
         $booking->where('bookings.status', 'CREATED');
         $booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
