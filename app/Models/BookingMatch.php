@@ -400,32 +400,33 @@ class BookingMatch extends Model
         );
         if ($compliance_status == "NEW SIGNUP" && $profile_status == "Active") {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
-        } else if ($compliance_status == "Compliance Review" && $profile_status == "Active") {
+        } else if ($compliance_status == "COMPLIANCE REVIEW" && $profile_status == "Active") {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
         }
-        else if ($compliance_status == "Compliant" && $profile_status == "Active") {
+        else if ($compliance_status == "COMPLIANT" && $profile_status == "Active") {
+           // echo "hi";exit;
             $booking_record_perm_for_signees['view_new_shifts'] = true;
             $booking_record_perm_for_signees['review_shifts'] = true;
             $booking_record_perm_for_signees['book_shifts'] = true;
             $booking_record_perm_for_signees['cancel_shifts'] = true;
-        } else if ($compliance_status == "Not Compliant" && $profile_status == "Active") {
+        } else if ($compliance_status == "NOT COMPLIANT" && $profile_status == "Active") {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
             $booking_record_perm_for_signees['review_shifts'] = true;
-        } else if ($compliance_status == "On Hold" && $profile_status == "Active") {
+        } else if ($compliance_status == "ON HOLD" && $profile_status == "Active") {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
         } else if ($compliance_status == "New Signup" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
             $booking_record_perm_for_signees['review_shifts'] = true;
-        } else if ($compliance_status == "Compliance Review" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+        } else if ($compliance_status == "COMPLIANCE REVIEW" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
             $booking_record_perm_for_signees['review_shifts'] = true;
-        } else if ($compliance_status == "Compliant" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+        } else if ($compliance_status == "COMPLIANT" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
             $booking_record_perm_for_signees['review_shifts'] = true;
-        } else if ($compliance_status == "Not Compliant" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+        } else if ($compliance_status == "NOT COMPLIANT" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
             $booking_record_perm_for_signees['view_new_shifts'] = true;
             $booking_record_perm_for_signees['review_shifts'] = true;
-        } else if ($compliance_status == "On Hold" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
+        } else if ($compliance_status == "ON HOLD" && ($profile_status == "Inactive" || $profile_status == "Dormant")) {
             $booking_record_perm_for_signees['view_new_shifts'] = false;
             $booking_record_perm_for_signees['review_shifts'] = false;
             $booking_record_perm_for_signees['book_shifts'] = false;
