@@ -264,7 +264,7 @@ class User extends Authenticatable
                 'data' => $user,
             ];
             $emailRes = \Mail::to($user['email'])
-                //->cc('maulik.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
             return true;
