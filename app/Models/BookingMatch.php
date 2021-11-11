@@ -212,6 +212,8 @@ class BookingMatch extends Model
             $booking->where('users.parent_id', Auth::user()->parent_id);
         }
         $booking->whereIn('bookings.user_id', $staffIdArray);
+        $booking->whereIn('specialities.user_id',  $staffIdArray);
+        // $booking->where('specialities.user_id', Auth::user()->parent_id);
         $booking->whereNull('booking_matches.deleted_at');
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('signee_speciality.deleted_at');
