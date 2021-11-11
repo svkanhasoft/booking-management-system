@@ -628,9 +628,6 @@ class UserController extends Controller
         }
     }
 
-
-
-
     /*
      * Change booking status by signee and organization/staff
      *
@@ -639,7 +636,6 @@ class UserController extends Controller
     public function bookingStatus(Request $request)
     {
         $requestData = $request->all();
-
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required',
             'signee_id' => 'required',
@@ -661,14 +657,12 @@ class UserController extends Controller
                     return $this->cancelShiftBYStaffOrOrg($requestData);
                 }
             } elseif ($requestData['status'] == 'ACCEPT') {
+                // echo "123";exit;
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
-                // print_r('123');exit;
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-                // print_r($matchSignee);exit();
                 $booking = booking::findOrFail($requestData['booking_id']);
-                //print_r($booking);exit();
                 $booking['status'] = $requestData['status'];
                 $bookingUpdate = $booking->update($requestData);
 
@@ -684,6 +678,7 @@ class UserController extends Controller
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
                 }
             } else if ($requestData['status'] == 'OFFER') {
+                // print_r('123');exit;
                 return $this->offerToSignee($requestData);
             }
         } catch (\Exception $e) {
@@ -694,10 +689,14 @@ class UserController extends Controller
     public function acceptShiftBySignee($requestData)
     {
         try {
+            $objBooking = new Booking();
+            $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+            print_r($signeeMatch);exit;
             $update = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_booking_status' => $requestData['status']
             ]);
 
+            $mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Offer accepted successfully'], $this->successStatus);
             } else {
@@ -712,21 +711,15 @@ class UserController extends Controller
         // print_r($requestData);exit;
         $objBooking = new Booking();
         try {
-            //print_r(Auth::user()->role);exit();
-
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
             BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
             ]);
             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
-
-            //echo "hi";
-            //print_r($signeeMatch);exit;
             $update = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
             //send booking open mail to other signees
             //  $signeeList = $objBooking->getMetchByBookingId($requestData['booking_id']);
-            // // //print_r($signeeList);exit();
             //  $sendBookingOpenMail = $objBooking->sendBookingOpenEmail($signeeList);
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Booking cancelled successfully'], $this->successStatus);
@@ -734,7 +727,6 @@ class UserController extends Controller
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
             }
         } catch (\Exception $e) {
-            //echo "123";exit;
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
@@ -774,9 +766,14 @@ class UserController extends Controller
 
     public function offerToSignee($postData)
     {
+        //print_r($postData);exit;
         try {
+            $objBooking = new Booking();
+            $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
             $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $postData['signee_id'], 'booking_id' => $postData['booking_id']]);
             $objBookingMatch->signee_booking_status = $postData['status'];
+
+            $mailSent = $objBooking->sendOfferToSigneeEmail($signeeMatch);
             $objBookingMatch->save();
             if ($objBookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Offer successfully send to candidate'], $this->successStatus);

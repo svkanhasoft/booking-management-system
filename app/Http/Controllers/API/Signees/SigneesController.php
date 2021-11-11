@@ -867,7 +867,7 @@ class SigneesController extends Controller
             $objBookingMatch->signee_booking_status = 'APPLY';
             $res = $objBookingMatch->save();
             if ($res) {
-                return response()->json(['status' => true, 'message' => 'Congratulations, You have successfully apply for the shift'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'You have successfully applied for the shift'], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);
             }

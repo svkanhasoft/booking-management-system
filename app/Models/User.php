@@ -425,13 +425,14 @@ class User extends Authenticatable
         $userDetais = $query->first();
         //query for speciality
         $query2 = SigneeSpecialitie::select(
-            //'specialities.id',
-            //'specialities.speciality_name',
+            //'specialities.id as speciality_id',
+            // 'specialities.speciality_name',
+            DB::raw('GROUP_CONCAT( DISTINCT specialities.id SEPARATOR ", ") AS speciality_id'),
             DB::raw('GROUP_CONCAT( DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query2->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query2->where('signee_speciality.user_id', $userId);
-        $userSpec = $query2->get()->toArray();
+        $userSpec = $query2->get()->first();
 
         //query for passport documents
         $query3 = SigneeDocument::select(
@@ -614,7 +615,9 @@ class User extends Authenticatable
 
         $result = [];
         $result = $userDetais;
-        $result->speciality = $userSpec;
+       // print_r( explode (',',$userSpec->speciality_id));exit;
+       $userSpec->speciality_id =  array_map('intval', explode(',', $userSpec->speciality_id));
+       $result->speciality = $userSpec;
         $result->documents = array('passport'=>$userPassportDocs);
         $result->documents += array('immunisation_records'=>$userIRDocs);
         $result->documents += array('training_certificates'=>$userTCDocs);

@@ -315,7 +315,6 @@ class Booking extends Model
 
     public function getMetchByBookingIdAndSigneeId($bookingId = null, $signeeId = null)
     {
-
         $subQuery = Booking::select(
             'users.email',
             'signee_preference.user_id as signeeId',
@@ -436,6 +435,64 @@ class Booking extends Model
         }
     }
 
+    //send offer to signee email
+    public function sendOfferToSigneeEmail($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            //print_r($result['email']);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'sendShiftOfferToSignee',
+                'subject' => 'Booking Management System: Offer For Shift',
+                'data' => $result
+            ];
+        // print_r($details['data']);exit();
+            $emailRes = \Mail::to($result['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+            ->cc('maulik.kanhasoft@gmail.com')
+            ->bcc('suresh.kanhasoft@gmail.com')
+            ->send(new \App\Mail\SendSmtpMail($details));
+
+            // $objNotification = new Notification();
+            // $notification = $objNotification->addNotification($result);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    //booking accepted by signee email
+    public function sendBookingAcceptBySigneeEmail($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+                //print_r($result['email']);exit();
+                $details = [
+                    'title' => '',
+                    'body' => 'Hello ',
+                    'mailTitle' => 'bookingAcceptBySignee',
+                    'subject' => 'Booking Management System: Booking Accepted',
+                    'data' => $result
+                ];
+            // print_r($details['data']);exit();
+                $emailRes = \Mail::to($result['email'])
+                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+
+                // $objNotification = new Notification();
+                // $notification = $objNotification->addNotification($result);
+                return true;
+        } else {
+            return false;
+        }
+    }
+
+
     //booking canceled by signee email
     public function sendBookingCancelBySigneeEmail($result)
     {
@@ -465,40 +522,40 @@ class Booking extends Model
         }
     }
 
-    public function sendBookingOpenEmail($result)
-    {
-        //print_r($result);exit();
+    // public function sendBookingOpenEmail($result)
+    // {
+    //     //print_r($result);exit();
 
-        if (isset($result) && !empty($result)) {
-            foreach($result as $key=>$val)
-            {
-                //print_r($val);exit();
-                if($val['signeeId'] != Auth::user()->id)
-                {
-                    //print_r($val);exit();
-                    $details = [
-                        'title' => '',
-                        'body' => 'Hello ',
-                        'mailTitle' => 'bookingOpened',
-                        'subject' => 'Booking Management System: Your booking is opened',
-                        'data' => $val
-                    ];
-                    //print_r($details);exit();
-                    $emailRes = \Mail::to($val['email'])
-                        // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                    ->cc('maulik.kanhasoft@gmail.com')
-                    ->bcc('suresh.kanhasoft@gmail.com')
-                    ->send(new \App\Mail\SendSmtpMail($details));
+    //     if (isset($result) && !empty($result)) {
+    //         foreach($result as $key=>$val)
+    //         {
+    //             //print_r($val);exit();
+    //             if($val['signeeId'] != Auth::user()->id)
+    //             {
+    //                 //print_r($val);exit();
+    //                 $details = [
+    //                     'title' => '',
+    //                     'body' => 'Hello ',
+    //                     'mailTitle' => 'bookingOpened',
+    //                     'subject' => 'Booking Management System: Your booking is opened',
+    //                     'data' => $val
+    //                 ];
+    //                 //print_r($details);exit();
+    //                 $emailRes = \Mail::to($val['email'])
+    //                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+    //                 ->cc('maulik.kanhasoft@gmail.com')
+    //                 ->bcc('suresh.kanhasoft@gmail.com')
+    //                 ->send(new \App\Mail\SendSmtpMail($details));
 
-                    $objNotification = new Notification();
-                    $notification = $objNotification->addNotification($val);
-                    return true;
-                }
-            }
-        } else {
-            return false;
-        }
-    }
+    //                 $objNotification = new Notification();
+    //                 $notification = $objNotification->addNotification($val);
+    //                 return true;
+    //             }
+    //         }
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     //booking invitation email
     public function sendBookingInvitationMail($result)
