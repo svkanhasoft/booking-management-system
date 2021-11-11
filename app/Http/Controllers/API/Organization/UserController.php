@@ -647,7 +647,8 @@ class UserController extends Controller
         try {
             $objBooking = new Booking();
             //dd(Auth::user()->role);
-            if ($requestData['status'] == 'CANCEL' || $requestData['status'] == 'DECLINE') {
+            if ($requestData['status'] == 'CANCEL' || $requestData['status'] == 'DECLINE' || $requestData['status'] == 'PENDING') {
+                //echo "123";exit;
                 //$signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
                 if (Auth::user()->role == 'SIGNEE') {
                     // dd($requestData);
@@ -691,7 +692,7 @@ class UserController extends Controller
         try {
             $objBooking = new Booking();
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-            print_r($signeeMatch);exit;
+            //print_r($signeeMatch);exit;
             $update = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_booking_status' => $requestData['status']
             ]);
