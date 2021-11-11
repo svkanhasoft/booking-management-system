@@ -302,7 +302,7 @@ class User extends Authenticatable
 
     public function getSignee(Request $request, $userId = null)
     {
-        //print_r($userId);exit();
+        // print_r($userId);exit();
         $keyword = $request->get('search');
         $perPage = Config::get('constants.pagination.perPage');
         $query = User::select(
@@ -321,7 +321,7 @@ class User extends Authenticatable
             'signees_detail.nmc_dmc_pin',
             'signee_organization.status as compliance_status',
             'signee_speciality.speciality_id',
-            DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->leftJoin('signee_organization', 'signee_organization.user_id', '=', 'users.id');
         $query->Join('signees_detail', 'signees_detail.user_id', '=', 'users.id');
@@ -332,16 +332,18 @@ class User extends Authenticatable
         $query->where('users.role', "SIGNEE");
         //$query->where('users.parent_id', $userId);
         if(Auth::user()->role == 'ORGANIZATION'){
+            //echo "123";exit;
             $org = SigneeOrganization::where('organization_id', $userId)->get()->toArray();
             $userIdArray = array_column($org, 'user_id');
+            //print_r($userIdArray);exit();
+            // $signee = User::select('id')->where(['parent_id' => Auth::user()->id])->get()->toArray();
+            // $signeeIdArray = array_column($signee, 'id');
+            // $signeeIdArray[] = Auth::user()->id;
+            // $mainArray = array_merge($userIdArray, $signeeIdArray);
+            //print_r($signeeIdArray);exit();
 
-            $signee = User::select('id')->where(['parent_id' => Auth::user()->id])->get()->toArray();
-            $signeeIdArray = array_column($signee, 'id');
-            $signeeIdArray[] = Auth::user()->id;
-            $mainArray = array_merge($userIdArray, $signeeIdArray);
-            //$query->where('signee_organization.organization_id', $userId);
             $query->where('signee_organization.organization_id', $userId);
-            $query->whereIn('users.id', $mainArray);
+            $query->whereIn('users.id', $userIdArray);
         }
         else{
 
