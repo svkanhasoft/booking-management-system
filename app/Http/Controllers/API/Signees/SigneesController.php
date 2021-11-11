@@ -857,15 +857,17 @@ class SigneesController extends Controller
             'booking_id' => 'required',
             'signee_status' => 'required',
         ]);
+
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']]);
-            $objBookingMatch->signee_status = $requestData['signee_status'];
-            $objBookingMatch->signee_booking_status = 'APPLY';
-            $res = $objBookingMatch->save();
+            $res =  BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
+                'signee_status'=>  $requestData['signee_status'],
+                'signee_booking_status'=>  'APPLY',
+            ]);
+
             if ($res) {
                 return response()->json(['status' => true, 'message' => 'You have successfully applied for the shift'], $this->successStatus);
             } else {
