@@ -372,7 +372,7 @@ class User extends Authenticatable
 
     public function getSigneeById($userId = null)
     {
-    //    print_r(Auth::user()->id);exit();
+        //print_r($userId);exit();
         $query = User::select(
             'users.id as user_id',
             'users.first_name',
@@ -608,11 +608,14 @@ class User extends Authenticatable
 
         $userNIDocs = $query14->get()->toArray();
 
+        $signeePref = SigneePreferences::where('user_id', $userId)->first();
+        //print_r($signeePref);exit;
+
         $result = [];
         $result = $userDetais;
        // print_r( explode (',',$userSpec->speciality_id));exit;
-       $userSpec->speciality_id =  array_map('intval', explode(',', $userSpec->speciality_id));
-       $result->speciality = $userSpec;
+        $userSpec->speciality_id =  array_map('intval', explode(',', $userSpec->speciality_id));
+        $result->speciality = $userSpec;
         $result->documents = array('passport'=>$userPassportDocs);
         $result->documents += array('immunisation_records'=>$userIRDocs);
         $result->documents += array('training_certificates'=>$userTCDocs);
@@ -625,7 +628,7 @@ class User extends Authenticatable
         $result->documents += array('address_proof'=>$userAPDocs);
         $result->documents += array('passport_photo'=>$userPPDocs);
         $result->documents += array('proof_of_ni'=>$userNIDocs);
-
+        $result->preferences = $signeePref;
         return $result;
     }
 
