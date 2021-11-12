@@ -106,6 +106,7 @@ Route::prefix('organization')->group(function () {
         Route::put('/change-signee-payment-status', [UserController::class, 'changeSigneePaymentStatus']);
         Route::post('/confirm-booking', [UserController::class, 'bookingStatus']);
         Route::get('/get-applied-shift', [UserController::class, 'getAppliedShift']);
+        //Route::get('/get-completed-shift', [UserController::class, 'getCompletedShift']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
         Route::prefix('user')->group(function () {
