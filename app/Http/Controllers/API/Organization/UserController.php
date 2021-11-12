@@ -681,7 +681,6 @@ class UserController extends Controller
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
                 }
             } else if ($requestData['status'] == 'OFFER') {
-                // print_r('123');exit;
                 return $this->offerToSignee($requestData);
             }
         } catch (\Exception $e) {
@@ -709,6 +708,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
     public function cancelShiftBySignee($requestData)
     {
         // print_r($requestData);exit;
@@ -733,6 +733,47 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    // public function cancelShiftBySignee($requestData)
+    // {
+    //     //print_r($requestData['booking_id']);exit;
+    //     $objBooking = new Booking();
+    //     try {
+    //         $booking = $objBooking->getBooking($requestData['booking_id']);
+
+    //         $deductedTime =  date('H', strtotime($booking['start_time'])) - 2;
+    //         $var  = Carbon::now('Asia/Kolkata');
+    //         $time = date('H',strtotime($var->toTimeString()));
+    //         print_r($deductedTime);
+    //         exit;
+
+    //         if(date('H', strtotime($deductedTime)) < $time)
+    //         {
+    //             echo "sorry your time limit to cancel the booking is over";exit;
+    //         }
+    //         else{
+    //             echo "success";exit;
+    //             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+    //             BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
+    //                 'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
+    //             ]);
+    //             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
+    //             $update = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
+
+    //             //send booking open mail to other signees
+    //             //  $signeeList = $objBooking->getMetchByBookingId($requestData['booking_id']);
+    //             //  $sendBookingOpenMail = $objBooking->sendBookingOpenEmail($signeeList);
+    //             if ($update) {
+    //                 return response()->json(['status' => true, 'message' => 'Booking cancelled successfully'], $this->successStatus);
+    //             } else {
+    //                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+    //             }
+    //         }
+
+    //     } catch (\Exception $e) {
+    //         return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+    //     }
+    // }
 
     public function cancelShiftBYStaffOrOrg($requestData)
     {
