@@ -599,7 +599,7 @@ class SigneesController extends Controller
             $signeeOrg->addOrganisation($requestData['organization'], $this->userId, false);
 
             $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->addSpeciality($requestData['organization'], $this->userId, true);
+            $objSpeciality->addSpeciality($requestData['organization'], $this->userId, false);
             return response()->json(['status' => true, 'message' => 'Organisation added Successfully'], $this->successStatus);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
