@@ -282,8 +282,8 @@ class BookingMatch extends Model
             'booking_matches.signee_status',
             'booking_matches.signee_booking_status',
             'signee_organization.status as compliance_status',
-            'signee_organization.user_id as signeeid',
-            'signee_organization.organization_id as orgid',
+            // 'signee_organization.user_id as signeeid',
+            // 'signee_organization.organization_id as orgid',
             DB::raw('GROUP_CONCAT( DISTINCT specialities.id SEPARATOR ", ") AS speciality_id'),
             DB::raw('GROUP_CONCAT( DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             'bookings.rate',
@@ -291,7 +291,7 @@ class BookingMatch extends Model
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $booking->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -307,7 +307,7 @@ class BookingMatch extends Model
         $booking->where('bookings.id', $id);
         $booking->where('users.id', Auth::user()->id);
         //$booking->where('booking_matches.signee_id', Auth::user()->id);
-        //$booking->whereNull('booking_specialities.deleted_at');
+        $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
         $res = $booking->first();
 
