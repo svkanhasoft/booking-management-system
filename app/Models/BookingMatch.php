@@ -174,7 +174,7 @@ class BookingMatch extends Model
             DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS saaaaa'),
         );
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $booking->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
 
         // $booking->whereRaw("(
@@ -290,8 +290,8 @@ class BookingMatch extends Model
         );
         $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $booking->Join('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-        $booking->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $booking->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -308,8 +308,10 @@ class BookingMatch extends Model
         $booking->where('users.id', Auth::user()->id);
         //$booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
-        $booking->groupBy('specialities.id');
+        $booking->groupBy('bookings.id');
         $res = $booking->first();
+        // $res = $booking->toSql();
+        // print_r($res);exit;
 
         $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
         return $res;

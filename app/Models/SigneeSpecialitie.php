@@ -29,7 +29,7 @@ class SigneeSpecialitie extends Model
      */
     protected $fillable = ['user_id', 'speciality_id', 'organization_id'];
 
-    function updateSpeciality($postData, $userId, $orgId, $isDelete = true)
+    function updateSpeciality($postData, $userId, $orgId, $isDelete = false)
     {
         if ($isDelete == true) {
             SigneeSpecialitie::where(['user_id' => $userId])->delete();
