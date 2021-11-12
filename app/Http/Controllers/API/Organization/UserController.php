@@ -9,6 +9,7 @@ use Validator;
 use App\Http\Requests;
 use App\Models\Booking;
 use App\Models\BookingMatch;
+use App\Models\BookingSpeciality;
 use App\Models\User;
 use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
@@ -746,7 +747,7 @@ class UserController extends Controller
                 if ($booking['status'] == 'CONFIRMED') {
                     $booking['status'] = $requestData['status'];
                     $bookingUpdate = $booking->update();
-                    $update = BookingMatch::where(['booking_id' => $requestData['booking_id']])->update([
+                    $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
                         'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                     ]);
                     // $update = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
@@ -830,10 +831,14 @@ class UserController extends Controller
             $downloadPath = Config::get('constants.path.pdf_download');
             $requestData = $request->all();
             $objBooking = new Booking();
-            $result['data'] = $objBooking->getSigneeForPDF($requestData);
+            $data = [];
+            $result['data']['signee'] = $objBooking->getSigneeForPDF($requestData);
+            $result['data']['booking'] = $objBooking->getBooking($requestData['booking_id']);
+            //print_r($result['data']);exit();
             if (!empty($result['data'])) {
                 $result['title'] = 'Signee Details';
                 $result['date'] = date('m/d/Y');
+                //print_r($result);exit();
                 $pdf = App::make('dompdf.wrapper');
                 // load from other pages use object or array by comma like (pdf-view,$user)
                 $pdf->loadView('signee', $result);
@@ -982,5 +987,9 @@ class UserController extends Controller
         {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
+    }
+    public function getCompletedShift()
+    {
+        echo "test";
     }
 }
