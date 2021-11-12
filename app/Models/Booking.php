@@ -490,8 +490,8 @@ class Booking extends Model
             ->bcc('suresh.kanhasoft@gmail.com')
             ->send(new \App\Mail\SendSmtpMail($details));
 
-            // $objNotification = new Notification();
-            // $notification = $objNotification->addNotification($result);
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
             return true;
         } else {
             return false;
@@ -860,10 +860,11 @@ class Booking extends Model
         $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $query->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        //$query->whereIn('booking_matches.signee_id', $postData['signee_id']);
+        $query->whereIn('booking_matches.signee_id', $postData['signee_id']);
         $query->whereNull('signee_speciality.deleted_at');
         $query->where('bookings.id', $postData['booking_id']);
         $query->groupBy('booking_matches.signee_id');
+        //print_r($query->toSql());exit();
         return $query->get()->toArray();
     }
 

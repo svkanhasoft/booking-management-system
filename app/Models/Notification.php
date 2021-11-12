@@ -53,8 +53,12 @@ class Notification extends Model
             $date = date("d-m-Y", strtotime($bookingDetails['date']));
             $time = date("h:i A", strtotime($bookingDetails['start_time'])).' '.'To'.' '.date("h:i A", strtotime($bookingDetails['end_time']));
 
+            if(isset($postData['signee_booking_status']) == "OFFER")
+            {
+                $msg = 'You got offer from'.' '.$postData['hospital_name'].' '.'hospital '.' '.$postData['ward_name'].' '.'ward';
+            }
             //signee cancel his shift
-            if($postData['signeeId'] == Auth::user()->id && isset($postData['signee_booking_status']) == "CANCEL")
+            elseif($postData['signeeId'] == Auth::user()->id && isset($postData['signee_booking_status']) == "CANCEL")
             {
                 //echo "hi";exit();
                 $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been canceled';
@@ -71,6 +75,7 @@ class Notification extends Model
             {
                 $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been cancelled by admin';
             }
+
         }
         //print_r($postData['signee_booking_status'] ? $postData['signee_booking_status'] : $postData['status']);exit();
 
