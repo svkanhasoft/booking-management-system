@@ -283,12 +283,105 @@
 
 <body style="background-color: White;">
     @php
-    $pageCount = 0;
+    $pageCount= 0 ;
     @endphp
-    @foreach($data as $key=>$val)
+
+
+    <header  style="background-color: #2B68A4;">
+        <img src="http://clientbooking.kanhasoftdev.com/static/media/logo.48531655.svg" width="230px" height="94px" />
+    </header>
+    <div class="content-block ">
+        <h2 style="padding-top: 10px; font-size: 15px;">Booking Details</h2>
+        <table class="table-block">
+            <tr>
+                <td class="blue-text">
+                    Booking Name
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['reference_id'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Trust
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['name'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Hospital
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['hospital_name'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Ward
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['ward_name'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Grade
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['grade_name'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Shift Type
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['shift_type'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Rate
+                </td>
+                <td>
+                    <span id="lblAccName">{{ $data['booking']['rate'] }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="blue-text">
+                    Shift Time
+                </td>
+                <td>
+                    <span id="lblAccName">{{ date('H:i', strtotime($data['booking']['start_time'])). '-' .date('H:i', strtotime($data['booking']['end_time'])) }}</span>
+                </td>
+            </tr>
+            {{-- <tr>
+                <td class="blue-text">
+                    Shift Time
+                </td>
+                <td>
+                    <span id="lblAccName">{{ date('H:i', strtotime($data['booking']['start_time'])) - date('H:i', strtotime($data['booking']['end_time'])) }}</span>
+                </td>
+            </tr> --}}
+        </table>
+    </div>
+    <footer>
+        <div class="text-center p-3" style="background-color: #2B68A4; height:35px; width:100%; padding-top:1px">
+            <h3>© Copyright:
+                <a href="http://clientbooking.kanhasoftdev.com/login">Pluto</a>
+            </h3>
+        </div>
+    </footer>
+    <div class="page-break">
+    </div>
+
+    @foreach($data['signee'] as $key=>$val)
     @php
-    $pageCount= $pageCount+1 ;
+    $pageCount= $pageCount+1;
     @endphp
+    @if(!empty($val))
     <header  style="background-color: #2B68A4;">
         <img src="http://clientbooking.kanhasoftdev.com/static/media/logo.48531655.svg" width="230px" height="94px" />
     </header>
@@ -299,6 +392,7 @@
                     <p style="float: right; font-size : 16px">Date : {{ $date }}</p></h3>
                 </div> -->
                 <div class="content-block ">
+                    <h2 style="padding-top: 10px; padding-left: 40%; font-size: 15px;">Signee Details</h2>
                     <table class="table-block">
                         <tr>
                             <td class="blue-text">
@@ -333,14 +427,14 @@
                                 <span id="lblAccNo">{{ $val['city'] }} {{ $val['postcode'] }} {{ $val['address_line_1'] }} {{ $val['address_line_2'] }}</span>
                             </td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <td class="blue-text">
                                 Rate
                             </td>
                             <td>
                                 <span id="lblSwift">{{ $val['rate'] }}</span>
                             </td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <td class="blue-text">
                                 Speciality
@@ -364,7 +458,10 @@
             </h3>
         </div>
     </footer>
+    @endif
     @endforeach
+
+
 </body>
 
 
