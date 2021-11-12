@@ -667,7 +667,7 @@ class SigneesController extends Controller
         try {
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, Auth::user()->parent_id, true);
+            $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, Auth::user()->parent_id, false);
 
             $bookingArray = new Booking();
             $booking = $bookingArray->editMetchBySigneeId($userId);
