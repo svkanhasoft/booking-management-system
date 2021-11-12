@@ -649,7 +649,7 @@ class UserController extends Controller
             $objBooking = new Booking();
             //dd(Auth::user()->role);
             if ($requestData['status'] == 'CANCEL' || $requestData['status'] == 'DECLINE' || $requestData['status'] == 'PENDING') {
-                //echo "123";exit;
+               // echo Auth::user()->role;exit;
                 //$signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
                 if (Auth::user()->role == 'SIGNEE') {
                     // dd($requestData);
@@ -662,11 +662,12 @@ class UserController extends Controller
                 // echo "123";exit;
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
+                //echo '123';exit;
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-                $booking = booking::findOrFail($requestData['booking_id']);
-                $booking['status'] = $requestData['status'];
-                $bookingUpdate = $booking->update($requestData);
+                // $booking = booking::findOrFail($requestData['booking_id']);
+                // $booking['status'] = $requestData['status'];
+                // $bookingUpdate = $booking->update($requestData);
 
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->signee_booking_status = $requestData['status'];
@@ -740,22 +741,27 @@ class UserController extends Controller
             $signees = $objBooking->getMetchByBookingId($requestData['booking_id']);
             $booking = booking::findOrFail($requestData['booking_id']);
             if ($booking['status'] == 'CREATED') {
-                $booking['status'] = $requestData['status'];
-                $booking->update();
-            } else {
-                // dd(array_search($booking['status'], array('CONFIRMED', 'APPLY', 'OFFER'), true));
-                if ($booking['status'] == 'CONFIRMED') {
-                    $booking['status'] = $requestData['status'];
-                    $bookingUpdate = $booking->update();
-                    $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
-                        'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
-                    ]);
-                    // $update = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
-                    //     'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
-                    // ]);
-                    $objBooking->sendBookingCancelByStaffEmail($signees);
-                }
+                $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
+                    'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
+                ]);
+                $objBooking->sendBookingCancelByStaffEmail($signees);
+                // $booking['status'] = $requestData['status'];
+                // $booking->update();
             }
+            // else {
+            //     // dd(array_search($booking['status'], array('CONFIRMED', 'APPLY', 'OFFER'), true));
+            //     if ($booking['status'] == 'CONFIRMED') {
+            //         $booking['status'] = $requestData['status'];
+            //         $bookingUpdate = $booking->update();
+            //         // $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
+            //         //     'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
+            //         // ]);
+            //         // $update = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
+            //         //     'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
+            //         // ]);
+            //         $objBooking->sendBookingCancelByStaffEmail($signees);
+            //     }
+            //}
             if ($booking) {
                 return response()->json(['status' => true, 'message' => 'Booking canceled successfully'], $this->successStatus);
             } else {
