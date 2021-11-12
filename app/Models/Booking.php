@@ -33,6 +33,41 @@ class Booking extends Model
     protected $fillable = ['user_id', 'hospital_id','reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate', 'start_time', 'end_time','created_by', 'updated_by'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
+    // public function getBooking($bookingId = null)
+    // {
+    //     $query = Booking::select(
+    //         'bookings.*',
+    //         'ward.ward_name',
+    //         'trusts.name',
+    //         'grade.grade_name',
+    //         'hospitals.hospital_name',
+    //         'shift_type.shift_type',
+    //         'organization_shift.start_time',
+    //         'organization_shift.end_time',
+    //         'users.email',
+    //         'users.postcode',
+    //         'users.city',
+    //         'users.address_line_1',
+    //         'users.address_line_2',
+    //         DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+    //         DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR "  | ") AS speciality_name'),
+    //         DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+    //         DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
+    //     );
+    //     $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+    //     $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
+    //     $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
+    //     $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
+    //     $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+    //     $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+    //     $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
+
+    //     $query->where('bookings.id', $bookingId);
+    //     $query->whereNull('signee_speciality.deleted_at');
+    //     $query->groupBy('booking_matches.signee_id');
+    //     return $query->first();
+    // }
+
     public function getBooking($bookingId = null)
     {
         $query = Booking::select(
@@ -752,11 +787,14 @@ class Booking extends Model
             'users.last_name',
             'users.email',
             'booking_matches.signee_booking_status',
+            'signee_organization.status as compliance_status',
             'bookings.user_id as organization_id',
             'bookings.*',
         );
         $subQuery->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('users',  'users.id', '=', 'booking_matches.signee_id');
+        $subQuery->Join('signee_organization',  'signee_organization.user_id', '=', 'users.id');
+        $subQuery->where('signee_organization.organization_id', Auth::user()->id);
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status',$status );
@@ -771,7 +809,6 @@ class Booking extends Model
         //print_r($postData);exit;
         $query = Booking::select(
             'bookings.*',
-            'booking_matches.signee_id',
             'users.contact_number',
             'users.email',
             'users.postcode',
@@ -785,11 +822,16 @@ class Booking extends Model
         $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $query->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
         $query->leftJoin('signee_speciality',  'signee_speciality.user_id', '=', 'booking_matches.signee_id');
+        // $query->join('signee_speciality', function ($join) {
+        //     $join->on('signee_speciality.organization_id', '=', 'bookings.user_id');
+        //     $join->on('signee_speciality.user_id', '=', 'booking_matches.signee_id');
+        // });
         $query->leftJoin('specialities',  'specialities.id', '=', 'signee_speciality.speciality_id');
-        //$query->where('booking_matches.signee_id',$postData['signee_id']);
+        $query->whereIn('booking_matches.signee_id', $postData['signee_id']);
         $query->whereNull('signee_speciality.deleted_at');
         $query->where('bookings.id', $postData['booking_id']);
         $query->groupBy('booking_matches.signee_id');
+        //print_r($query->toSql());exit();
         return $query->get()->toArray();
     }
 
@@ -818,7 +860,7 @@ class Booking extends Model
         $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $query->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        //$query->whereIn('booking_matches.signee_id',$postData['signee_id']);
+        //$query->whereIn('booking_matches.signee_id', $postData['signee_id']);
         $query->whereNull('signee_speciality.deleted_at');
         $query->where('bookings.id', $postData['booking_id']);
         $query->groupBy('booking_matches.signee_id');

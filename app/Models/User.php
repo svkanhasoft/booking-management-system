@@ -333,17 +333,9 @@ class User extends Authenticatable
         //$query->where('users.parent_id', $userId);
         if(Auth::user()->role == 'ORGANIZATION'){
             //echo "123";exit;
-            $org = SigneeOrganization::where('organization_id', $userId)->get()->toArray();
-            $userIdArray = array_column($org, 'user_id');
-            //print_r($userIdArray);exit();
-            // $signee = User::select('id')->where(['parent_id' => Auth::user()->id])->get()->toArray();
-            // $signeeIdArray = array_column($signee, 'id');
-            // $signeeIdArray[] = Auth::user()->id;
-            // $mainArray = array_merge($userIdArray, $signeeIdArray);
-            //print_r($signeeIdArray);exit();
-
-            $query->where('signee_organization.organization_id', $userId);
-            $query->whereIn('users.id', $userIdArray);
+            $signee = User::where(['parent_id' => Auth::user()->id, 'role'=>'SIGNEE'])->get()->toArray();
+            $signeeIdArray = array_column($signee, 'id');
+            $query->whereIn('users.id', $signeeIdArray);
         }
         else{
 
@@ -365,7 +357,8 @@ class User extends Authenticatable
 
         $query->groupBy('signee_organization.user_id');
         // $query->groupBy('signee_speciality.user_id');
-        return $query->latest('users.created_at')->paginate($perPage);
+        //print_r($query->toSql());exit();
+         return $query->latest('users.created_at')->paginate($perPage);
     }
 
     public function speciality()
