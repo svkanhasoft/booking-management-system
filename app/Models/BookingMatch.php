@@ -217,7 +217,7 @@ class BookingMatch extends Model
         // $booking->whereNull('booking_matches.deleted_at');
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('signee_speciality.deleted_at');
-        // $booking->whereNull('booking_specialities.deleted_at');
+        $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
         // $res = $booking->toSql();
