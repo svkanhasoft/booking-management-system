@@ -191,7 +191,7 @@ class BookingMatch extends Model
         $booking->leftJoin('ward_type', 'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type', 'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('users',  'users.parent_id', '=', 'bookings.user_id');
-        $booking->Join('booking_matches', 'booking_matches.booking_id', '=', 'bookings.id');
+        $booking->leftJoin('booking_matches', 'booking_matches.booking_id', '=', 'bookings.id');
         $booking->join('signee_organization', function ($join) {
             $join->on('signee_organization.user_id', '=', 'users.id');
             $join->on('signee_organization.organization_id', '=', 'users.parent_id');
@@ -212,12 +212,12 @@ class BookingMatch extends Model
             $booking->where('users.parent_id', Auth::user()->parent_id);
         }
         $booking->whereIn('bookings.user_id', $staffIdArray);
-        $booking->whereIn('specialities.user_id',  $staffIdArray);
+        // $booking->whereIn('specialities.user_id',  $staffIdArray);
         // $booking->where('specialities.user_id', Auth::user()->parent_id);
-        $booking->whereNull('booking_matches.deleted_at');
+        // $booking->whereNull('booking_matches.deleted_at');
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('signee_speciality.deleted_at');
-        $booking->whereNull('booking_specialities.deleted_at');
+        // $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
         // $res = $booking->toSql();
