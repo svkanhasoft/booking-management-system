@@ -78,7 +78,9 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
-
+        if (!$checkRecord) {
+            return response()->json(['message' => "Sorry, your email does't exists", 'status' => false], 200);
+        }
         $query = Designation::select(
             'designations.designation_name'
         );
@@ -97,7 +99,7 @@ class SuperAdminController extends Controller
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $user['token'] =  $user->createToken('MyApp')->accessToken;
-            if($checkRecord->role == 'STAFF'){
+            if ($checkRecord->role == 'STAFF') {
                 // $user['staffdetails'] =  $checkRecord->stafdetails;
                 $user['staffdetails'] = $userDetais['designation_name'];
             }
@@ -385,19 +387,17 @@ class SuperAdminController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        try
-        {
+        try {
             $userList = User::where('parent_id', $requestData['id'])->get()->toArray();
             $userArray = array_column($userList, 'id');
             $userArray[] = $requestData['id'];
             $userUpdate = User::whereIn('id', $userArray)->update([
                 'status' => $requestData['status'],
             ]);
-            if($userUpdate)
-            {
+            if ($userUpdate) {
                 // \Log::info("Organization status changed successfully");
                 return response()->json(['status' => true, 'message' => 'Organization status changed successfully'], $this->successStatus);
-            } else{
+            } else {
                 return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
             }
         } catch (\Exception $e) {
