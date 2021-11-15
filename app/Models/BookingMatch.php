@@ -411,6 +411,7 @@ class BookingMatch extends Model
             'signee_organization.user_id as signeeid',
             'signee_organization.organization_id as orgid',
             'signee_organization.id as signee_organization_id',
+            'booking_matches.id as booking_matched_id',
             DB::raw('GROUP_CONCAT( DISTINCT specialities.id SEPARATOR ", ") AS speciality_id'),
             DB::raw('GROUP_CONCAT( DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             'bookings.rate',
@@ -428,14 +429,16 @@ class BookingMatch extends Model
         $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
 
         $booking->where('bookings.id', $id);
-        $booking->where('users.id', Auth::user()->id);
+        //$booking->where('users.id', Auth::user()->id);
+        $booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $res = $booking->first();
         // $res = $booking->toSql();
-        // print_r($res);exit;
+        //print_r($res);exit;
         $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
-        if(!$result){
+        //print_r(!$result);exit;
+        if($result){
             $res['signee_booking_status'] = '';
             $res['booking_record_perm_for_signees'] = $this->managePermission('',$res['profile_status']);
         }else{
@@ -532,7 +535,7 @@ class BookingMatch extends Model
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
-        
+
         if ($shiftType == 'past') {
             $booking->where('bookings.date', '<', date('y-m-d'));
             $booking->where('bookings.status', 'CONFIRMED');

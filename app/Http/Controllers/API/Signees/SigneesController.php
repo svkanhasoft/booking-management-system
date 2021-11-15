@@ -852,6 +852,7 @@ class SigneesController extends Controller
      */
     public function applyShift(Request $request)
     {
+        //print_r(Auth::user()->id);exit;
         $requestData = $request->all();
 
         $validator = Validator::make($request->all(), [
@@ -870,7 +871,7 @@ class SigneesController extends Controller
             ]);
 
             if ($res) {
-                return response()->json(['status' => true, 'message' => 'You have successfully applied for the shift'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'You have successfully applied for this shift'], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);
             }
