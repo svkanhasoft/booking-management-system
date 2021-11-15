@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SigneeSpecialitie extends Model
 {
-    use SoftDeletes;
+    //use SoftDeletes;
     /**
      * The database table used by the model.
      *
@@ -31,11 +31,13 @@ class SigneeSpecialitie extends Model
 
     function updateSpeciality($postData, $userId, $orgId, $isDelete = false)
     {
-        if ($isDelete == true) {
-            SigneeSpecialitie::where(['user_id' => $userId])->delete();
-        }
+        //print_r($postData);exit;
+        // if ($isDelete == true) {
+        //     SigneeSpecialitie::where(['user_id' => $userId])->delete();
+        // }
+        SigneeSpecialitie::where('user_id', '=', $userId)->whereNotIn('speciality_id', $postData)->delete();
         foreach ($postData as $key => $val) {
-            $objSigneeSpecialitie = new SigneeSpecialitie();
+            $objSigneeSpecialitie = SigneeSpecialitie::where(['user_id' => $userId, 'speciality_id' => $val, 'organization_id' => $orgId])->firstOrNew();;
             $objSigneeSpecialitie->speciality_id = $val;
             $objSigneeSpecialitie->user_id = $userId;
             $objSigneeSpecialitie->organization_id = $orgId;
@@ -43,6 +45,19 @@ class SigneeSpecialitie extends Model
             $objSigneeSpecialitie = "";
         }
         return true;
+
+        // if ($isDelete == true) {
+        //     SigneeSpecialitie::where(['user_id' => $userId])->delete();
+        // }
+        // foreach ($postData as $key => $val) {
+        //     $objSigneeSpecialitie = new SigneeSpecialitie();
+        //     $objSigneeSpecialitie->speciality_id = $val;
+        //     $objSigneeSpecialitie->user_id = $userId;
+        //     $objSigneeSpecialitie->organization_id = $orgId;
+        //     $objSigneeSpecialitie->save();
+        //     $objSigneeSpecialitie = "";
+        // }
+        // return true;
     }
 
     public function addSpeciality($postData, $userId, $isDelete = false)
