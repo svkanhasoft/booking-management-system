@@ -407,6 +407,7 @@ class BookingMatch extends Model
             'users.email',
             'booking_matches.signee_status',
             'booking_matches.signee_booking_status',
+            // 'signeetable.signee_booking_status as tempstatus',
             'signee_organization.status as compliance_status',
             'signee_organization.user_id as signeeid',
             'signee_organization.organization_id as orgid',
@@ -427,6 +428,7 @@ class BookingMatch extends Model
         $booking->Join('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->Join('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $booking->leftJoin('booking_matches as signeetable',  'booking_matches.signee_id', '=', 'users.id');
 
         $booking->where('bookings.id', $id);
         $booking->where('users.id', Auth::user()->id);
