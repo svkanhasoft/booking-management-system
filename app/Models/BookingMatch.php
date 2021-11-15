@@ -432,6 +432,7 @@ class BookingMatch extends Model
         $booking->where('users.id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
+        //$booking->groupBy('bookings.id');
         $res = $booking->first();
         $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
         if(!$result){
