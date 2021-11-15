@@ -407,7 +407,7 @@ class BookingMatch extends Model
             'users.email',
             'booking_matches.signee_status',
             'booking_matches.signee_booking_status',
-            // 'signeetable.signee_booking_status as tempstatus',
+            'signeetable.signee_booking_status as tempstatus',
             'signee_organization.status as compliance_status',
             'signee_organization.user_id as signeeid',
             'signee_organization.organization_id as orgid',
