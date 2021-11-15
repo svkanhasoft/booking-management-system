@@ -419,18 +419,18 @@ class BookingMatch extends Model
 
         $booking->Join('signee_organization',  'signee_organization.organization_id', '=', 'bookings.user_id');
         $booking->Join('users',  'users.id', '=', 'signee_organization.user_id');
-        $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $booking->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->Join('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->Join('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('booking_matches', function($join)
-                         {
-                            $join->on('booking_matches.booking_id', '=', 'bookings.id');
-                            $join->on('booking_matches.signee_id','=', 'users.id');
-                         });
+        {
+            $join->on('booking_matches.booking_id', '=', 'bookings.id');
+            $join->on('booking_matches.signee_id','=', 'users.id');
+        });
         // $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         // $booking->leftJoin('booking_matches as signeetable',  'booking_matches.signee_id', '=', 'users.id');
 

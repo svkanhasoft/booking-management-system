@@ -305,6 +305,7 @@ class User extends Authenticatable
         // print_r($userId);exit();
         $keyword = $request->get('search');
         $perPage = Config::get('constants.pagination.perPage');
+        //$perPage = 70;
         $query = User::select(
             'users.id',
             'users.first_name',
@@ -333,9 +334,17 @@ class User extends Authenticatable
         //$query->where('users.parent_id', $userId);
         if(Auth::user()->role == 'ORGANIZATION'){
             //echo "123";exit;
-            $signee = User::where(['parent_id' => Auth::user()->id, 'role'=>'SIGNEE'])->get()->toArray();
-            $signeeIdArray = array_column($signee, 'id');
-            $query->whereIn('users.id', $signeeIdArray);
+            $staffList = SigneeOrganization::where('organization_id' , Auth::user()->id)->get()->toArray();
+            //print_r($staffList);exit;
+
+            $staffIdArray = array_column($staffList, 'user_id');
+            //print_r($staffIdArray);exit;
+
+
+            //$signeeList = SigneeOrganization::whereIn(['organization_id' => $staffIdArray])->get()->toArray();
+            //$signeeIdArray = array_column($signeeList, 'id');
+            //print_r($signeeIdArray);exit;
+            $query->whereIn('users.id', $staffIdArray);
         }
         else{
 
