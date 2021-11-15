@@ -58,7 +58,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->signee_booking_status = 'PENDING';
+            // $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             //print_r($objBookingMatch);exit;
             //$objBookingMatch = '';
@@ -405,10 +405,15 @@ class BookingMatch extends Model
             $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
-        $booking->where('bookings.status', 'CONFIRMED');
+        
         if ($shiftType == 'past') {
             $booking->where('bookings.date', '<', date('y-m-d'));
+            $booking->where('bookings.status', 'CONFIRMED');
+        }else if ($shiftType == 'apply') {
+            $booking->where('bookings.status', 'APPLY');
+            $booking->where('bookings.date', '<=', date('y-m-d'));
         } else {
+            $booking->where('bookings.status', 'CONFIRMED');
             $booking->where('bookings.date', '>=', date('y-m-d'));
         }
         $booking->whereIn('bookings.user_id', $staffIdArray);
@@ -422,7 +427,6 @@ class BookingMatch extends Model
         foreach ($res as $keys => $values) {
             $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
-        //print_r($res);exit;
         return $res;
     }
 

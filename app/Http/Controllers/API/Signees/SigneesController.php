@@ -489,6 +489,7 @@ class SigneesController extends Controller
         $bookingMatching = new BookingMatch();
         $result['upcoming'] = $bookingMatching->getMyShift('upcoming');
         $result['past'] = $bookingMatching->getMyShift('past');
+        $result['apply'] = $bookingMatching->getMyShift('apply');
         //print_r($result);exit();
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Your shift listed successfully', 'data' => $result], $this->successStatus);
@@ -863,7 +864,7 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            $res =  BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
+            $res =  BookingMatch::whereNull('deleted_at')->where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_status'=>  $requestData['signee_status'],
                 'signee_booking_status'=>  'APPLY',
             ]);
