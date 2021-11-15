@@ -435,7 +435,6 @@ class BookingMatch extends Model
         $booking->groupBy('bookings.id');
         $res = $booking->first();
         // $res = $booking->toSql();
-        //print_r($res);exit;
         $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
         //print_r($result);exit;
         if(!$result){
