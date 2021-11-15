@@ -524,6 +524,7 @@ class BookingMatch extends Model
             'signee_organization.user_id as sid',
             "signee_organization.organization_id as orgid",
             'signee_organization.status as compliance_status',
+            'booking_matches.id as bmid',
             DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
@@ -540,16 +541,29 @@ class BookingMatch extends Model
         });
         $booking->Join('users',  'users.id', '=', 'booking_matches.signee_id');
 
-        if ($shiftType == 'past') {
-            $booking->where('bookings.date', '<', date('y-m-d'));
+        if ($shiftType === 'past') {
+            $booking->where('bookings.date', '<', date('Y-m-d'));
+            // $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
             $booking->where('bookings.status', 'CONFIRMED');
-        }else if ($shiftType == 'apply') {
-            $booking->where('bookings.status', 'APPLY');
-            $booking->where('bookings.date', '<=', date('y-m-d'));
-        } else {
-            $booking->where('bookings.status', 'CONFIRMED');
-            $booking->where('bookings.date', '>=', date('y-m-d'));
+        }else if ($shiftType === 'apply') {
+            $booking->where('booking_matches.signee_booking_status', 'APPLY');
+            $booking->where('bookings.date', '>=', date('Y-m-d'));
+        } else if ($shiftType === 'upcoming') {
+            // $booking->where('bookings.status', 'CONFIRMED');
+            // $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
+            $booking->where('bookings.date', '>=', date('Y-m-d'));
         }
+        // if ($shiftType == 'past') {
+        //     $booking->where('bookings.date', '<', date('y-m-d'));
+        //     $booking->where('bookings.status', 'CONFIRMED');
+        // }else if ($shiftType == 'apply') {
+        //     //$booking->where('bookings.status', 'APPLY');
+        //     $booking->where('booking_matches.signee_booking_status', 'APPLY');
+        //     $booking->where('bookings.date', '>=', date('y-m-d'));
+        // } else {
+        //     $booking->where('bookings.status', 'CONFIRMED');
+        //     $booking->where('bookings.date', '>=', date('y-m-d'));
+        // }
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
