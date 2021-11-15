@@ -916,11 +916,11 @@ class Booking extends Model
     {
         $query = Booking::select(
             'bookings.*',
-            'booking_matches.signee_booking_status'
+            'booking_matches.signee_booking_status',
         );
         $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $query->where('booking_matches.signee_booking_status', 'APPLY');
-        $query->where('booking_matches.organization_id', Auth::user()->id);
-        return $query->get()->toArray();
+        $query->where('booking_matches.signee_id', Auth::user()->id);
+        return $query->get();
     }
 }

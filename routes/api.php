@@ -105,7 +105,6 @@ Route::prefix('organization')->group(function () {
         Route::post('/change-signee-compliance-status', [SigneesController::class, 'changeSigneeComplianceStatus']);
         Route::put('/change-signee-payment-status', [UserController::class, 'changeSigneePaymentStatus']);
         Route::post('/confirm-booking', [UserController::class, 'bookingStatus']);
-        Route::get('/get-applied-shift', [UserController::class, 'getAppliedShift']);
         //Route::get('/get-completed-shift', [UserController::class, 'getCompletedShift']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
@@ -175,6 +174,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-organisation-add-org', [SigneesController::class, 'getOrganisationListAddOrg']);
         Route::post('/multi-org-login/{organization_id?}', [SigneesController::class, 'multiOrgLogin']);
         Route::post('/apply-shift', [SigneesController::class, 'applyShift']);
+        Route::get('/get-applied-shift', [UserController::class, 'getAppliedShift']);
     });
 });
 
