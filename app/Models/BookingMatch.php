@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class BookingMatch extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
     /**
      * The database table used by the model.
      *
@@ -404,42 +404,43 @@ class BookingMatch extends Model
             'trusts.city',
             'trusts.post_code',
             'users.status as profile_status',
+            'users.email',
             'booking_matches.signee_status',
             'booking_matches.signee_booking_status',
             'signee_organization.status as compliance_status',
-            // 'signee_organization.user_id as signeeid',
-            // 'signee_organization.organization_id as orgid',
+            'signee_organization.user_id as signeeid',
+            'signee_organization.organization_id as orgid',
+            'signee_organization.id as signee_organization_id',
             DB::raw('GROUP_CONCAT( DISTINCT specialities.id SEPARATOR ", ") AS speciality_id'),
             DB::raw('GROUP_CONCAT( DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             'bookings.rate',
         );
-        $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+
+        $booking->Join('signee_organization',  'signee_organization.organization_id', '=', 'bookings.user_id');
+        $booking->Join('users',  'users.id', '=', 'signee_organization.user_id');
         $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        // $booking->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
         $booking->Join('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->Join('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->Join('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-        $booking->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
-        $booking->leftJoin('signee_organization', function ($join) {
-            // $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
-            //$join->on('signee_organization.user_id', '=', 'users.id');
-            $join->on('signee_organization.organization_id', '=', 'bookings.user_id');
-            $join->where('signee_organization.user_id', Auth::user()->id);
-        });
+        $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
 
         $booking->where('bookings.id', $id);
-        // $booking->where('users.id', Auth::user()->id);
-        //$booking->where('booking_matches.signee_id', Auth::user()->id);
+        $booking->where('users.id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $res = $booking->first();
         // $res = $booking->toSql();
         // print_r($res);exit;
-
-        $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
+        $result = BookingMatch::where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
+        if(!$result){
+            $res['signee_booking_status'] = '';
+            $res['booking_record_perm_for_signees'] = $this->managePermission('',$res['profile_status']);
+        }else{
+            $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
+        }
         return $res;
     }
 
