@@ -415,8 +415,17 @@ class User extends Authenticatable
         $query->leftJoin('organization_user_details as oud',  'oud.user_id', '=', 'users.parent_id');
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->leftJoin('signee_organization',  'signee_organization.user_id', '=', 'users.id');
+
+        if(Auth::user()->role == 'ORGANIZATION'){
+            //print(Auth::user()->id);exit;
+            $query->where('signee_organization.organization_id', Auth::user()->id);
+        }else{
+            //print(Auth::user()->role);exit;
+            $query->where('signee_organization.organization_id', Auth::user()->parent_id);
+        }
+
         $query->where('users.id', $userId);
-        $query->where('signee_organization.organization_id', Auth::user()->id);
+        //$query->where('signee_organization.organization_id', Auth::user()->id);
         $userDetais = $query->first();
         //query for speciality
         $query2 = SigneeSpecialitie::select(
