@@ -779,7 +779,7 @@ class UserController extends Controller
     {
         $objBooking = new Booking();
         try {
-            $signees = $objBooking->getMetchByBookingId($requestData['booking_id']);
+            $signees = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
             $booking = booking::findOrFail($requestData['booking_id']);
             if ($booking['status'] == 'CREATED') {
                 $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
