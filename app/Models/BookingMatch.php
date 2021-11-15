@@ -431,7 +431,7 @@ class BookingMatch extends Model
         $booking->leftJoin('booking_matches as signeetable',  'booking_matches.signee_id', '=', 'users.id');
 
         $booking->where('bookings.id', $id);
-        $booking->where('users.id', Auth::user()->id);
+        $booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('specialities.id');
         //$booking->groupBy('bookings.id');
