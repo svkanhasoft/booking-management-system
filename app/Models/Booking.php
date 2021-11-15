@@ -794,11 +794,20 @@ class Booking extends Model
         $subQuery->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $subQuery->Join('signee_organization',  'signee_organization.user_id', '=', 'users.id');
-        $subQuery->where('signee_organization.organization_id', Auth::user()->id);
+        if(Auth::user()->role == 'ORGANIZATION'){
+
+            $subQuery->where('signee_organization.organization_id', Auth::user()->id);
+        }else{
+            //print_r(Auth::user()->role);exit;
+            // $query->where('bookings.user_id',Auth::user()->id);
+            $subQuery->where('signee_organization.organization_id', Auth::user()->parent_id);
+        }
+
+        //$subQuery->where('signee_organization.organization_id', Auth::user()->id);
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status',$status );
-        $subQuery->where('booking_matches.deleted_at');;
+        $subQuery->where('booking_matches.deleted_at');
         $res = $subQuery->get()->toArray();
 
         return $res;
