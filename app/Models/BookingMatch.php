@@ -429,16 +429,16 @@ class BookingMatch extends Model
         $booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
 
         $booking->where('bookings.id', $id);
-        //$booking->where('users.id', Auth::user()->id);
-        $booking->where('booking_matches.signee_id', Auth::user()->id);
+        $booking->where('users.id', Auth::user()->id);
+        //$booking->where('booking_matches.signee_id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
         $res = $booking->first();
         // $res = $booking->toSql();
         //print_r($res);exit;
         $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
-        //print_r(!$result);exit;
-        if($result){
+        //print_r($result);exit;
+        if(!$result){
             $res['signee_booking_status'] = '';
             $res['booking_record_perm_for_signees'] = $this->managePermission('',$res['profile_status']);
         }else{
