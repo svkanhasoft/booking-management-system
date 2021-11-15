@@ -434,7 +434,7 @@ class BookingMatch extends Model
         $res = $booking->first();
         // $res = $booking->toSql();
         // print_r($res);exit;
-        $result = BookingMatch::where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
+        $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
         if(!$result){
             $res['signee_booking_status'] = '';
             $res['booking_record_perm_for_signees'] = $this->managePermission('',$res['profile_status']);
