@@ -543,14 +543,14 @@ class BookingMatch extends Model
 
         if ($shiftType === 'past') {
             $booking->where('bookings.date', '<', date('Y-m-d'));
-            // $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
+            $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
             $booking->where('bookings.status', 'CONFIRMED');
         }else if ($shiftType === 'apply') {
             $booking->where('booking_matches.signee_booking_status', 'APPLY');
             $booking->where('bookings.date', '>=', date('Y-m-d'));
         } else if ($shiftType === 'upcoming') {
             // $booking->where('bookings.status', 'CONFIRMED');
-            // $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
+            $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
             $booking->where('bookings.date', '>=', date('Y-m-d'));
         }
         // if ($shiftType == 'past') {
