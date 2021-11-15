@@ -300,9 +300,11 @@ class Booking extends Model
             'ward.ward_name',
             'ward_type.ward_type',
             'booking_matches.signee_status',
+            'booking_matches.signee_booking_status',
+            'booking_matches.id as bookingMatchId',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
-            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
             DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
@@ -443,8 +445,7 @@ class Booking extends Model
     {
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
-            foreach($result as $key=>$val)
-            {
+
                 //print_r($result[$key]['email']);exit();
                 //print_r($val);exit();
                 $details = [
@@ -452,18 +453,17 @@ class Booking extends Model
                     'body' => 'Hello ',
                     'mailTitle' => 'bookingCancelByStaff',
                     'subject' => 'Booking Management System: Your booking is canceled',
-                    'data' => $val
+                    'data' => $result
                 ];
                 // print_r($details['data']);exit();
-                $emailRes = \Mail::to($result)
+                $emailRes = \Mail::to($result['email'])
                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
                 ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
                 $objNotification = new Notification();
-                $notification = $objNotification->addNotification($val);
-            }
+                $notification = $objNotification->addNotification($result);
             return true;
         } else {
             return false;
