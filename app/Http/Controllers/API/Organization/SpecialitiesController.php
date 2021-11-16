@@ -245,9 +245,10 @@ class SpecialitiesController extends Controller
             $staffIdArray[] = Auth::user()->id;
             $query2 = Speciality::whereIn('user_id', $staffIdArray);
         }else{
+            //print(Auth::user()->role);exit;
             $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
         }
-        $res = $speciality->get()->toArray();
+        $res = $query2->get()->toArray();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $res], $this->successStatus);
         } else {
