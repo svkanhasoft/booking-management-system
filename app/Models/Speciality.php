@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Speciality extends Model
 {
-    //use SoftDeletes;
+    use SoftDeletes;
     /**
      * The database table used by the model.
      *
