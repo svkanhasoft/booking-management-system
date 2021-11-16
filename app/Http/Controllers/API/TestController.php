@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
 use PDF;
 use App;
 use App\Models\Booking;
+use App\Models\Notification;
 
 class TestController extends Controller
 {
@@ -52,8 +53,9 @@ class TestController extends Controller
             return response()->json(['status' => false, 'message' => $e], 200);
         }
     }
-    
-    public function getData(){
+
+    public function getData()
+    {
         $res = Booking::find(102);
         // $res->users;
         // $res->ward;
@@ -67,7 +69,8 @@ class TestController extends Controller
         dd($res);
     }
 
-    public function getOrg(){
+    public function getOrg()
+    {
         // $res = User::where(['user_id' => 138]);
         $res = User::find(138);
         $res->organizations;
@@ -86,7 +89,15 @@ class TestController extends Controller
         // $res->user;
         echo "<pre/>";
         dd($res);
-        return response()->json(['message' => 'Sorry, Availablity update failed!', 'data'=>$res,'status' => false], 409);
+        return response()->json(['message' => 'Sorry, Availablity update failed!', 'data' => $res, 'status' => false], 409);
     }
-    
+
+    public function notification()
+    {
+        echo "fsdfsd";
+        $token =  "dQE4u0N01ACA4o-RoJ71ac:APA91bF4BOzk21A-5DS-wpypdGjlwxn1D76-RlxxpZEoeNMdhfmeFHEd3ZoryraNhBGa3V3DehGR9TUVxFCiXgM9iqsmN4lGneR77uGCr6S9Ajk4doLocSwyRq_Uh8EJ0CqkLuOBUL1j";
+        $objNotification = new Notification();
+        $response   = $objNotification->sendAndroidNotification("Hello notification",$token,7);
+        dd($response);
+    }
 }
