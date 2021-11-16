@@ -145,8 +145,8 @@ class SigneesController extends Controller
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
             $checkRecord->parent_id =  request('organization_id');
             $checkRecord->last_login_date =  date('Y-m-d H:i:s');
-            $checkRecord->device_id =  !empty($request->header('device_id')) ? $request->header('device_id') : '';
-            $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Web';
+            $checkRecord->device_id =  !empty($request->header('deviceId')) ? $request->header('deviceId') : '';
+            $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Android';
             $checkRecord->save();
 
 
