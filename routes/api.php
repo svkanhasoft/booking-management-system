@@ -181,5 +181,6 @@ Route::prefix('signee')->group(function () {
 
 Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
+Route::get('/send-notification', [TestController::class, 'notification']);
 Route::get('/dashboard', [DashboardController::class, 'totalUser']);
 // Route::get('/pdf/{signee_id?}', [TestController::class, 'pdf']);
