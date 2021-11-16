@@ -8,6 +8,7 @@ use DB;
 use Illuminate\Http\Request;
 use Config;
 use Auth;
+
 class Booking extends Model
 {
     use SoftDeletes;
@@ -30,7 +31,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'hospital_id','reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate', 'start_time', 'end_time','created_by', 'updated_by'];
+    protected $fillable = ['user_id', 'hospital_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate', 'start_time', 'end_time', 'created_by', 'updated_by'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     // public function getBooking($bookingId = null)
@@ -145,19 +146,19 @@ class Booking extends Model
         }
 
         $query->where('bookings.status', $status);
-        if($status == 'CREATED'){
+        if ($status == 'CREATED') {
             $query->where('bookings.date', '>=', date('y-m-d'));
         }
         // $query->where('bookings.user_id',Auth::user()->id);
 
-        if(Auth::user()->role == 'ORGANIZATION'){
+        if (Auth::user()->role == 'ORGANIZATION') {
             $staff = User::select('id')->where('parent_id', Auth::user()->id)->get()->toArray();
             $staffIdArray = array_column($staff, 'id');
             $staffIdArray[] = Auth::user()->id;
-            $query->whereIn('bookings.user_id',$staffIdArray);
-        }else{
+            $query->whereIn('bookings.user_id', $staffIdArray);
+        } else {
             // $query->where('bookings.user_id',Auth::user()->id);
-            $query->whereIn('bookings.user_id',array(Auth::user()->id,Auth::user()->parent_id));
+            $query->whereIn('bookings.user_id', array(Auth::user()->id, Auth::user()->parent_id));
         }
 
         $query->whereNull('bookings.deleted_at');
@@ -200,9 +201,9 @@ class Booking extends Model
         }
 
         $query->where('bookings.status', $status);
-        $query->whereIn('bookings.user_id',array(Auth::user()->id,Auth::user()->parent_id));
+        $query->whereIn('bookings.user_id', array(Auth::user()->id, Auth::user()->parent_id));
         $query->whereNull('bookings.deleted_at');
-        $query->groupBy ('bookings.id');
+        $query->groupBy('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);
         return $bookingList;
     }
@@ -241,7 +242,7 @@ class Booking extends Model
 
         $query->where('bookings.status', $status);
         $query->whereNull('bookings.deleted_at');
-        $query->groupBy ('bookings.id');
+        $query->groupBy('bookings.id');
         $bookingList = $query->latest()->paginate($perPage);;
 
         $subArray = [];
@@ -382,7 +383,11 @@ class Booking extends Model
         $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        //$subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $subQuery->leftJoin('booking_matches', function ($join) {
+            $join->on('booking_matches.booking_id', '=', 'bookings.id');
+            $join->on('booking_matches.signee_id', '=', 'users.id');
+        });
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
 
         $subQuery->where('users.role', 'SIGNEE');
@@ -427,9 +432,9 @@ class Booking extends Model
             ];
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-            ->cc('maulik.kanhasoft@gmail.com')
-            ->bcc('suresh.kanhasoft@gmail.com')
-            ->send(new \App\Mail\SendSmtpMail($details));
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
 
             //send notification
             $objNotification = new Notification();
@@ -446,24 +451,24 @@ class Booking extends Model
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
 
-                //print_r($result[$key]['email']);exit();
-                //print_r($val);exit();
-                $details = [
-                    'title' => '',
-                    'body' => 'Hello ',
-                    'mailTitle' => 'bookingCancelByStaff',
-                    'subject' => 'Booking Management System: Your booking is canceled',
-                    'data' => $result
-                ];
-                // print_r($details['data']);exit();
-                $emailRes = \Mail::to($result['email'])
-                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+            //print_r($result[$key]['email']);exit();
+            //print_r($val);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'bookingCancelByStaff',
+                'subject' => 'Booking Management System: Your booking is cancelled',
+                'data' => $result
+            ];
+            // print_r($details['data']);exit();
+            $emailRes = \Mail::to($result['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
                 ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
-                $objNotification = new Notification();
-                $notification = $objNotification->addNotification($result);
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
             return true;
         } else {
             return false;
@@ -483,12 +488,12 @@ class Booking extends Model
                 'subject' => 'Booking Management System: Offer For Shift',
                 'data' => $result
             ];
-        // print_r($details['data']);exit();
+            // print_r($details['data']);exit();
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-            ->cc('maulik.kanhasoft@gmail.com')
-            ->bcc('suresh.kanhasoft@gmail.com')
-            ->send(new \App\Mail\SendSmtpMail($details));
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($result);
@@ -498,30 +503,59 @@ class Booking extends Model
         }
     }
 
+    public function sendSigneeAccepBookingEmailToOrg($res)
+    {
+        //print_r($res);exit();
+        if (isset($res) && !empty($res)) {
+            //print_r($result['email']);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'signeeAccepBookingEmailToOrg',
+                'subject' => 'Booking Management System: Booking Accepted By Signee',
+                'data' => $res
+            ];
+            //print_r($details);exit();
+            $emailRes = \Mail::to($res['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($res);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     //booking accepted by signee email
     public function sendBookingAcceptBySigneeEmail($result)
     {
         //print_r($result);exit();
+
+
+
         if (isset($result) && !empty($result)) {
-                //print_r($result['email']);exit();
-                $details = [
-                    'title' => '',
-                    'body' => 'Hello ',
-                    'mailTitle' => 'bookingAcceptBySignee',
-                    'subject' => 'Booking Management System: Booking Accepted',
-                    'data' => $result
-                ];
+            //print_r($result['email']);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'bookingAcceptBySignee',
+                'subject' => 'Booking Management System: Booking Accepted',
+                'data' => $result
+            ];
             // print_r($details['data']);exit();
-                $emailRes = \Mail::to($result['email'])
-                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+            $emailRes = \Mail::to($result['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
                 ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
 
-                // $objNotification = new Notification();
-                // $notification = $objNotification->addNotification($result);
-                return true;
+            return true;
         } else {
             return false;
         }
@@ -534,24 +568,24 @@ class Booking extends Model
         // print_r($result);exit;
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
-                //print_r($result['email']);exit();
-                $details = [
-                    'title' => '',
-                    'body' => 'Hello ',
-                    'mailTitle' => 'bookingCancelBySignee',
-                    'subject' => 'Booking Management System: Your booking is canceled',
-                    'data' => $result
-                ];
-               // print_r($details['data']);exit();
-                $emailRes = \Mail::to($result['email'])
-                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+            //print_r($result['email']);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'bookingCancelBySignee',
+                'subject' => 'Booking Management System: Your booking is cancelled',
+                'data' => $result
+            ];
+            // print_r($details['data']);exit();
+            $emailRes = \Mail::to($result['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
                 ->cc('maulik.kanhasoft@gmail.com')
                 ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
-                $objNotification = new Notification();
-                $notification = $objNotification->addNotification($result);
-                return true;
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
+            return true;
         } else {
             return false;
         }
@@ -595,10 +629,9 @@ class Booking extends Model
     //booking invitation email
     public function sendBookingInvitationMail($result)
     {
-       //print_r($result);exit();
+        //print_r($result);exit();
         if (isset($result) && !empty($result)) {
-            foreach($result as $key=>$val)
-            {
+            foreach ($result as $key => $val) {
                 //print_r($val['email']);exit();
                 $details = [
                     'title' => '',
@@ -610,9 +643,9 @@ class Booking extends Model
                 //print_r($details);exit();
                 $emailRes = \Mail::to($result)
                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+                    ->cc('maulik.kanhasoft@gmail.com')
+                    ->bcc('suresh.kanhasoft@gmail.com')
+                    ->send(new \App\Mail\SendSmtpMail($details));
                 return true;
             }
         } else {
@@ -775,7 +808,7 @@ class Booking extends Model
         return $subArray;
     }
 
-    public function getMatchByBooking($bookingId,$status)
+    public function getMatchByBooking($bookingId, $status)
     {
         $subQuery = Booking::select(
             'users.id as signeeId',
@@ -794,10 +827,10 @@ class Booking extends Model
         $subQuery->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $subQuery->Join('signee_organization',  'signee_organization.user_id', '=', 'users.id');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        if (Auth::user()->role == 'ORGANIZATION') {
 
             $subQuery->where('signee_organization.organization_id', Auth::user()->id);
-        }else{
+        } else {
             //print_r(Auth::user()->role);exit;
             // $query->where('bookings.user_id',Auth::user()->id);
             $subQuery->where('signee_organization.organization_id', Auth::user()->parent_id);
@@ -806,7 +839,7 @@ class Booking extends Model
         //$subQuery->where('signee_organization.organization_id', Auth::user()->id);
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
-        $subQuery->where('booking_matches.signee_status',$status );
+        $subQuery->where('booking_matches.signee_status', $status);
         $subQuery->where('booking_matches.deleted_at');
         $res = $subQuery->get()->toArray();
 
@@ -888,28 +921,34 @@ class Booking extends Model
         }
     }
 
-    public function users(){
-        return $this->hasOne(User::class,'id');
+    public function users()
+    {
+        return $this->hasOne(User::class, 'id');
     }
 
-    public function ward(){
-        return $this->hasOne(Ward::class,'id');
+    public function ward()
+    {
+        return $this->hasOne(Ward::class, 'id');
     }
 
-    public function shift(){
-        return $this->hasOne(OrganizationShift::class,'id','shift_id');
+    public function shift()
+    {
+        return $this->hasOne(OrganizationShift::class, 'id', 'shift_id');
     }
 
-    public function hospital(){
-        return $this->hasOne(Hospital::class,'id','hospital_id');
+    public function hospital()
+    {
+        return $this->hasOne(Hospital::class, 'id', 'hospital_id');
     }
 
-    public function shiftType(){
-        return $this->hasOne(ShiftType::class,'id','shift_type_id');
+    public function shiftType()
+    {
+        return $this->hasOne(ShiftType::class, 'id', 'shift_type_id');
     }
 
-    public function trust(){
-        return $this->hasOne(Trust::class,'id','trust_id');
+    public function trust()
+    {
+        return $this->hasOne(Trust::class, 'id', 'trust_id');
     }
 
     public function getAppliedShift()

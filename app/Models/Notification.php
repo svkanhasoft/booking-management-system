@@ -21,10 +21,10 @@ class Notification extends Model
     protected $table = 'notification';
 
     /**
-    * The database primary key value.
-    *
-    * @var string
-    */
+     * The database primary key value.
+     *
+     * @var string
+     */
     protected $primaryKey = 'id';
 
     /**
@@ -37,67 +37,128 @@ class Notification extends Model
     public function addNotification($postData)
     {
         //print_r($postData);exit;
-        if($postData['status'] != 'CREATED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'CONFIRMED' )
-        {
+        //print_r($postData['signee_booking_status']);exit;
+        // echo $postData['signeeId'] . " signe <br/>";
+        // echo Auth::user()->id . " login user <br/>";
+        // echo $postData['signee_booking_status'] . " signee_booking_status <br/>";
+        // exit;
+        $msg = '';
+        if (isset($postData['status']) && $postData['status'] != 'CREATED' && $postData['status'] != 'CONFIRMED' && $postData['status'] != 'CANCEL') {
+            //echo "hi";exit;
             // dd($postData['signee_booking_status']);
             $data = User::where('id', $postData['signeeId'])->first();
             $postData['organization_id'] = $data->parent_id;
             //print_r($postData);exit();
-            $complientMsg = 'Your compliant status has been changed to '. $postData['status'];
-        }
-        else
-        {
-            //print_r($postData['id']);exit;
+            $msg = 'Your compliant status has been changed to ' . $postData['status'];
+        } else {
+
             $bookingDetails = Booking::findOrFail($postData['id']);
-            //print_r($bookingDetails);exit();
             $date = date("d-m-Y", strtotime($bookingDetails['date']));
-            $time = date("h:i A", strtotime($bookingDetails['start_time'])).' '.'To'.' '.date("h:i A", strtotime($bookingDetails['end_time']));
+            $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
 
-            if(isset($postData['signee_booking_status']) == "CANCEL")
-            {
-                //echo"hi";exit;
-                $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been rejected by admin';
-            }
-            elseif(isset($postData['signee_booking_status']) == "OFFER")
-            {
-                $msg = 'You got offer from'.' '.$postData['hospital_name'].' '.'hospital '.' '.$postData['ward_name'].' '.'ward';
-            }
-            //signee cancel his shift
-            elseif($postData['signeeId'] == Auth::user()->id && isset($postData['signee_booking_status']) == "CANCEL")
-            {
-                //echo "hi";exit();
-                $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been canceled';
-            }
-            elseif($postData['status'] == "CREATED")
-            {
-                $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been created';
-            }
-            elseif(!isset($postData['signee_booking_status']) && $postData['status'] == "CONFIRMED")
-            {
-                $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been confirmed';
-            }
-            // elseif(isset($postData['signee_booking_status']) == "CANCEL")
-            // {
-            //     //echo"hi";exit;
-            //     $msg = 'Your shift in'.' '.$postData['hospital_name'].' '.'hospital of'.' '.$postData['ward_name'].' '.'ward at '.$date.' '.$time.' '.'has been rejected by admin';
+            //signee reject shift
+            if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
+                $msg = 'You reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
+            } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //signee accepts shift
+                $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
+            } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
+                $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';
+            } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['organization_id'] == Auth::user()->id && $postData['signee_booking_status'] == "OFFER") {
+                $msg = 'You got offer from' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
+            } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
+                $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
+            } else  if ($postData['status'] == "CREATED" && ($postData['signee_booking_status'] == '' || $postData['signee_booking_status'] == 'PENDING')) {
+                $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been created';
+            } else if (isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "CONFIRMED") {
+                $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been confirmed';
+            } //else if (isset($postData['status']) && isset($postData['role']) && $postData['status'] == 'Active' && $postData['role'] == 'ORGANIZATION') {
+            //      $msg = 'Your shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'is accepted by signee';
             // }
-
         }
-        //print_r($postData['signee_booking_status'] ? $postData['signee_booking_status'] : $postData['status']);exit();
 
+        //print_r(isset($msg) ? $msg :  "null");exit();
         $notification = new Notification();
         $notification->signee_id = $postData['signeeId'];
         $notification->organization_id = $postData['organization_id'];
         $notification->booking_id = isset($postData['id']) ? $postData['id'] : NULL;
-        $notification->message = isset($msg) ? $msg :  $complientMsg;
-        if(isset($postData['signee_booking_status'])){
-            $notification->status=$postData['signee_booking_status'];
-        }else{
-            $notification->status=$postData['status'];
+        $notification->message = $msg;
+        if (isset($postData['signee_booking_status'])) {
+            $notification->status = $postData['signee_booking_status'];
+        } else {
+            $notification->status = $postData['status'];
         }
         $notification->is_read = 0;
         $notification->is_sent = 0;
         $notification->save();
+        //print_r($notification);exit;
         return true;
     }
+
+    // public static function sendAndroidNotification($message, $token, $orderId)
+    // {
+    //     $url = "https://fcm.googleapis.com/fcm/send";
+    //     $token = $token;
+    //     $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
+    //     $title = "Pluto";
+    //     $customData = array('orderID' => $orderId, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
+    //     $notification = array('title' => $title, 'text' => $message, 'orderId' => $orderId, 'sound' => 'default', 'badge' => '1');
+    //     $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
+    //     // $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
+    //     $json = json_encode($arrayToSend);
+    //     $headers = array();
+    //     $headers[] = 'Content-Type: application/json';
+    //     $headers[] = 'Authorization: key=' . $serverKey;
+    //     // $ch = curl_init();
+    //     // curl_setopt($ch, CURLOPT_URL, $url);
+    //     // curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"POST");
+    //     // curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    //     // curl_setopt($ch, CURLOPT_RETURNTRANSFER,false);
+    //     // curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
+    //     // $response = curl_exec($ch);
+    //     // $result = json_encode($response);
+    //     $ch = curl_init();
+    //     curl_setopt($ch, CURLOPT_URL, $url);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     curl_setopt($ch, CURLOPT_POST, true);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    //     $response = curl_exec($ch);
+    //     if ($response === FALSE) {
+    //         die('Curl failed: ' . curl_error($ch));
+    //     } else {
+    //         return $response;
+    //     }
+    //     curl_close($ch);
+    // }
+
+    // public static function sendIOSNotification($message, $token, $orderId)
+    // {
+    //     $url = "https://fcm.googleapis.com/fcm/send";
+    //     $token = $token;
+    //     $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
+    //     $title = "Pluto";
+    //     $body = $message;
+    //     $notification = array('title' => $title, 'text' => $body, 'orderId' => $orderId, 'sound' => 'default', 'badge' => '1');
+    //     $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
+    //     $json = json_encode($arrayToSend);
+    //     $headers = array();
+    //     $headers[] = 'Content-Type: application/json';
+    //     $headers[] = 'Authorization: key=' . $serverKey;
+    //     $ch = curl_init();
+    //     curl_setopt($ch, CURLOPT_URL, $url);
+    //     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    //     //Send the request
+    //     $response = curl_exec($ch);
+    //     //Close request
+    //     if ($response === FALSE) {
+    //         // die('FCM Send Error: ' . curl_error($ch));
+    //     }
+    //     curl_close($ch);
+    //     $reeed = json_decode($response);
+    //     return $reeed->success;
+    // }
 }
