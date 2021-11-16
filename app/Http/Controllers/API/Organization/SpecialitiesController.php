@@ -234,4 +234,25 @@ class SpecialitiesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);   //400 not found
         }
     }
+
+    public function getSpecialtyWithoutPagination()
+    {
+        $speciality = Speciality::select("specialities.*",);
+        $speciality->where('specialities.user_id',  $this->userId);
+        if(Auth::user()->role == 'ORGANIZATION'){
+            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            $query2 = Speciality::whereIn('user_id', $staffIdArray);
+        }else{
+            $query2 = Speciality::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
+        }
+        $res = $speciality->get()->toArray();
+        if ($res) {
+            return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $res], $this->successStatus);
+        } else {
+            return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 404);
+        }
+
+    }
 }
