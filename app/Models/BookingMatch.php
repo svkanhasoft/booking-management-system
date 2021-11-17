@@ -143,8 +143,9 @@ class BookingMatch extends Model
 
     public function getShiftList($request, $userId)
     {
-        //print_r(Auth::user()->id);exit;
+        //print_r($userId);exit;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
+        //print_r($staff);exit();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
         $requestData = $request->all();
@@ -198,7 +199,7 @@ class BookingMatch extends Model
             $join->on('signee_organization.organization_id', '=', 'users.parent_id');
         });
         $booking->where('bookings.status', 'CREATED');
-        $booking->where('users.id', Auth::user()->id);
+        //$booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
         if (!empty($requestData['day'])) {
             $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
@@ -212,6 +213,7 @@ class BookingMatch extends Model
             $booking->whereIn('bookings.hospital_id', $requestData['hospital_id']);
             $booking->where('users.parent_id', Auth::user()->parent_id);
         }
+
         $booking->whereIn('bookings.user_id', $staffIdArray);
         // $booking->whereIn('specialities.user_id',  $staffIdArray);
         // $booking->where('specialities.user_id', Auth::user()->parent_id);
