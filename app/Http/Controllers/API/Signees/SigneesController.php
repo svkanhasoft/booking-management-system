@@ -415,7 +415,7 @@ class SigneesController extends Controller
         if ($speciality) {
             return response()->json(['status' => true, 'message' => 'Specialities get successfully', 'data' => $speciality], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, No specialities available.', 'status' => true], 200);
+            return response()->json(['message' => 'Sorry, No specialities available.', 'status' => false], 200);
         }
     }
 
