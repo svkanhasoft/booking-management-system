@@ -143,9 +143,8 @@ class BookingMatch extends Model
 
     public function getShiftList($request, $userId)
     {
-        //print_r($userId);exit;
+        //print_r(Auth::user()->id);exit;
         $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
-        //print_r($staff);exit();
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
         $requestData = $request->all();
@@ -171,7 +170,7 @@ class BookingMatch extends Model
             'users.status as profile_status',
             'signee_organization.status as compliance_status',
             'signee_organization.organization_id',
-            'signee_organization.user_id as sId',
+            'signee_organization.user_id as signee_organization_user_Id',
             DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             // DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS saaaaa'),
         );
@@ -199,7 +198,7 @@ class BookingMatch extends Model
             $join->on('signee_organization.organization_id', '=', 'users.parent_id');
         });
         $booking->where('bookings.status', 'CREATED');
-        //$booking->where('users.id', Auth::user()->id);
+        $booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
         if (!empty($requestData['day'])) {
             $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
@@ -213,7 +212,6 @@ class BookingMatch extends Model
             $booking->whereIn('bookings.hospital_id', $requestData['hospital_id']);
             $booking->where('users.parent_id', Auth::user()->parent_id);
         }
-
         $booking->whereIn('bookings.user_id', $staffIdArray);
         // $booking->whereIn('specialities.user_id',  $staffIdArray);
         // $booking->where('specialities.user_id', Auth::user()->parent_id);
