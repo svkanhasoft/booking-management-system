@@ -150,6 +150,7 @@ class Booking extends Model
         //$query->where('bookings.status', $status);
         if ($status == 'CREATED') {
             $query->where('bookings.date', '>=', date('y-m-d'));
+            $query->where('bookings.status', 'CREATED');
         }else if ($status == 'CONFIRMED') {
             $query->where('bookings.date', '>=', date('Y-m-d'));
             $query->where('bookings.status', 'CONFIRMED');
@@ -157,7 +158,6 @@ class Booking extends Model
             $query->where('bookings.date', '<', date('Y-m-d'));
             $query->where('bookings.status', 'CONFIRMED');
         } else if ($status == 'CANCEL') {
-            //$query->where('bookings.date', '<', date('Y-m-d'));
             $query->where('bookings.status', 'CANCEL');
         }
 
