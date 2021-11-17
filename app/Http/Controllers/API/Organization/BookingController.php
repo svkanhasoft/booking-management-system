@@ -221,16 +221,18 @@ class BookingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function bookingStatus(Request $request, $status = null)
+    public function bookingStatus(Request $request, $status = NULL)
     {
-        //print_r(Auth::user()->role);exit();
-        $objBooking = new Booking();
-        $booking = $objBooking->getBookingByFilter($request, $status);
-
-        if (count($booking) > 0) {
-            return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
-        } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
+        try{
+            $objBooking = new Booking();
+            $booking = $objBooking->getBookingByFilter($request, $status);
+            if (count($booking) > 0) {
+                return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 

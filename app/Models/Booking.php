@@ -135,7 +135,7 @@ class Booking extends Model
         $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
-        $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        //$query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
 
 
         if (!empty($keyword)) {
@@ -147,15 +147,16 @@ class Booking extends Model
             });
         }
 
-        $query->where('bookings.status', $status);
+        //$query->where('bookings.status', $status);
         if ($status == 'CREATED') {
             $query->where('bookings.date', '>=', date('y-m-d'));
-        }
-
-        if ($status == 'CONFIRMED') {
-            $query->where('bookings.date', '<', date('Y-m-d'));
-            //$query->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        }else if ($status == 'CONFIRMED') {
+            $query->where('bookings.date', '>=', date('Y-m-d'));
             $query->where('bookings.status', 'CONFIRMED');
+        } else if ($status == 'COMPLETED') {
+            $query->where('bookings.date', '<', date('Y-m-d'));
+            $query->where('bookings.status', 'CONFIRMED');
+
         }
 
         // $query->where('bookings.user_id',Auth::user()->id);
@@ -173,8 +174,11 @@ class Booking extends Model
         $query->whereNull('bookings.deleted_at');
         $query->orderBy('bookings.id', 'DESC');
         $query->groupBy('bookings.id');
+        //$bookingList = $query->get();
         $bookingList = $query->latest()->paginate($perPage);
+        //print_r($bookingList);exit;
         return $bookingList;
+
     }
     public function getStaffBooking(Request $request, $status = null)
     {
