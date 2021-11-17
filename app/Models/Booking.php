@@ -963,4 +963,17 @@ class Booking extends Model
         $query->where('booking_matches.signee_id', Auth::user()->id);
         return $query->get();
     }
+
+    public function getCompletedShift()
+    {
+        $booking = Booking::select(
+            'bookings.*',
+            //'booking_matches.signee_booking_status',
+        );
+        //$booking->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $booking->where('bookings.date', '<', date('Y-m-d'));
+        //$booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        $booking->where('bookings.status', 'CONFIRMED');
+        return $booking->get();
+    }
 }

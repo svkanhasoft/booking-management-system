@@ -1045,6 +1045,18 @@ class UserController extends Controller
     }
     public function getCompletedShift()
     {
-        echo "test";
+        try{
+            $booking = new Booking();
+            $completedShifts = $booking->getCompletedShift();
+            if($completedShifts)
+            {
+                return response()->json(['status' => true, 'message' => 'Completed Shifts Get Successfully', 'data'=>$completedShifts], $this->successStatus);
+            } else{
+                return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
+            }
+        } catch(\Exception $e)
+        {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
     }
 }
