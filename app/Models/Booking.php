@@ -820,6 +820,7 @@ class Booking extends Model
             'users.last_name',
             'users.email',
             'booking_matches.signee_booking_status',
+            'booking_matches.payment_status',
             'signee_organization.status as compliance_status',
             'bookings.user_id as organization_id',
             'bookings.*',
