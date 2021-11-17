@@ -27,7 +27,7 @@ class Trust extends Model
      *
      * @var array, .
      */
-    protected $fillable = ['user_id', 'trust_id', 'name', 'code', 'preference_invoice_method', 'email_address', 'address_line_1', 'address_line_2', 'address_line_3', 'city', 'post_code', 'trust_portal_url', 'portal_email', 'portal_password', 'first_name', 'first_name', 'last_name', 'email_address', 'phone_number', 'client', 'department', 'contact_email_address'];
+    protected $fillable = ['user_id', 'trust_id', 'name', 'code', 'preference_invoice_method', 'email_address', 'address_line_1', 'address_line_2', 'address_line_3', 'city', 'post_code', 'trust_portal_url', 'portal_email', 'portal_password', 'first_name', 'first_name', 'last_name', 'email_address', 'phone_number', 'client', 'department', 'contact_email_address', 'created_by', 'updated_by'];
     protected $hidden = ['pseudo', 'deleted_at', 'updated_at', 'created_at'];
 
     public function hospital()
@@ -88,7 +88,7 @@ class Trust extends Model
 
     public function hospitals()
     {
-        // return $this->hasMany(Hospital::class, "trust_id", "id"); 
+        // return $this->hasMany(Hospital::class, "trust_id", "id");
 
         // return  $this->belongsToMany(Hospital::class, Ward::class,'hospital_id');   OLD code
         // return $this->belongsToMany(Ward::class, 'candidate_wards');
@@ -96,7 +96,7 @@ class Trust extends Model
         return  $this->hasMany(Hospital::class,'trust_id');
 
         // return $this->morphOne(Hospital::class, 'trust_id','id','ward');
-        
+
         // return  $this->hasManyThrough(Hospital::class, Ward::class );
 
         // return  $this->hasManyThrough(Ward::class ,Hospital::class,'trust_id','hospital_id','id');

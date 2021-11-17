@@ -27,7 +27,7 @@ class Speciality extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'speciality_name'];
+    protected $fillable = ['user_id', 'speciality_name', 'created_by', 'updated_by'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     public function addOrUpdateSpeciality($postData, $userId, $orgId)

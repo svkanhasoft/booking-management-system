@@ -74,9 +74,16 @@ class TrustsController extends Controller
         }
         try {
             $requestData = $request->all();
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $requestData['created_by'] = Auth::user()->id;
+            }else{
+                $requestData['user_id'] = Auth::user()->parent_id;
+                $requestData['created_by'] = Auth::user()->id;
+            }
             // print_r($requestData['hospital'][1]);exit();
             $requestData['password'] = Hash::make($request->post('portal_password'));
-            $requestData['user_id'] = $this->userId;
+
             $trustResult = Trust::create($requestData);
 
             $objHospital = new Hospital();
@@ -160,6 +167,12 @@ class TrustsController extends Controller
             //print_r($requestData);exit();
             $requestData['password'] = Hash::make($request->post('portal_password'));
             $trustResult = Trust::findOrFail($requestData['id']);
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $trustResult->updated_by = Auth::user()->id;
+            }else{
+                $trustResult->updated_by = Auth::user()->id;
+            }
             $trustResult->update($requestData);
 
             $objHospital = new Hospital();

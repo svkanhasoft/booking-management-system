@@ -71,10 +71,16 @@ class BookingController extends Controller
             {
                 return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             }
-            $requestData['user_id'] = Auth::user()->id;
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $requestData['user_id'] = Auth::user()->id;
+                $requestData['created_by'] = Auth::user()->id;
+            }else{
+                $requestData['staff_id'] = Auth::user()->id;
+                $requestData['created_by'] = Auth::user()->id;
+            }
             $requestData['start_time'] = $shift['start_time'];
             $requestData['end_time'] = $shift['end_time'];
-            $requestData['created_by'] = Auth::user()->id;
             $bookingCreated = Booking::create($requestData);
             if ($bookingCreated) {
                 $objBookingSpeciality = new BookingSpeciality();
@@ -164,7 +170,12 @@ class BookingController extends Controller
                 //print_r($bookinghift);exit();
                 $requestData['start_time'] = $bookingShift['start_time'];
                 $requestData['end_time'] = $bookingShift['end_time'];
-                $booking->updated_by = $this->userId;
+                if(Auth::user()->role == 'ORGANIZATION')
+                {
+                    $booking->updated_by = Auth::user()->id;
+                }else{
+                    $booking->updated_by = Auth::user()->id;
+                }
                 $booking->update($requestData);
                 $objBookingSpeciality = new BookingSpeciality();
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $requestData['id'], true);

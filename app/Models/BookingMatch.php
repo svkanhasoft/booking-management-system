@@ -51,7 +51,13 @@ class BookingMatch extends Model
                 'trust_id' => $values['trust_id'],
             ])->firstOrNew();
             // $objBookingMatch->organization_id = $values['organization_id'];
-            $objBookingMatch->organization_id = $values['organization_id'];
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $objBookingMatch->organization_id = $values['organization_id'];
+            }else{
+                $objBookingMatch->organization_id = Auth::user()->parent_id;
+            }
+
             $objBookingMatch->signee_id = $values['signeeId'];
             $objBookingMatch->booking_id = $values['booking_id'];
             $objBookingMatch->trust_id = $values['trust_id'];
@@ -169,8 +175,8 @@ class BookingMatch extends Model
             'trusts.post_code',
             'users.status as profile_status',
             'signee_organization.status as compliance_status',
-            'signee_organization.organization_id',
-            'signee_organization.user_id as signee_organization_user_Id',
+            'signee_organization.organization_id as signee_organization_organization_Id',
+            'signee_organization.id as signee_organization_Id',
             DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
             // DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS saaaaa'),
         );
@@ -193,10 +199,22 @@ class BookingMatch extends Model
         $booking->leftJoin('shift_type', 'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('users',  'users.parent_id', '=', 'bookings.user_id');
         $booking->leftJoin('booking_matches', 'booking_matches.booking_id', '=', 'bookings.id');
-        $booking->join('signee_organization', function ($join) {
+        //$booking->leftJoin('signee_organization', 'signee_organization.organization_id', '=', 'users.parent_id');
+        // $booking->leftJoin('signee_organization', function ($join) {
+        //     $join->on('signee_organization.user_id', '=', 'users.id');
+        //     $join->on('signee_organization.organization_id', '=', 'users.parent_id');
+        //     //$join->orOn('users as staff',  'staff.id', '=', 'bookings.user_id');
+        //     //$join->orOn('signee_organization as signee_org',  'signee_org.organization_id', '=', 'staff.parent_id');
+        // });
+        $booking->leftJoin('signee_organization', function ($join) {
             $join->on('signee_organization.user_id', '=', 'users.id');
             $join->on('signee_organization.organization_id', '=', 'users.parent_id');
+            //$join->on('bookings.user_id', '=', 'users.parent_id');
+            //$join->on('users.parent_id', '=', 'signee_organization.organization_id');
+            //$join->orOn('users as staff',  'staff.id', '=', 'bookings.user_id');
+            //$join->orOn('signee_organization as signee_org',  'signee_org.organization_id', '=', 'staff.parent_id');
         });
+
         $booking->where('bookings.status', 'CREATED');
         $booking->where('users.id', Auth::user()->id);
         $booking->where('bookings.date', '>=', date('y-m-d'));
@@ -212,6 +230,7 @@ class BookingMatch extends Model
             $booking->whereIn('bookings.hospital_id', $requestData['hospital_id']);
             $booking->where('users.parent_id', Auth::user()->parent_id);
         }
+
         $booking->whereIn('bookings.user_id', $staffIdArray);
         // $booking->whereIn('specialities.user_id',  $staffIdArray);
         // $booking->where('specialities.user_id', Auth::user()->parent_id);
@@ -228,167 +247,7 @@ class BookingMatch extends Model
             $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
         return $res;
-
-        // $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        // $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-        // $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
-        // $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
-        // $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-        // $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        // $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-
-        // $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
-        // $booking->join('signee_organization', function ($join) {
-        //     $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
-        //     $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
-        //     $join->where('signee_organization.user_id', '=',  Auth::user()->id);
-        // });
-        // $booking->Join('users',  'users.parent_id', '=', 'bookings.user_id');
-
-        // $booking->where('bookings.status', 'CREATED');
-        // $booking->where('bookings.date', '>=', date('y-m-d'));
-        // $booking->where('users.parent_id', Auth::user()->parent_id);
-        // $booking->whereIn('bookings.user_id', $staffIdArray);
-
-        // $booking->whereNull('booking_matches.deleted_at');
-        // $booking->whereNull('bookings.deleted_at');
-        // $booking->whereNull('booking_specialities.deleted_at');
-        // $booking->groupBy('bookings.id');
-        // $booking->orderBy('bookings.date');
-        // // $res = $booking->get();
-        // $res = $booking->get();
-        // print_r($res);exit();
-        // //$res = $booking->latest('bookings.created_at')->paginate($perPage);
-        // foreach ($res as $keys => $values) {
-        //     $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
-        // }
-        // return $res;
     }
-// -----------------------------------------------------------------
-    // public function getShiftList($request, $userId)
-    // {
-    //     //print_r(Auth::user()->id);exit;
-    //     $staff = User::select('id')->where('parent_id', Auth::user()->parent_id)->get()->toArray();
-    //     $staffIdArray = array_column($staff, 'id');
-    //     $staffIdArray[] = Auth::user()->parent_id;
-    //     $requestData = $request->all();
-    //     //print_r($staffIdArray);exit();
-    //     $perPage = Config::get('constants.pagination.perPage');
-    //     $booking = Booking::select(
-    //         'bookings.*',
-    //         'bookings.id as bid',
-    //         // 'bookings.date',
-    //         // 'bookings.start_time',
-    //         // 'bookings.end_time',
-    //         // 'bookings.rate',
-    //         //'specialities.speciality_name',
-    //         'hospitals.hospital_name',
-    //         'ward.ward_name',
-    //         'ward_type.ward_type',
-    //         'shift_type.shift_type',
-    //         'trusts.trust_portal_url',
-    //         'trusts.address_line_1',
-    //         'trusts.address_line_2',
-    //         'trusts.city',
-    //         'trusts.post_code',
-    //         'users.status as profile_status',
-    //         'signee_organization.status as compliance_status',
-    //         'signee_organization.organization_id',
-    //         'signee_organization.user_id as sId',
-    //         DB::raw('GROUP_CONCAT(DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-    //         DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS saaaaa'),
-    //     );
-    //     $booking->Join('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-    //     $booking->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
-    //     $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-
-    //     // $booking->whereRaw("(
-    //     //     (bookings.id = booking_specialities.booking_id AND  or `booking_specialities`.`deleted_at` = null),'')
-    //     //      and
-    //     //      (signee_speciality.speciality_id = booking_specialities.speciality_id AND  or `booking_specialities`.`deleted_at` = null),'')
-    //     //      and
-    //     //      (specialities.id = booking_specialities.speciality_id AND  or `specialities`.`deleted_at` = null),'')
-    //     // )");
-
-    //     $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
-    //     $booking->leftJoin('hospitals', 'hospitals.id', '=', 'bookings.hospital_id');
-    //     $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-    //     $booking->leftJoin('ward_type', 'ward_type.id', '=', 'ward.ward_type_id');
-    //     $booking->leftJoin('shift_type', 'shift_type.id', '=', 'bookings.shift_type_id');
-    //     $booking->leftJoin('users',  'users.parent_id', '=', 'bookings.user_id');
-    //     $booking->leftJoin('booking_matches', 'booking_matches.booking_id', '=', 'bookings.id');
-    //     $booking->join('signee_organization', function ($join) {
-    //         $join->on('signee_organization.user_id', '=', 'users.id');
-    //         $join->on('signee_organization.organization_id', '=', 'users.parent_id');
-    //     });
-    //     $booking->where('bookings.status', 'CREATED');
-    //     $booking->where('users.id', Auth::user()->id);
-    //     $booking->where('bookings.date', '>=', date('y-m-d'));
-    //     if (!empty($requestData['day'])) {
-    //         $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
-    //         $booking->where('users.parent_id', Auth::user()->parent_id);
-    //     }
-    //     if (!empty($requestData['speciality_id'])) {
-    //         $booking->whereIn('booking_specialities.speciality_id', $requestData['speciality_id']);
-    //         $booking->where('users.parent_id', Auth::user()->parent_id);
-    //     }
-    //     if (!empty($requestData['hospital_id'])) {
-    //         $booking->whereIn('bookings.hospital_id', $requestData['hospital_id']);
-    //         $booking->where('users.parent_id', Auth::user()->parent_id);
-    //     }
-    //     $booking->whereIn('bookings.user_id', $staffIdArray);
-    //     // $booking->whereIn('specialities.user_id',  $staffIdArray);
-    //     // $booking->where('specialities.user_id', Auth::user()->parent_id);
-    //     // $booking->whereNull('booking_matches.deleted_at');
-    //     $booking->whereNull('bookings.deleted_at');
-    //     $booking->whereNull('signee_speciality.deleted_at');
-    //     $booking->whereNull('booking_specialities.deleted_at');
-    //     $booking->groupBy('bookings.id');
-    //     $booking->orderBy('bookings.date');
-    //     // $res = $booking->toSql();
-    //     // print_r($res);exit;
-    //     $res = $booking->latest('bookings.created_at')->paginate($perPage);
-    //     foreach ($res as $keys => $values) {
-    //         $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
-    //     }
-    //     return $res;
-
-    //     // $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-    //     // $booking->Join('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-    //     // $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
-    //     // $booking->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
-    //     // $booking->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-    //     // $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-    //     // $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
-
-    //     // $booking->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
-    //     // $booking->join('signee_organization', function ($join) {
-    //     //     $join->on('signee_organization.user_id', '=', 'booking_matches.signee_id');
-    //     //     $join->on('signee_organization.organization_id', '=', 'booking_matches.organization_id');
-    //     //     $join->where('signee_organization.user_id', '=',  Auth::user()->id);
-    //     // });
-    //     // $booking->Join('users',  'users.parent_id', '=', 'bookings.user_id');
-
-    //     // $booking->where('bookings.status', 'CREATED');
-    //     // $booking->where('bookings.date', '>=', date('y-m-d'));
-    //     // $booking->where('users.parent_id', Auth::user()->parent_id);
-    //     // $booking->whereIn('bookings.user_id', $staffIdArray);
-
-    //     // $booking->whereNull('booking_matches.deleted_at');
-    //     // $booking->whereNull('bookings.deleted_at');
-    //     // $booking->whereNull('booking_specialities.deleted_at');
-    //     // $booking->groupBy('bookings.id');
-    //     // $booking->orderBy('bookings.date');
-    //     // // $res = $booking->get();
-    //     // $res = $booking->get();
-    //     // print_r($res);exit();
-    //     // //$res = $booking->latest('bookings.created_at')->paginate($perPage);
-    //     // foreach ($res as $keys => $values) {
-    //     //     $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
-    //     // }
-    //     // return $res;
-    // }
-
     public function viewShiftDetails($id = null)
     {
         //print_r(Auth::user()->id);exit;

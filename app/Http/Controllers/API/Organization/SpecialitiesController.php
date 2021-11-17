@@ -74,7 +74,15 @@ class SpecialitiesController extends Controller
                 return response()->json(['status' => false, 'message' => $error], 200);
             }
             $requestData = $request->all();
-            $requestData['user_id'] = $this->userId;
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $requestData['user_id'] = Auth::user()->id;
+                $requestData['created_by'] = Auth::user()->id;
+            }else{
+                $requestData['user_id'] = Auth::user()->parent_id;
+                $requestData['created_by'] = Auth::user()->id;
+            }
+            // $requestData['user_id'] = $this->userId;
             $addResult =  Speciality::create($requestData);
             if ($addResult) {
                 return response()->json(['status' => true, 'message' => 'Speciality added Successfully', 'data' => $addResult], $this->successStatus);
@@ -198,6 +206,12 @@ class SpecialitiesController extends Controller
             }
 
             $speciality = Speciality::findOrFail($requestData['speciality_id']);
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $speciality->updated_by = Auth::user()->id;
+            }else{
+                $speciality->updated_by = Auth::user()->id;
+            }
             $addResult =  $speciality->update($requestData);
             if ($addResult) {
                 return response()->json(['status' => true, 'message' => 'Speciality update Successfully', 'data' => $speciality], $this->successStatus);
