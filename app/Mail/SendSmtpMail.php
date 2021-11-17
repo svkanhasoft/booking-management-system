@@ -56,7 +56,7 @@ class SendSmtpMail extends Mailable
             return $this->subject($this->details['subject'])->view('emails.booking-accept-by-signee-mail');
         }else if ($this->details['mailTitle'] == 'sendShiftOfferToSignee') {
             return $this->subject($this->details['subject'])->view('emails.booking-offer-to-signee-mail');
-        }else if ($this->details['mailTitle'] == 'signeeAccepBookingEmailToOrg') {
+        }//else if ($this->details['mailTitle'] == 'signeeAccepBookingEmailToOrg') {
         //     return $this->subject($this->details['subject'])->view('emails.booking-accept-by-signee-mail-to-org');
         // }
 
