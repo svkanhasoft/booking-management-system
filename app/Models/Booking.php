@@ -125,6 +125,7 @@ class Booking extends Model
             'hospitals.hospital_name',
             //'organization_shift.start_time',
             //'organization_shift.end_time',
+            // 'booking_matches.id as bmid',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -134,6 +135,7 @@ class Booking extends Model
         $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
+        $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
 
 
         if (!empty($keyword)) {
@@ -149,6 +151,13 @@ class Booking extends Model
         if ($status == 'CREATED') {
             $query->where('bookings.date', '>=', date('y-m-d'));
         }
+
+        if ($status == 'CONFIRMED') {
+            $query->where('bookings.date', '<', date('Y-m-d'));
+            //$query->where('booking_matches.signee_booking_status', 'CONFIRMED');
+            $query->where('bookings.status', 'CONFIRMED');
+        }
+
         // $query->where('bookings.user_id',Auth::user()->id);
 
         if (Auth::user()->role == 'ORGANIZATION') {
@@ -841,6 +850,7 @@ class Booking extends Model
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status', $status);
+        $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         $subQuery->where('booking_matches.deleted_at');
         $res = $subQuery->get()->toArray();
 
