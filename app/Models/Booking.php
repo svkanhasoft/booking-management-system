@@ -156,7 +156,9 @@ class Booking extends Model
         } else if ($status == 'COMPLETED') {
             $query->where('bookings.date', '<', date('Y-m-d'));
             $query->where('bookings.status', 'CONFIRMED');
-
+        } else if ($status == 'CANCEL') {
+            //$query->where('bookings.date', '<', date('Y-m-d'));
+            $query->where('bookings.status', 'CANCEL');
         }
 
         // $query->where('bookings.user_id',Auth::user()->id);
@@ -823,6 +825,7 @@ class Booking extends Model
 
     public function getMatchByBooking($bookingId, $status)
     {
+        //print_r($bookingId);exit;
         $subQuery = Booking::select(
             'users.id as signeeId',
             'users.address_line_1',
@@ -842,7 +845,7 @@ class Booking extends Model
         $subQuery->Join('users',  'users.id', '=', 'booking_matches.signee_id');
         $subQuery->Join('signee_organization',  'signee_organization.user_id', '=', 'users.id');
 
-
+        //if('bookings.status')
 
 
         if (Auth::user()->role == 'ORGANIZATION') {
