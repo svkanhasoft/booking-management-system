@@ -15,7 +15,6 @@ use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
 use App\Models\SigneeOrganization;
 use App\Models\Notification;
-
 use Hash;
 use App\Models\Role;
 use App\Models\SigneeSpecialitie;
@@ -1008,12 +1007,17 @@ class UserController extends Controller
     public function getAllNotifications(Request $request)
     {
         $requestData = $request->all();
+        $perPage = Config::get('constants.pagination.perPage');
         try{
-            $notifications = Notification::where('signee_id', $requestData['signee_id'])->orderBy('id','DESC')->get();
-            // $res=$notifications->get();
-           // print_r($notifications);exit;
-            if ($notifications) {
-                return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notifications], $this->successStatus);
+            $query = Notification::select('notification.*',);
+            $notification = $query->latest()->paginate($perPage);
+        //     $notifications = Notification::where('signee_id', $requestData['signee_id'])->orderBy('id','DESC')->get();
+        //     $notifications->latest()->paginate($perPage);
+        //     $count =  $notifications->count();
+        //     // $res=$notifications->get();
+        //    // print_r($notifications);exit;
+            if ($notification) {
+                return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Notification not available!', 'status' => false], 404);
             }
