@@ -1008,19 +1008,14 @@ class UserController extends Controller
         }
     }
 
-    public function getAllNotifications(Request $request)
+    public function getAllNotifications()
     {
-        $requestData = $request->all();
         $perPage = Config::get('constants.pagination.perPage');
         try{
             $query = Notification::select('notification.*',);
-            $query->where('signee_id', $requestData['signee_id']);
+            $query->where('signee_id', $this->userId);
+            $query->where('organization_id', Auth::user()->parent_id);
             $notification = $query->latest()->paginate($perPage);
-        //     $notifications = Notification::where('signee_id', $requestData['signee_id'])->orderBy('id','DESC')->get();
-        //     $notifications->latest()->paginate($perPage);
-        //     $count =  $notifications->count();
-        //     // $res=$notifications->get();
-        //    // print_r($notifications);exit;
             if ($notification) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification], $this->successStatus);
             } else {
@@ -1033,8 +1028,6 @@ class UserController extends Controller
 
     public function updateNotifications(Request $request)
     {
-        // dd($this->userId);
-        $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             //'signeeId' => 'required',
         ]);
@@ -1044,17 +1037,31 @@ class UserController extends Controller
         }
         try{
             $requestData = $request->all();
+            //print_r($requestData);exit;
             $requestData['organization_id'] = $this->userId;
-            $notification = Notification::where('id', $requestData['notification_id'])->first();
-            // $res = Notification::find($notification['id']);
-            $notification->is_read = $requestData['is_read'];
-            $update = $notification->update();
-            if($update)
+            if($requestData['notification_id'] == 'All')
             {
-                return response()->json(['status' => true, 'message' => 'Notifications Update Successfully'], $this->successStatus);
-            }
-            else {
-                return response()->json(['message' => 'Sorry, Notification Not Updated!', 'status' => false], 404);
+                $query = Notification::where(['signee_id' => $this->userId, 'organization_id' => Auth::user()->parent_id])->update([
+                    'is_sent'=>  true,
+                    'is_read'=>  true,
+                ]);
+                if($query)
+                {
+                    return response()->json(['status' => true, 'message' => 'Notifications clear successfully'], $this->successStatus);
+                }else {
+                    return response()->json(['message' => 'Sorry, Notification not cleared!', 'status' => false], 404);
+                }
+            } else{
+                $notification = Notification::where('id', $requestData['notification_id'])->first();
+                // $res = Notification::find($notification['id']);
+                $notification->is_read = $requestData['is_read'];
+                $update = $notification->update();
+                if($update)
+                {
+                    return response()->json(['status' => true, 'message' => 'Notifications Update Successfully'], $this->successStatus);
+                }else {
+                    return response()->json(['message' => 'Sorry, Notification Not Updated!', 'status' => false], 404);
+                }
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -1077,6 +1084,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
     public function getCompletedShift()
     {
         try{
