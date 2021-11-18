@@ -721,12 +721,13 @@ class UserController extends Controller
                 'signee_booking_status' => $requestData['status']
             ]);
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-
+            //print_r($signeeMatch);exit;
             $mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
 
             //send mail to signee organization
-            // $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
-            // $orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($orgDetail);
+            $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
+            $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
+            $orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($comArray);
 
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Offer accepted successfully'], $this->successStatus);
@@ -740,22 +741,25 @@ class UserController extends Controller
 
     public function cancelShiftBySignee($requestData)
     {
-        // print_r(Auth::user()->id);exit;
-        $objBooking = new Booking();
+        //print_r(Auth::user()->id);exit;
         try {
-            BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
+            $update = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
             ]);
+            $objBooking = new Booking();
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
             //print_r($signeeMatch);exit;
             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
-            $update = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
+            $mailSent = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
-            //send booking open mail to other signees
-            //  $signeeList = $objBooking->getMetchByBookingId($requestData['booking_id']);
-            //  $sendBookingOpenMail = $objBooking->sendBookingOpenEmail($signeeList);
+            //send mail to signee organization
+            $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
+            $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
+            //print_r($comArray);exit;
+            $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($comArray);
+
             if ($update) {
-                return response()->json(['status' => true, 'message' => 'Booking cancelled by signee successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Shift cancelled by signee successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
             }
@@ -1010,6 +1014,7 @@ class UserController extends Controller
         $perPage = Config::get('constants.pagination.perPage');
         try{
             $query = Notification::select('notification.*',);
+            $query->where('signee_id', $requestData['signee_id']);
             $notification = $query->latest()->paginate($perPage);
         //     $notifications = Notification::where('signee_id', $requestData['signee_id'])->orderBy('id','DESC')->get();
         //     $notifications->latest()->paginate($perPage);
