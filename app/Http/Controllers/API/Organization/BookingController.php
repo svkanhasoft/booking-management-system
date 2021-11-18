@@ -77,6 +77,7 @@ class BookingController extends Controller
                 $requestData['created_by'] = Auth::user()->id;
             }else{
                 $requestData['staff_id'] = Auth::user()->id;
+                $requestData['user_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
             $requestData['start_time'] = $shift['start_time'];
