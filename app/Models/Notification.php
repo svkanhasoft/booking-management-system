@@ -47,7 +47,7 @@ class Notification extends Model
             //echo "hi";exit;
             // dd($postData['signee_booking_status']);
             //$data = SigneeOrganization::where(['user_id'=> $postData['signeeId'], 'organization_id'=> Auth::user()->id])->first();
-            //$postData['organization_id'] = $data['organization_id'];
+            $postData['organization_id'] = Auth::user()->id;
             //print_r($postData);exit();
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
