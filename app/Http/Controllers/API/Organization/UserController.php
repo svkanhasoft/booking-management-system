@@ -72,6 +72,12 @@ class UserController extends Controller
             $requestData['password'] = Hash::make(123456);
             $requestData['parent_id'] = $this->userId;
             $requestData['role'] = 'STAFF';
+            // if(Auth::user()->role == 'ORGANIZATION')
+            // {
+            //     $requestData['created_by'] = Auth::user()->id;
+            // }else{
+            //     $requestData['created_by'] = Auth::user()->id;
+            // }
             $userCreated = User::create($requestData);
             if ($userCreated) {
                 $requestData['user_id'] = $userCreated['id'];
@@ -309,6 +315,12 @@ class UserController extends Controller
         }
         try {
             $user = User::findOrFail($requestData['id']);
+            // if(Auth::user()->role == 'ORGANIZATION')
+            // {
+            //     $user->updated_by = Auth::user()->id;
+            // }else{
+            //     $user->updated_by = Auth::user()->id;
+            // }
             $addResult = $user->update($requestData);
             if ($addResult) {
                 $oudData = OrganizationUserDetail::where('user_id', $requestData['id'])->first();
@@ -416,6 +428,13 @@ class UserController extends Controller
             $requestData['password'] = Hash::make($request->post('password'));
             $requestData['parent_id'] = $this->userId;
             $requestData['role'] = 'SIGNEE';
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $requestData['created_by'] = Auth::user()->id;
+            }else{
+                $requestData['parent_id'] = Auth::user()->parent_id;
+                $requestData['created_by'] = Auth::user()->id;
+            }
             $userCreated = User::create($requestData);
             if ($userCreated) {
                 $requestData['user_id'] = $userCreated['id'];
@@ -482,6 +501,12 @@ class UserController extends Controller
                 $requestData['password'] = Hash::make($request->post('password'));
             }
             $signee = User::findOrFail($requestData['id']);
+            if(Auth::user()->role == 'ORGANIZATION')
+            {
+                $signee->updated_by = Auth::user()->id;
+            }else{
+                $signee->updated_by = Auth::user()->id;
+            }
             //print_r($signee->parent_id);exit();
             $signeeUpdated = $signee->update($requestData);
             if ($signeeUpdated) {
@@ -863,7 +888,7 @@ class UserController extends Controller
         try {
             $signeeDocs = SigneeDocument::where(['signee_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id'], 'key' => $requestData['key']])->get()->toArray();
             $idArrray = array_column($signeeDocs, 'id');
-            $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status']));
+            $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status'], 'updated_by'=>Auth::user()->id));
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Document  status updated successfully'], $this->successStatus);
             } else {
