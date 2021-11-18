@@ -556,11 +556,12 @@ class SigneesController extends Controller
             //print_r($requestData);exit();
             if (Auth::user()->role == 'ORGANIZATION') {
                 $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signeeId'], 'organization_id' => Auth::user()->id]);
+                //print_r($signeeOrg);exit;
+                $signeeOrg->status = $requestData['status'];
             } else {
                 $signeeOrg = SigneeOrganization::firstOrNew(['user_id' => $requestData['signeeId'], 'organization_id' => Auth::user()->parent_id]);
+                $signeeOrg->status = $requestData['status'];
             }
-            $signeeOrg->status = $requestData['status'];
-
             $res = $signeeOrg->save();
             //print_r($res);exit;
             $objNotification = new Notification();
@@ -869,8 +870,15 @@ class SigneesController extends Controller
                 'signee_status'=>  $requestData['signee_status'],
                 'signee_booking_status'=>  'APPLY',
             ]);
+            $objBooking = new Booking();
+            $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
+            $mailSent = $objBooking->sendBookingApplyBySigneeEmail($signeeMatch);
 
-            if ($res) {
+            $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
+            $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
+            //print_r($comArray);exit;
+            $orgMailSent = $objBooking->sendBookingApplyBySigneeEmailToOrg($comArray);
+            if ($orgMailSent) {
                 return response()->json(['status' => true, 'message' => 'You have successfully applied for this shift'], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);

@@ -376,6 +376,7 @@ class Booking extends Model
             'users.address_line_2',
             'users.city',
             'users.role',
+            'users.parent_id as signee_org_id',
             'bookings.user_id as organization_id',
             'bookings.*',
             'booking_matches.signee_booking_status',
@@ -518,6 +519,7 @@ class Booking extends Model
         }
     }
 
+    //booking accepted by signee email to org
     public function sendSigneeAccepBookingEmailToOrg($res)
     {
         //print_r($res);exit();
@@ -528,6 +530,33 @@ class Booking extends Model
                 'body' => 'Hello ',
                 'mailTitle' => 'signeeAccepBookingEmailToOrg',
                 'subject' => 'Booking Management System: Booking Accepted By Signee',
+                'data' => $res
+            ];
+            //print_r($details);exit();
+            $emailRes = \Mail::to($res['email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($res);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    //booking reject by signee email to org
+    public function sendSigneeCancelBookingEmailToOrg($res)
+    {
+        //print_r($res);exit();
+        if (isset($res) && !empty($res)) {
+            //print_r($result['email']);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'signeeCancelBookingEmailToOrg',
+                'subject' => 'Booking Management System: Booking Cancel By Signee',
                 'data' => $res
             ];
             //print_r($details);exit();
@@ -606,40 +635,64 @@ class Booking extends Model
         }
     }
 
-    // public function sendBookingOpenEmail($result)
-    // {
-    //     //print_r($result);exit();
+    //booking apply by signee
+    public function sendBookingApplyBySigneeEmail($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            //print_r($val);exit();
+                //print_r($val);exit();
+                $details = [
+                    'title' => '',
+                    'body' => 'Hello ',
+                    'mailTitle' => 'signeeApplyShift',
+                    'subject' => 'Booking Management System: You applied for the shift',
+                    'data' => $result
+                ];
+                //print_r($details);exit();
+                $emailRes = \Mail::to($result['email'])
+                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
 
-    //     if (isset($result) && !empty($result)) {
-    //         foreach($result as $key=>$val)
-    //         {
-    //             //print_r($val);exit();
-    //             if($val['signeeId'] != Auth::user()->id)
-    //             {
-    //                 //print_r($val);exit();
-    //                 $details = [
-    //                     'title' => '',
-    //                     'body' => 'Hello ',
-    //                     'mailTitle' => 'bookingOpened',
-    //                     'subject' => 'Booking Management System: Your booking is opened',
-    //                     'data' => $val
-    //                 ];
-    //                 //print_r($details);exit();
-    //                 $emailRes = \Mail::to($val['email'])
-    //                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-    //                 ->cc('maulik.kanhasoft@gmail.com')
-    //                 ->bcc('suresh.kanhasoft@gmail.com')
-    //                 ->send(new \App\Mail\SendSmtpMail($details));
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($result);
+                return true;
+        } else {
+            return false;
+        }
+    }
 
-    //                 $objNotification = new Notification();
-    //                 $notification = $objNotification->addNotification($val);
-    //                 return true;
-    //             }
-    //         }
-    //     } else {
-    //         return false;
-    //     }
-    // }
+    //booking apply by signee mail to org
+    public function sendBookingApplyBySigneeEmailToOrg($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            //print_r($val);exit();
+                //print_r($val);exit();
+                $details = [
+                    'title' => '',
+                    'body' => 'Hello ',
+                    'mailTitle' => 'signeeApplyShiftMailToOrg',
+                    'subject' => 'Booking Management System: Shift Apply',
+                    'data' => $result
+                ];
+                //print_r($details);exit();
+                $emailRes = \Mail::to($result['email'])
+                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotification($result);
+                return true;
+        } else {
+            return false;
+        }
+    }
+
 
     //booking invitation email
     public function sendBookingInvitationMail($result)

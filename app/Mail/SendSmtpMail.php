@@ -48,17 +48,20 @@ class SendSmtpMail extends Mailable
             return $this->subject($this->details['subject'])->view('emails.booking-cancelBySignee-mail');
         } else if ($this->details['mailTitle'] == 'bookingInvite') {
             return $this->subject($this->details['subject'])->view('emails.booking-invite-mail');
-        }
-        // else if ($this->details['mailTitle'] == 'bookingOpened') {
-        // //     return $this->subject($this->details['subject'])->view('emails.booking-open-mail');
-        // // }
-        else if ($this->details['mailTitle'] == 'bookingAcceptBySignee') {
+        } else if ($this->details['mailTitle'] == 'bookingAcceptBySignee') {
             return $this->subject($this->details['subject'])->view('emails.booking-accept-by-signee-mail');
         }else if ($this->details['mailTitle'] == 'sendShiftOfferToSignee') {
             return $this->subject($this->details['subject'])->view('emails.booking-offer-to-signee-mail');
-        }//else if ($this->details['mailTitle'] == 'signeeAccepBookingEmailToOrg') {
-        //     return $this->subject($this->details['subject'])->view('emails.booking-accept-by-signee-mail-to-org');
-        // }
+        }else if ($this->details['mailTitle'] == 'signeeAccepBookingEmailToOrg') {
+            return $this->subject($this->details['subject'])->view('emails.booking-accept-by-signee-mail-to-org');
+        }else if ($this->details['mailTitle'] == 'signeeCancelBookingEmailToOrg') {
+            return $this->subject($this->details['subject'])->view('emails.booking-cancel-by-signee-mail-to-org');
+        }else if ($this->details['mailTitle'] == 'signeeApplyShift') {
+            return $this->subject($this->details['subject'])->view('emails.signee-apply-shift');
+        }else if ($this->details['mailTitle'] == 'signeeApplyShiftMailToOrg') {
+            return $this->subject($this->details['subject'])->view('emails.signee-apply-shift-mail-to-org');
+        }
+
 
     }
 }
