@@ -46,8 +46,8 @@ class Notification extends Model
         if (isset($postData['status']) && $postData['status'] != 'CREATED' && $postData['status'] != 'CONFIRMED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'Active') {
             //echo "hi";exit;
             // dd($postData['signee_booking_status']);
-            $data = User::where('id', $postData['signeeId'])->first();
-            $postData['organization_id'] = $data->parent_id;
+            //$data = SigneeOrganization::where(['user_id'=> $postData['signeeId'], 'organization_id'=> Auth::user()->id])->first();
+            //$postData['organization_id'] = $data['organization_id'];
             //print_r($postData);exit();
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
@@ -106,7 +106,7 @@ class Notification extends Model
         $notification->is_read = 0;
         $notification->is_sent = 0;
         $notification->save();
-        print_r($notification);exit;
+        //print_r($notification);exit;
         return true;
     }
 
