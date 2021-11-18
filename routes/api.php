@@ -127,8 +127,7 @@ Route::prefix('organization')->group(function () {
                 Route::post('/pdf', [UserController::class, 'pdf']);
                 Route::post('/change-document-status', [UserController::class, 'changeDocStatus']);
                 Route::post('/send-invitation', [UserController::class, 'inviteSigneeForTheShift']);
-                Route::post('/get-all-notification', [UserController::class, 'getAllNotifications']);
-                Route::post('/update-notification', [UserController::class, 'updateNotifications']);
+
             });
         });
     });
@@ -176,6 +175,8 @@ Route::prefix('signee')->group(function () {
         Route::post('/multi-org-login/{organization_id?}', [SigneesController::class, 'multiOrgLogin']);
         Route::post('/apply-shift', [SigneesController::class, 'applyShift']);
         Route::get('/get-applied-shift', [UserController::class, 'getAppliedShift']);
+        Route::get('/get-all-notification', [UserController::class, 'getAllNotifications']);
+        Route::post('/update-notification', [UserController::class, 'updateNotifications']);
     });
 });
 
