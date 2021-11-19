@@ -25,10 +25,10 @@ use App\Models\Notification;
 class TestController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function __construct()
     {
@@ -79,8 +79,8 @@ class TestController extends Controller
         //     print_r($val->id);
         //     // dd($val);
         //     // exit;
-        //     //  dd($res->specialitys($val->id)); 
-        //     // $res->organizations[$key]['organization'] = $res->specialitys($val->organization_id); 
+        //     //  dd($res->specialitys($val->id));
+        //     // $res->organizations[$key]['organization'] = $res->specialitys($val->organization_id);
         //     echo "$val->organization_id >>>";
         //     print_r($res->specialitys($val->organization_id));
         // }
@@ -98,6 +98,6 @@ class TestController extends Controller
         $token =  "dQE4u0N01ACA4o-RoJ71ac:APA91bF4BOzk21A-5DS-wpypdGjlwxn1D76-RlxxpZEoeNMdhfmeFHEd3ZoryraNhBGa3V3DehGR9TUVxFCiXgM9iqsmN4lGneR77uGCr6S9Ajk4doLocSwyRq_Uh8EJ0CqkLuOBUL1j";
         $objNotification = new Notification();
         $response   = $objNotification->sendAndroidNotification("Hello notification",$token,7);
-        dd($response);
+        print_r($response);
     }
 }

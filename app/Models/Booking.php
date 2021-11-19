@@ -913,7 +913,19 @@ class Booking extends Model
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status', $status);
-        $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+
+        $bookingDetail = Booking::findOrFail($bookingId);
+
+        if($bookingDetail['status'] == 'CONFIRMED')
+        {
+           // echo "hi";exit;
+            $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        } else if($bookingDetail['status'] == 'CREATED')
+        {
+            //echo "123";exit;
+            $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','APPLY','OFFER','DECLINE','ACCEPT'));
+        }
+
         $subQuery->where('booking_matches.deleted_at');
         $res = $subQuery->get()->toArray();
 

@@ -117,6 +117,7 @@ class BookingController extends Controller
     {
         $objBooking = new Booking();
         $booking = $objBooking->getBooking($id);
+
         if($booking){
             $obj = new BookingSpeciality();
             $booking['speciality'] = $obj->getBookingSpeciality($id);
