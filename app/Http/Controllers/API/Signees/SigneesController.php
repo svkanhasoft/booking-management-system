@@ -427,9 +427,13 @@ class SigneesController extends Controller
     public function logout(Request $request)
     {
         $user = Auth::user()->token();
+        // print_r($user);exit;
         try {
             if (Auth::user()) {
                 $user->revoke();
+                $userDetail = User::findOrFail($user['user_id']);
+                $userDetail['device_id'] = NULL;
+                $userDetail->save();
                 return response()->json([
                     'status' => true,
                     'message' => 'You have Successfully logout',
