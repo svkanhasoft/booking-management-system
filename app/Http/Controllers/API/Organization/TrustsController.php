@@ -74,8 +74,10 @@ class TrustsController extends Controller
         }
         try {
             $requestData = $request->all();
+            //print_r($requestData);exit;
             if(Auth::user()->role == 'ORGANIZATION')
             {
+                $requestData['user_id'] = Auth::user()->id;
                 $requestData['created_by'] = Auth::user()->id;
             }else{
                 $requestData['user_id'] = Auth::user()->parent_id;
