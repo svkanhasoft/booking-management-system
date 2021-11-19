@@ -902,7 +902,6 @@ class Booking extends Model
 
 
         if (Auth::user()->role == 'ORGANIZATION') {
-
             $subQuery->where('signee_organization.organization_id', Auth::user()->id);
         } else {
             //print_r(Auth::user()->role);exit;
@@ -914,7 +913,7 @@ class Booking extends Model
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status', $status);
-        //$subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         $subQuery->where('booking_matches.deleted_at');
         $res = $subQuery->get()->toArray();
 
