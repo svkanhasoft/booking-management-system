@@ -229,7 +229,7 @@ class User extends Authenticatable
     }
     public function sendForgotEmail($request)
     {
-        $user = User::where('email', $request->all('email'))->first();
+        $user = User::where('status', 'Active')->where('email', $request->all('email'))->first();
         if (isset($user) && !empty($user)) {
             $details = [
                 'title' => '',
