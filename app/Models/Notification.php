@@ -36,7 +36,7 @@ class Notification extends Model
 
     public function addNotification($postData)
     {
-        //print_r($postData);exit;
+       //print_r($postData);exit;
         //print_r($postData['signee_booking_status']);exit;
         // echo $postData['signeeId'] . " signe <br/>";
         // echo Auth::user()->id . " login user <br/>";
@@ -44,7 +44,7 @@ class Notification extends Model
         // exit;
         $msg = '';
         if (isset($postData['status']) && $postData['status'] != 'CREATED' && $postData['status'] != 'CONFIRMED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'Active') {
-            //echo "hi";exit;
+            // echo "home";exit;
             // dd($postData['signee_booking_status']);
             //$data = SigneeOrganization::where(['user_id'=> $postData['signeeId'], 'organization_id'=> Auth::user()->id])->first();
             if(Auth::user()->role == 'ORGANIZATION')
@@ -57,46 +57,63 @@ class Notification extends Model
             //print_r($postData);exit();
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
-            if(isset($postData['role']) && $postData['role'] != 'ORGANIZATION')
+            //echo "in else ";exit;
+            if((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION'))
             {
-                //echo "hi";exit;
-                $bookingDetails = Booking::findOrFail($postData['id']);
+                //echo "in if";exit;
+                $bookingDetails = Booking::findOrFail($postData['booking_id']);
                 $date = date("d-m-Y", strtotime($bookingDetails['date']));
                 $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
 
                 //signee reject shift
                 if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
+                    //echo "hi";exit;
                     $msg = 'You reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
                 } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //signee accepts shift
+                    //echo "123";exit;
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
+                    //echo "456";exit;
                     $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';
                 } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['organization_id'] == Auth::user()->id && $postData['signee_booking_status'] == "OFFER") {
+                    //echo "933";exit;
                     $msg = 'You got offer from' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
                 } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
+                    //echo "333";exit;
                     $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
                 } else  if ($postData['status'] == "CREATED" && ($postData['signee_booking_status'] == '' || $postData['signee_booking_status'] == 'PENDING')) {
+                    //echo "666";exit;
                     $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been created';
                 } else if (isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "CONFIRMED") {
+                    //echo "712";exit;
                     $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been confirmed';
                 }else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['signee_booking_status'] === "APPLY" && $postData['role'] === 'SIGNEE') {
+                    //echo "748";exit;
                     $msg = 'Your have applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward';
                 }
             } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
+                //echo "789";exit;
                 $msg = 'You have applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward has been accepted by signee';
             } else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['role'] == 'SIGNEE' && $postData['signee_booking_status'] == "CANCEL") {
+                //echo "963";exit;
                 $msg = 'Your shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward has been rejected by signee';
-            }else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['role'] == 'ORGANIZATION' && $postData['signee_booking_status'] == "APPLY") {
-                //echo "123";exit;
+            } else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['role'] == 'ORGANIZATION' && $postData['signee_booking_status'] == "APPLY") {
+               // echo "159";exit;
                 $msg = 'Signee applied in your shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward added by you';
+            } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CREATED') {
+                //echo "458";exit;
+                $msg = 'You created a new shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
+            } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CONFIRMED' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] === 'CONFIRMED') {
+                //echo "797979";exit;
+                $msg = 'Your shift is confirmed in ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             }
         }
-
+        //echo "dfgfdgfdgdfg";exit;
         $notification = new Notification();
-        $notification->signee_id = $postData['signeeId'];
+        $notification->signee_id = isset($postData['signeeId']) ? $postData['signeeId'] : NULL;
         $notification->organization_id = isset($postData['organization_id']) ? $postData['organization_id'] : $postData['signee_org_id'];
         // $notification->booking_id = (isset($postData['id']) || isset($postData['booking_id'])) ? $postData['id'] : NULL;
-        if(isset($postData['role']) && $postData['role'] == 'ORGANIZATION'){
+        if(isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')){
             $notification->booking_id = $postData['booking_id'];
         }else if(isset($postData['id']) && $postData['id']){
             $notification->booking_id = $postData['id'];

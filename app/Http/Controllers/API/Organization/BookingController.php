@@ -44,6 +44,7 @@ class BookingController extends Controller
      */
     public function add(Request $request)
     {
+        // echo "hi";exit;
         $validator = Validator::make($request->all(), [
             'reference_id' => 'unique:bookings,reference_id,NULL,id,user_id,' . $this->userId,
             // 'reference_id' => 'required',
@@ -75,7 +76,7 @@ class BookingController extends Controller
             {
                 $requestData['user_id'] = Auth::user()->id;
                 $requestData['created_by'] = Auth::user()->id;
-            }else{
+            } else{
                 $requestData['staff_id'] = Auth::user()->id;
                 $requestData['user_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
@@ -93,8 +94,9 @@ class BookingController extends Controller
                 $objBookingMatch = new BookingMatch();
                 $bookingMatch = $objBookingMatch->addBookingMatch($bookings, $bookingCreated['id']);
 
-                // $objNotification = new Notification();
-                // $notification = $objNotification->addNotification($bookings, $bookingCreated['id']);
+                //$orgDetail = User::where('id', $requestData['user_id'])->first()->toArray();
+                //print_r($orgDetail);exit;
+                //$comArray = array_merge($signeeMatch->toArray(), $orgDetail);
 
                 return response()->json(['status' => true, 'message' => 'Booking added Successfully', 'data' => $bookingCreated], $this->successStatus);
             } else {

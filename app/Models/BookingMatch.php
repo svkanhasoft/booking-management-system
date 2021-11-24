@@ -42,7 +42,7 @@ class BookingMatch extends Model
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             //print_r($values);
-            // exit;
+            //exit;
             $this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
@@ -71,6 +71,15 @@ class BookingMatch extends Model
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($values);
+
+            $objBooking = new Booking();
+            $org = User::select(
+                'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
+            );
+            $org->where('id', $values['organization_id']);
+            $orgDetail = $org->first()->toArray();
+            $comArray = array_merge($values, $orgDetail);
+            $orgMailSent = $objBooking->sendBookingCreatedEmailToOrg($comArray);
         }
         return true;
     }

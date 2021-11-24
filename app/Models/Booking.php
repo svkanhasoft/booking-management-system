@@ -460,6 +460,35 @@ class Booking extends Model
             return false;
         }
     }
+    //booking confirmed by signee email to org
+    public function sendBookingConfirmedEmailToOrg($result)
+    {
+        //print_r($result);exit();
+        if (isset($result) && !empty($result)) {
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'bookingConfirmMailToOrg',
+                'subject' => 'Booking Management System: booking confirm',
+                'data' => $result
+            ];
+            $emailRes = \Mail::to($result['org_email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+
+            //send notification
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
 
     //booking canceled by staff/org email
     public function sendBookingCancelByStaffEmail($result)
@@ -546,6 +575,35 @@ class Booking extends Model
             return false;
         }
     }
+
+    //booking created email to organization
+    public function sendBookingCreatedEmailToOrg($res)
+    {
+        //print_r($res);exit();
+        if (isset($res) && !empty($res)) {
+            //print_r($result['email']);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'sendBookingCreatedEmailToOrg',
+                'subject' => 'Booking Management System: Booking Created',
+                'data' => $res
+            ];
+            //print_r($details);exit();
+            $emailRes = \Mail::to($res['org_email'])
+                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
+                ->cc('maulik.kanhasoft@gmail.com')
+                ->bcc('suresh.kanhasoft@gmail.com')
+                ->send(new \App\Mail\SendSmtpMail($details));
+
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($res);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     //booking reject by signee email to org
     public function sendSigneeCancelBookingEmailToOrg($res)
     {

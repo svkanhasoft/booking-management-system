@@ -60,6 +60,10 @@ class SendSmtpMail extends Mailable
             return $this->subject($this->details['subject'])->view('emails.signee-apply-shift');
         }else if ($this->details['mailTitle'] == 'signeeApplyShiftMailToOrg') {
             return $this->subject($this->details['subject'])->view('emails.signee-apply-shift-mail-to-org');
+        }else if ($this->details['mailTitle'] == 'sendBookingCreatedEmailToOrg') {
+            return $this->subject($this->details['subject'])->view('emails.shift-create-mail-to-org');
+        }else if ($this->details['mailTitle'] == 'bookingConfirmMailToOrg') {
+            return $this->subject($this->details['subject'])->view('emails.shift-confirm-mail-to-org');
         }
 
 

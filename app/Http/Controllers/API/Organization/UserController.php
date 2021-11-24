@@ -686,10 +686,7 @@ class UserController extends Controller
                 //echo "123";exit;
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
-                //echo '123';exit;
-                // $booking = booking::findOrFail($requestData['booking_id']);
-                // $booking['status'] = $requestData['status'];
-                // $bookingUpdate = $booking->update($requestData);
+               // echo '123';exit;
 
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->signee_booking_status = $requestData['status'];
@@ -698,6 +695,17 @@ class UserController extends Controller
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
                 $objBooking->sendBookingConfirmEmail($matchSignee);
+
+                //send mail and noti to org
+                $objBooking = new Booking();
+                $org = User::select(
+                    'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
+                );
+                $org->where('id', $matchSignee['organization_id']);
+                $orgDetail = $org->first()->toArray();
+                $comArray = array_merge($matchSignee->toArray(), $orgDetail);
+                //print_r($comArray);exit;
+                $orgMailSent = $objBooking->sendBookingConfirmedEmailToOrg($comArray);
 
                 if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
