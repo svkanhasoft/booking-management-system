@@ -950,9 +950,10 @@ class SigneesController extends Controller
                     $signeeUser = User::findOrFail($this->userId);
                     $signeeUser->profile_pic = $new_name;
                     $docUpload = $signeeUser->save();
+                    $data['profile_pic'] = $new_name;
                     if(!empty($docUpload))
                     {
-                        return response()->json(['status' => true, 'message' => 'Profile picture uploaded successfully'], $this->successStatus);
+                        return response()->json(['status' => true,'data'=> $data, 'message' => 'Profile picture uploaded successfully'], $this->successStatus);
                     }
                 }
             } else {
