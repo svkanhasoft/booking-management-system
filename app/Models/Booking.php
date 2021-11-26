@@ -321,7 +321,7 @@ class Booking extends Model
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
-            DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
+            DB::raw('GROUP_CONCAT( DISTINCT(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         // $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');

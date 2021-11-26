@@ -72,14 +72,14 @@ class BookingMatch extends Model
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($values);
 
-            $objBooking = new Booking();
-            $org = User::select(
-                'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
-            );
-            $org->where('id', $values['organization_id']);
-            $orgDetail = $org->first()->toArray();
-            $comArray = array_merge($values, $orgDetail);
-            $orgMailSent = $objBooking->sendBookingCreatedEmailToOrg($comArray);
+            // $objBooking = new Booking();
+            // $org = User::select(
+            //     'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
+            // );
+            // $org->where('id', $values['organization_id']);
+            // $orgDetail = $org->first()->toArray();
+            // $comArray = array_merge($values, $orgDetail);
+            // $orgMailSent = $objBooking->sendBookingCreatedEmailToOrg($comArray);
         }
         return true;
     }

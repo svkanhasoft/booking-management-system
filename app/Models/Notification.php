@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
 
 class Notification extends Model
 {
@@ -81,9 +80,12 @@ class Notification extends Model
                 } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
                     //echo "333";exit;
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
+                } else if ($postData['status'] == "CREATED" && isset($postData['updated_by']) && $postData['updated_by'] != '') {
+                    //echo "748";exit;
+                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been updated by admin';
                 } else  if ($postData['status'] == "CREATED" && ($postData['signee_booking_status'] == '' || $postData['signee_booking_status'] == 'PENDING')) {
                     //echo "666";exit;
-                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been created';
+                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been created by admin';
                 } else if (isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "CONFIRMED") {
                     //echo "712";exit;
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been confirmed';
@@ -137,7 +139,7 @@ class Notification extends Model
             $notification->is_showing_for = "SIGNEE";
         }
         $notification->save();
-        //print_r($notification);exit;
+        print_r($notification);exit;
         return true;
     }
 
