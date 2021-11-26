@@ -361,7 +361,7 @@ class SigneesController extends Controller
             'org.organization_name'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-        $query->where('users.role', '=', 'ORGANIZATION');
+        $query->where(['users.role' => 'ORGANIZATION', 'users.status' => 'Active']);
         $data = $query->get()->toArray();
         // print_r($data);exit();
         foreach ($data as $key => $value) {
@@ -396,7 +396,7 @@ class SigneesController extends Controller
             'org.organization_name'
         );
         $query->join('organizations as org', 'org.user_id', '=', 'users.id');
-        $query->where('users.role', '=', 'ORGANIZATION');
+        $query->where(['users.role' => 'ORGANIZATION', 'users.status' => 'Active']);
         $query->whereNotIn('users.id', $orgId);
         $res = $query->get()->toArray();
         //print_r($res);exit();
