@@ -137,6 +137,10 @@ class SigneesController extends Controller
             return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
         }
         // dd($checkRecord->id, $request->organization_id);
+        $checkRecordOrg = User::where('id', $request->organization_id)->first();
+        if ($checkRecordOrg->status != 'Active') {
+            return response()->json(['message' => 'Sorry, Your organization is inactive, contact to organization admin', 'status' => false], 200);
+        }
         $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->organization_id])->first();
         //print_r($orgResult);exit();
         if (empty($orgResult)) {
@@ -160,7 +164,7 @@ class SigneesController extends Controller
             $user['token'] =  $userResult->createToken('User')->accessToken;
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Email or password does not match', 'status' => false], 200);
         }
     }
 
@@ -874,7 +878,7 @@ class SigneesController extends Controller
             ]);
             $objBooking = new Booking();
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
-            $mailSent = $objBooking->sendBookingApplyBySigneeEmail($signeeMatch);
+            // $mailSent = $objBooking->sendBookingApplyBySigneeEmail($signeeMatch);
 
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);

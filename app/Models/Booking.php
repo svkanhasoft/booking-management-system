@@ -502,7 +502,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'bookingCancelByStaff',
-                'subject' => 'Booking Management System: Your booking is cancelled',
+                'subject' => 'Booking Management System: Your booking is cancelled by admin',
                 'data' => $result
             ];
             // print_r($details['data']);exit();
@@ -943,6 +943,7 @@ class Booking extends Model
             'users.address_line_2',
             'users.contact_number',
             'users.city',
+            'users.status as signee_activity_status',
             'users.first_name',
             'users.last_name',
             'users.email',
@@ -969,6 +970,7 @@ class Booking extends Model
 
         //$subQuery->where('signee_organization.organization_id', Auth::user()->id);
         $subQuery->where('users.role', 'SIGNEE');
+        $subQuery->where('users.status', 'Active');
         $subQuery->where('bookings.id', $bookingId);
         $subQuery->where('booking_matches.signee_status', $status);
 
@@ -976,11 +978,9 @@ class Booking extends Model
 
         if($bookingDetail['status'] == 'CONFIRMED')
         {
-           // echo "hi";exit;
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         } else if($bookingDetail['status'] == 'CREATED')
         {
-            //echo "123";exit;
             $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','APPLY','OFFER','DECLINE','ACCEPT'));
         }
 

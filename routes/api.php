@@ -172,7 +172,7 @@ Route::prefix('signee')->group(function () {
         Route::post('/multi-org-login/{organization_id?}', [SigneesController::class, 'multiOrgLogin']);
         Route::post('/apply-shift', [SigneesController::class, 'applyShift']);
         Route::get('/get-applied-shift', [UserController::class, 'getAppliedShift']);
-        Route::get('/get-all-notification', [UserController::class, 'getAllNotifications']);
+        Route::get('/get-all-notification/{showing?}', [UserController::class, 'getAllNotifications']);
         Route::post('/update-notification', [UserController::class, 'updateNotifications']);
     });
 });

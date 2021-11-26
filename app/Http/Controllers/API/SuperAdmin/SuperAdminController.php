@@ -92,7 +92,7 @@ class SuperAdminController extends Controller
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 404);
         }
-        if ($checkRecord->status !== 'Active') {
+        if ($checkRecord->status != 'Active') {
             return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
         }
 
@@ -111,7 +111,7 @@ class SuperAdminController extends Controller
             ]);
             return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 409);
+            return response()->json(['message' => 'Sorry, Email or password does not match', 'status' => false], 409);
         }
     }
 
@@ -388,7 +388,7 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            $userList = User::where('parent_id', $requestData['id'])->get()->toArray();
+            $userList = User::where(['parent_id'=> $requestData['id'], 'role'=>'STAFF'])->get()->toArray();
             $userArray = array_column($userList, 'id');
             $userArray[] = $requestData['id'];
             $userUpdate = User::whereIn('id', $userArray)->update([

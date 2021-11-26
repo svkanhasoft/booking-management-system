@@ -697,15 +697,15 @@ class UserController extends Controller
                 $objBooking->sendBookingConfirmEmail($matchSignee);
 
                 //send mail and noti to org
-                $objBooking = new Booking();
-                $org = User::select(
-                    'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
-                );
-                $org->where('id', $matchSignee['organization_id']);
-                $orgDetail = $org->first()->toArray();
-                $comArray = array_merge($matchSignee->toArray(), $orgDetail);
-                //print_r($comArray);exit;
-                $orgMailSent = $objBooking->sendBookingConfirmedEmailToOrg($comArray);
+                // $objBooking = new Booking();
+                // $org = User::select(
+                //     'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
+                // );
+                // $org->where('id', $matchSignee['organization_id']);
+                // $orgDetail = $org->first()->toArray();
+                // $comArray = array_merge($matchSignee->toArray(), $orgDetail);
+                // //print_r($comArray);exit;
+                // $orgMailSent = $objBooking->sendBookingConfirmedEmailToOrg($comArray);
 
                 if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
@@ -730,7 +730,7 @@ class UserController extends Controller
             ]);
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
             //print_r($signeeMatch);exit;
-            $mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
+            //$mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
 
             //send mail to signee organization
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
@@ -758,7 +758,7 @@ class UserController extends Controller
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
             //print_r($signeeMatch);exit;
             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
-            $mailSent = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
+            //$mailSent = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
             //send mail to signee organization
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
@@ -1016,15 +1016,29 @@ class UserController extends Controller
         }
     }
 
-    public function getAllNotifications()
+    public function getAllNotifications(Request $request)
     {
         $perPage = Config::get('constants.pagination.perPage');
+        //print_r($showing);exit;
         try{
-            $query = Notification::select('notification.*',);
-            $query->where('signee_id', $this->userId);
-            $query->where('organization_id', Auth::user()->parent_id);
+            $showing = $request->get('showing');
+            $query = Notification::select('*');
+            if($showing == "ORGANIZATION")
+            {
+                //echo "123";exit;
+                $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
+                // $query->where('organization_id', Auth::user()->parent_id);
+                // $query->where('is_showing_for1', $showing);
+            } else {
+                //echo "456";exit;
+                $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
+                // $query->where('signee_id', $this->userId);
+                // $query->where('organization_id', Auth::user()->parent_id);
+                // $query->where('is_showing_for', $showing);
+            }
+
             $notification = $query->latest()->paginate($perPage);
-            if ($notification) {
+            if (!empty($notification)) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Notification not available!', 'status' => false], 404);
