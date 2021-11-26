@@ -244,6 +244,7 @@ class SigneesController extends Controller
         if (!empty($request->post('password'))) {
             $requestData['password'] = Hash::make($request->post('password'));
         }
+        $requestData['status'] = Auth::user()->status;
         $role = User::findOrFail($this->userId);
         $userCreated = $role->update($requestData);
         if ($userCreated) {
