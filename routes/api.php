@@ -174,6 +174,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/get-applied-shift', [UserController::class, 'getAppliedShift']);
         Route::get('/get-all-notification/{showing?}', [UserController::class, 'getAllNotifications']);
         Route::post('/update-notification', [UserController::class, 'updateNotifications']);
+        Route::post('/upload-profile-picture', [SigneesController::class, 'uploadProfilePicture']);
     });
 });
 

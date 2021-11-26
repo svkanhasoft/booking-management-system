@@ -924,4 +924,42 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
+            'files[]' => 'mimes:jpg,png,jpeg|size:1048',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try {
+            if ($request->hasfile('profile_pic')) {
+                if ($request->file('profile_pic')) {
+                    $file = $request->file('profile_pic');
+                    $name = $file->getClientOriginalName();
+                    $filename = pathinfo($name, PATHINFO_FILENAME);
+                    $extension = pathinfo($name, PATHINFO_EXTENSION);
+                    $new_filename = $filename . '_' . time() . '.' . $extension;
+                    //print_r($new_filename);exit;
+                    $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
+                    $file->move(public_path() . '/uploads/signee_profile_pic/', $new_name);
+                    $signeeUser = User::findOrFail($this->userId);
+                    $signeeUser->profile_pic = $new_name;
+                    $docUpload = $signeeUser->save();
+                    if(!empty($docUpload))
+                    {
+                        return response()->json(['status' => true, 'message' => 'Profile picture uploaded successfully'], $this->successStatus);
+                    }
+                }
+            } else {
+                return response()->json(['message' => 'No file selected', 'status' => false], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
 }

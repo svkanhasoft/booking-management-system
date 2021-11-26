@@ -192,7 +192,7 @@ class User extends Authenticatable
             'users.password_change as is_password_change',
             'users.city',
             'users.postcode',
-
+            'users.profile_pic',
             'signees_detail.nationality',
             'signees_detail.nmc_dmc_pin',
 
