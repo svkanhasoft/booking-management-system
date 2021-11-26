@@ -139,7 +139,7 @@ class Notification extends Model
             $notification->is_showing_for = "SIGNEE";
         }
         $notification->save();
-        print_r($notification);exit;
+        //print_r($notification);exit;
         return true;
     }
 
