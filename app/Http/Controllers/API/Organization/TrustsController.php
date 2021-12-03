@@ -256,9 +256,10 @@ class TrustsController extends Controller
      */
     function destroy($trustId)
     {
-        // echo "$trustId" ;
-        // exit;
-        Ward::where('trust_id', $trustId)->delete();
+        $wardRes = Hospital::select('id')->where('trust_id', $trustId)->groupBy('id')->get()->toArray();
+        $hospitalId = array_column($wardRes, 'id');
+        Ward::where('hospital_id', '=', $hospitalId)->delete();
+        // Ward::where('trust_id', $trustId)->delete();
         Traning::where('trust_id', $trustId)->delete();
         Hospital::where('trust_id', $trustId)->delete();
         $result = Trust::where('id', $trustId)->delete();
