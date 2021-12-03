@@ -515,7 +515,7 @@ class UserController extends Controller
                     $speciality = new Speciality();
                     $speciality->addOrUpdateSpeciality($requestData['speciality'], $requestData['id'], $signee->parent_id);
                     $user = User::find($this->userId)->SigneesDetail;
-                    return response()->json(['status' => true, 'message' => 'Signee update Successfully', 'data' =>  $signee], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Signee Updated Successfully', 'data' =>  $signee], $this->successStatus);
                 }
             } else {
                 return response()->json(['message' => 'Sorry, Signee update failed!', 'status' => false], 409);
