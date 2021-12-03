@@ -214,7 +214,7 @@ class SpecialitiesController extends Controller
             }
             $addResult =  $speciality->update($requestData);
             if ($addResult) {
-                return response()->json(['status' => true, 'message' => 'Speciality update Successfully', 'data' => $speciality], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Speciality updated Successfully', 'data' => $speciality], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, speciality update failed!', 'status' => false], 409);
             }

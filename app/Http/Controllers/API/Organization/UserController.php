@@ -515,7 +515,7 @@ class UserController extends Controller
                     $speciality = new Speciality();
                     $speciality->addOrUpdateSpeciality($requestData['speciality'], $requestData['id'], $signee->parent_id);
                     $user = User::find($this->userId)->SigneesDetail;
-                    return response()->json(['status' => true, 'message' => 'Signee update Successfully', 'data' =>  $signee], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Signee Updated Successfully', 'data' =>  $signee], $this->successStatus);
                 }
             } else {
                 return response()->json(['message' => 'Sorry, Signee update failed!', 'status' => false], 409);
@@ -767,7 +767,7 @@ class UserController extends Controller
             $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($comArray);
 
             if ($update) {
-                return response()->json(['status' => true, 'message' => 'Shift cancelled by signee successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Shift rejected by signee successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
             }
