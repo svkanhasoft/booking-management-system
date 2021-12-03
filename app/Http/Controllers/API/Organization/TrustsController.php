@@ -189,7 +189,7 @@ class TrustsController extends Controller
             if ($trustResult) {
                 $trustData = new Trust();
                 $trustDetails = $trustData->getTrustById($requestData['id']);
-                return response()->json(['status' => true, 'message' => 'Trust update successfully.', 'data' => $trustDetails], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Trust updated successfully.', 'data' => $trustDetails], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Trust update failed.', 'status' => false], 409);
             }

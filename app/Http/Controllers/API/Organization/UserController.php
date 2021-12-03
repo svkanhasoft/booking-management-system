@@ -767,7 +767,7 @@ class UserController extends Controller
             $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($comArray);
 
             if ($update) {
-                return response()->json(['status' => true, 'message' => 'Shift cancelled by signee successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Shift rejected by signee successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
             }

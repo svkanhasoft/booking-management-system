@@ -162,7 +162,7 @@ class SigneesController extends Controller
             $user = $userObj->getSigneeDetails(Auth::user()->id, $checkRecord->parent_id);
             // $user['is_password_change'] =  ($user['is_password_change']==1)?true:false;
             $user['token'] =  $userResult->createToken('User')->accessToken;
-            return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Login Successfully', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Email or password does not match', 'status' => false], 200);
         }
@@ -213,7 +213,7 @@ class SigneesController extends Controller
             $userObj['password'] = Hash::make($request->post('password'));
             $userObj['password_change'] = true;
             $userObj->save();
-            return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Password Changed Successfully.'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Password change failed.', 'status' => false], 200);
         }
@@ -252,7 +252,7 @@ class SigneesController extends Controller
             $result = $orgResult->update($requestData);
             if ($result) {
                 $user = User::find($this->userId)->SigneesDetail;
-                return response()->json(['status' => true, 'message' => 'User update Successfully', 'data' =>  $user], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'User updated Successfully', 'data' =>  $user], $this->successStatus);
             }
         } else {
             return response()->json(['message' => 'Sorry, User update failed!', 'status' => false], 200);
