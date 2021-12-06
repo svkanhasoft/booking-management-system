@@ -266,7 +266,7 @@ class SpecialitiesController extends Controller
         if ($res) {
             return response()->json(['status' => true, 'message' => 'get speciality Successfully', 'data' => $res], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 404);
+            return response()->json(['message' => 'Sorry, speciality not available!', 'status' => false], 200);
         }
 
     }
