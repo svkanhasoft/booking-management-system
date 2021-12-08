@@ -845,7 +845,7 @@ class SigneesController extends Controller
                     return response()->json(['status' => true, 'message' => 'Organization successfully changed', 'data' => $user], $this->successStatus);
                 }
             } else {
-                return response()->json(['status' => false, 'message' => 'No user found in selected organization'], 404);
+                return response()->json(['status' => false, 'message' => 'No user found in selected organization'], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -958,7 +958,7 @@ class SigneesController extends Controller
                     }
                 }
             } else {
-                return response()->json(['message' => 'No file selected', 'status' => false], 404);
+                return response()->json(['message' => 'No file selected', 'status' => false], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);

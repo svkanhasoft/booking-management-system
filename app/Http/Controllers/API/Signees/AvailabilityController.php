@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\Auth;
 class AvailabilityController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -69,7 +69,7 @@ class AvailabilityController extends Controller
         if ($availability) {
             return response()->json(['status' => true, 'message' => 'Availablity get successfully', 'data' => $availability], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, availablity not available!', 'status' => false], 404);
+            return response()->json(['message' => 'Sorry, availablity not available!', 'status' => false], 200);
         }
     }
 }

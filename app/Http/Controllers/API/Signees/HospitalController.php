@@ -50,7 +50,7 @@ class HospitalController extends Controller
         if ($hospitals) {
             return response()->json(['status' => true, 'message' => 'Hospital get successfully', 'data' => $hospitals], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Hospital not available.', 'status' => false], 404);
+            return response()->json(['message' => 'Hospital not available.', 'status' => false], 200);
         }
 
     }
@@ -71,7 +71,7 @@ class HospitalController extends Controller
         if ($query2) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $query2], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Speciality not available.', 'status' => false], 404);
+            return response()->json(['message' => 'Speciality not available.', 'status' => false], 200);
         }
     }
 }
