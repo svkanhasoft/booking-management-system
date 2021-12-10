@@ -125,13 +125,13 @@ class SigneesController extends Controller
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
-            return response()->json(['status' => false, 'message' => $error], 400);
+            return response()->json(['status' => false, 'message' => $error], 422);
         }
 
         $checkRecord = User::where('email', $request->all('email'))->where('role', 'SIGNEE')->first();
         // dd($checkRecord->id);
         if (empty($checkRecord)) {
-            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 400);
+            return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
         if ($checkRecord->status != 'Active') {
             return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
@@ -144,7 +144,7 @@ class SigneesController extends Controller
         $orgResult = SigneeOrganization::where(['user_id' => $checkRecord->id, 'organization_id' => $request->organization_id])->first();
         //print_r($orgResult);exit();
         if (empty($orgResult)) {
-            return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 400);
+            return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 200);
         }
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
             $checkRecord->parent_id =  request('organization_id');
