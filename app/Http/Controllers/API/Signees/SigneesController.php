@@ -623,7 +623,7 @@ class SigneesController extends Controller
     {
         $requestData = $request->all();
         \Log::info("Upload files result!");
-        \Log::info($request->hasfile('files'));
+        \Log::info($request->file('files'));
         $validator = Validator::make($request->all(), [
             // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
             'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
