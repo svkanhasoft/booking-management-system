@@ -56,7 +56,7 @@ class Notification extends Model
             //print_r($postData);exit();
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
-            //echo "in else ";exit;
+
             if((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION'))
             {
                 //echo "in if";exit;
@@ -66,51 +66,45 @@ class Notification extends Model
 
                 //signee reject shift
                 if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
-                    //echo "hi";exit;
                     $msg = 'You reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
                 } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //signee accepts shift
-                    //echo "123";exit;
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
-                    //echo "456";exit;
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';
                 } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['organization_id'] == Auth::user()->id && $postData['signee_booking_status'] == "OFFER") {
-                    //echo "933";exit;
                     $msg = 'You got offer from' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward by admin';
                 } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
-                    //echo "333";exit;
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
                 } else if ($postData['status'] == "CREATED" && isset($postData['updated_by']) && $postData['updated_by'] != '') {
-                    //echo "748";exit;
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been updated by admin';
                 } else  if ($postData['status'] == "CREATED" && ($postData['signee_booking_status'] == '' || $postData['signee_booking_status'] == 'PENDING')) {
-                    //echo "666";exit;
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been created by admin';
                 } else if (isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "CONFIRMED") {
-                    //echo "712";exit;
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been confirmed';
                 }else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['signee_booking_status'] === "APPLY" && $postData['role'] === 'SIGNEE') {
-                    //echo "748";exit;
                     $msg = 'Your have applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward';
                 }
             } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
-                //echo "789";exit;
                 $msg = $postData['user_name'] .' '.'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['signee_booking_status']) && isset($postData['signeeId']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
-                //echo "963";exit;
                 $msg = $postData['user_name'] .' '.'rejected your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['role'] == 'ORGANIZATION' && $postData['signee_booking_status'] == "APPLY") {
-               // echo "159";exit;
                 $msg = $postData['user_name'] .' '.'applied in shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CREATED') {
-                //echo "458";exit;
                 $msg = 'You created a new shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CONFIRMED' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] === 'CONFIRMED') {
-                //echo "797979";exit;
                 $msg = 'Your shift is confirmed in ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             }
         }
-        //echo "dfgfdgfdgdfg";exit;
+        if(!empty($postData['signeeId'])){
+            $userResult = User::find($postData['signeeId']);
+            if($userResult->device_id != '' && $userResult->platform == 'Android'){
+                $this->sendAndroidNotification($msg, $userResult->device_id, '');
+            }else if($userResult->device_id != '' && $userResult->platform == 'Iphone'){
+                $this->sendIOSNotification($msg, $userResult->device_id, '');
+            }
+        }
+
         $notification = new Notification();
         $notification->signee_id = isset($postData['signeeId']) ? $postData['signeeId'] : NULL;
         $notification->organization_id = isset($postData['organization_id']) ? $postData['organization_id'] : $postData['id'];
@@ -133,7 +127,6 @@ class Notification extends Model
         $notification->created_by = Auth::user()->role ? Auth::user()->id : Auth::user()->parent_id;
 
         if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
-            //echo "123456";exit;
             $notification->is_showing_for = "ORGANIZATION";
         } else {
             $notification->is_showing_for = "SIGNEE";
@@ -143,33 +136,7 @@ class Notification extends Model
         return true;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static function sendAndroidNotification($message, $token, $orderId)
+    public function sendAndroidNotification($message, $token, $orderId)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
@@ -183,14 +150,7 @@ class Notification extends Model
         $headers = array();
         $headers[] = 'Content-Type: application/json';
         $headers[] = 'Authorization: key=' . $serverKey;
-        // $ch = curl_init();
-        // curl_setopt($ch, CURLOPT_URL, $url);
-        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST,"POST");
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER,false);
-        // curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
-        // $response = curl_exec($ch);
-        // $result = json_encode($response);
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -207,7 +167,7 @@ class Notification extends Model
         curl_close($ch);
     }
 
-    public static function sendIOSNotification($message, $token, $orderId)
+    public function sendIOSNotification($message, $token, $orderId)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;

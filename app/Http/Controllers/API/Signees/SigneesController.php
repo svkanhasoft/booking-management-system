@@ -150,7 +150,7 @@ class SigneesController extends Controller
             $checkRecord->parent_id =  request('organization_id');
             $checkRecord->last_login_date =  date('Y-m-d H:i:s');
             $checkRecord->device_id =  !empty($request->header('deviceId')) ? $request->header('deviceId') : '';
-            $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Android';
+            $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Web';
             $checkRecord->save();
 
 
