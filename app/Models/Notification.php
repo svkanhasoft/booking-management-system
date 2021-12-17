@@ -96,7 +96,7 @@ class Notification extends Model
                 $msg = 'Your shift is confirmed in ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             }
         }
-        if(!empty($postData['signeeId'])){
+        if(!empty($postData['signeeId']) && Auth::user()->role !== 'SIGNEE'){
             $userResult = User::find($postData['signeeId']);
             if($userResult->device_id != '' && $userResult->platform == 'Android'){
                 $this->sendAndroidNotification($msg, $userResult->device_id, '');
