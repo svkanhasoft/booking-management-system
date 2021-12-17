@@ -174,8 +174,8 @@ class Notification extends Model
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $body = $message;
-        $notification = array('title' => $title, 'text' => $body, 'sound' => 'default', 'badge' => '1');
-        $arrayToSend = array('to' => $token, 'data' => $notification, 'notification' => $notification, 'priority' => 'high');
+        $notification = array('title' => $title,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
+        $arrayToSend = array('to' => $token, 'subtitle' => $message,'data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
         $headers = array();
         $headers[] = 'Content-Type: application/json';
