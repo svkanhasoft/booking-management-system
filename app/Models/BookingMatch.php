@@ -101,7 +101,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->signee_booking_status = 'PENDING';
+            // $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
             $objNotification = new Notification();
@@ -128,7 +128,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
-            $objBookingMatch->signee_booking_status = 'PENDING';
+            // $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
         }
