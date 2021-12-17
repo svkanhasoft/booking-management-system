@@ -98,10 +98,16 @@ class Notification extends Model
         }
         if(!empty($postData['signeeId']) && Auth::user()->role !== 'SIGNEE'){
             $userResult = User::find($postData['signeeId']);
+            $bookingId = '';
+            if(isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')){
+                $bookingId = $postData['booking_id'];
+            }else if(isset($postData['id']) && $postData['id']){
+                $bookingId = $postData['id'];
+            }
             if($userResult->device_id != '' && $userResult->platform == 'Android'){
-                $this->sendAndroidNotification($msg, $userResult->device_id, '');
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId);
             }else if($userResult->device_id != '' && $userResult->platform == 'Iphone'){
-                $this->sendIOSNotification($msg, $userResult->device_id, '');
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId);
             }
         }
 
@@ -136,13 +142,13 @@ class Notification extends Model
         return true;
     }
 
-    public function sendAndroidNotification($message, $token, $orderId)
+    public function sendAndroidNotification($message, $token, $bookingId)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
-        $customData = array('orderID' => $orderId, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
+        $customData = array('bookingId' => $bookingId, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         $notification = array('title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
@@ -167,14 +173,14 @@ class Notification extends Model
         curl_close($ch);
     }
 
-    public function sendIOSNotification($message, $token, $orderId)
+    public function sendIOSNotification($message, $token, $bookingId)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $body = $message;
-        $notification = array('title' => $title,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
+        $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
         $arrayToSend = array('to' => $token, 'subtitle' => $message,'data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
         $headers = array();
