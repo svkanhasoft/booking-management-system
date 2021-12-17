@@ -144,8 +144,8 @@ class Notification extends Model
         $title = "Pluto";
         $customData = array('orderID' => $orderId, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         $notification = array('title' => $title, 'text' => $message, 'orderId' => $orderId, 'sound' => 'default', 'badge' => '1');
-        $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
-        // $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
+        // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
+        $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
         $headers = array();
         $headers[] = 'Content-Type: application/json';
