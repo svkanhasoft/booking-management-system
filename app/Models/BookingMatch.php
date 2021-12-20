@@ -416,10 +416,10 @@ class BookingMatch extends Model
         }else if ($shiftType === 'apply') {
             $booking->where('booking_matches.signee_booking_status', 'APPLY');
             $booking->where('bookings.date', '>=', date('Y-m-d'));
-            $booking->orWhere('bookings.status','<>', 'CANCEL');
+            $booking->where('bookings.status','<>', 'CANCEL');
         } else if ($shiftType === 'upcoming') {
             // $booking->where('bookings.status', 'CONFIRMED');
-            $booking->orWhere('bookings.status','<>', 'CANCEL');
+            $booking->where('bookings.status','<>', 'CANCEL');
             $booking->where('booking_matches.signee_booking_status', 'CONFIRMED');
             $booking->where('bookings.date', '>=', date('Y-m-d'));
         }
