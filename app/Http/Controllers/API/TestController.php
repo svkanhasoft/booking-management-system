@@ -96,8 +96,10 @@ class TestController extends Controller
     {
         echo "fsdfsd";
         $token =  "dQE4u0N01ACA4o-RoJ71ac:APA91bF4BOzk21A-5DS-wpypdGjlwxn1D76-RlxxpZEoeNMdhfmeFHEd3ZoryraNhBGa3V3DehGR9TUVxFCiXgM9iqsmN4lGneR77uGCr6S9Ajk4doLocSwyRq_Uh8EJ0CqkLuOBUL1j";
+        $tokenIOS =  "cDEgpnwfiEy2lownRYroc1:APA91bFri5go-0EzVSHXWYQ8EzGRjbhOPDwfmhKO-VBDLV6pUkI-cF1DIbwDpKRJvqeyDPCOolHdgyzPcW5ZpruyK0qzZpjSFFB3gFmMJgwBN3oesO9ufkiOvuFeGBhci4pbKUtP1c7T";
         $objNotification = new Notification();
-        $response   = $objNotification->sendAndroidNotification("Hello notification",$token,7);
+        // $response   = $objNotification->sendAndroidNotification("Hello notification",$token,7,'static');
+        $response   = $objNotification->sendIOSNotification("Hello notification",$tokenIOS,7,'static');
         print_r($response);
     }
 }

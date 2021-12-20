@@ -99,15 +99,21 @@ class Notification extends Model
         if(!empty($postData['signeeId']) && Auth::user()->role !== 'SIGNEE'){
             $userResult = User::find($postData['signeeId']);
             $bookingId = '';
+            $status = '';
             if(isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')){
                 $bookingId = $postData['booking_id'];
             }else if(isset($postData['id']) && $postData['id']){
                 $bookingId = $postData['id'];
             }
+            if (isset($postData['signee_booking_status'])) {
+                $status = $postData['signee_booking_status'];
+            } else {
+                $status = $postData['status'];
+            }
             if($userResult->device_id != '' && $userResult->platform == 'Android'){
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId);
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId,$status);
             }else if($userResult->device_id != '' && $userResult->platform == 'Iphone'){
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId);
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId,$status);
             }
         }
 
@@ -142,13 +148,13 @@ class Notification extends Model
         return true;
     }
 
-    public function sendAndroidNotification($message, $token, $bookingId)
+    public function sendAndroidNotification($message, $token, $bookingId,$status)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
-        $customData = array('bookingId' => $bookingId, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
+        $customData = array('bookingId' => $bookingId,'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         $notification = array('title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
@@ -173,17 +179,19 @@ class Notification extends Model
         curl_close($ch);
     }
 
-    public function sendIOSNotification($message, $token, $bookingId)
+    public function sendIOSNotification($message, $token, $bookingId,$status)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $body = $message;
-        $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => array('bookingId'=>$bookingId,"message"=>$body), 'sound' => 'default', 'badge' => '1');
-        $arrayToSend = array('to' => $token, 'subtitle' => $message,'data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
+        $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => array('bookingId'=>$bookingId,"message"=>$body,'status' => $status), 'sound' => 'default', 'badge' => '1');
+        $arrayToSend = array('data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
+        // $arrayToSend = array('to' => $token, 'subtitle' => $message,'data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
-        // dd($arrayToSend);
+        echo "<pre/>";
+        print_r($json);exit;
         $headers = array();
         $headers[] = 'Content-Type: application/json';
         $headers[] = 'Authorization: key=' . $serverKey;
