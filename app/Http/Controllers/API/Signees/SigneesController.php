@@ -146,15 +146,13 @@ class SigneesController extends Controller
         if (empty($orgResult)) {
             return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 200);
         }
-        \Log::info("header!");
-        \Log::info($request->header('deviceId'));
+
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
             $checkRecord->parent_id =  request('organization_id');
             $checkRecord->last_login_date =  date('Y-m-d H:i:s');
             $checkRecord->device_id =  !empty($request->header('deviceId')) ? $request->header('deviceId') : '';
             $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Web';
             $checkRecord->save();
-
 
             $userResult = Auth::user();
             $this->userId = Auth::user()->id;

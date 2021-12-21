@@ -123,8 +123,14 @@ class BookingController extends Controller
         if($booking){
             $obj = new BookingSpeciality();
             $booking['speciality'] = $obj->getBookingSpeciality($id);
-            $booking['matching'] = $objBooking->getMatchByBooking($id,'Matching');
-            $booking['interested'] = $objBooking->getMatchByBooking($id,'Interested');
+            $booking['matching'] = $objBooking->getMatchByBooking($id,'Matching',$booking['status']);
+            $booking['interested'] = $objBooking->getMatchByBooking($id,'Interested',$booking['status']);
+            $booking['confirmed'] = [];
+            if($booking['status'] == 'CONFIRMED'){
+                $booking['matching'] = [];
+                $booking['interested'] = [];
+                $booking['confirmed'] = $objBooking->getMatchByBooking($id,'CONFIRMED',$booking['status']);
+            }
         }
         // $shift['speciality'] = BookingSpeciality::where('booking_id', $id)->get()->toArray();
         if ($booking) {
