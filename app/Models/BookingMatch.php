@@ -424,21 +424,11 @@ class BookingMatch extends Model
             $booking->where('bookings.date', '>=', date('Y-m-d'));
         }else if ($shiftType === 'invite') {
             // $booking->where('bookings.status', 'CONFIRMED');
-            $booking->where('booking_matches.signee_booking_status', 'APPLY');
+            $booking->where('booking_matches.signee_booking_status', 'INVITE');
             $booking->where('bookings.date', '>=', date('Y-m-d'));
-            $booking->where('bookings.status','<>', 'INVITE');
+            $booking->where('bookings.status','<>', 'CANCEL');
         }
-        // if ($shiftType == 'past') {
-        //     $booking->where('bookings.date', '<', date('y-m-d'));
-        //     $booking->where('bookings.status', 'CONFIRMED');
-        // }else if ($shiftType == 'apply') {
-        //     //$booking->where('bookings.status', 'APPLY');
-        //     $booking->where('booking_matches.signee_booking_status', 'APPLY');
-        //     $booking->where('bookings.date', '>=', date('y-m-d'));
-        // } else {
-        //     $booking->where('bookings.status', 'CONFIRMED');
-        //     $booking->where('bookings.date', '>=', date('y-m-d'));
-        // }
+
         $booking->whereIn('bookings.user_id', $staffIdArray);
         $booking->whereNull('bookings.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
