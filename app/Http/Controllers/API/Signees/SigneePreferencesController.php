@@ -22,7 +22,7 @@ class SigneePreferencesController extends Controller
     }
 
     /**
-     * Add signee preferences.
+     * Add candidate preferences.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -54,7 +54,7 @@ class SigneePreferencesController extends Controller
     }
 
     /**
-     * Get signee preferences.
+     * Get candidate preferences.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

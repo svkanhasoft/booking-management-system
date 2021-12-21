@@ -252,7 +252,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Used to get matching signee by booking id.
+     * Used to get matching candidate by booking id.
      *
      * @param  int  $id
      *
@@ -280,7 +280,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Used to update matching signee by signee id.
+     * Used to update matching candidate by candidate id.
      *
      * @param  int  $id
      *
@@ -305,7 +305,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Used to get signee by signee id and booking id.
+     * Used to get candidate by candidate id and booking id.
      *
      * @param  int  $id
      *
@@ -318,14 +318,14 @@ class BookingController extends Controller
         $signeeId = $request->get('signeeId');
         $signeeDetails = $booking->getSigneeByIdAndBookingId($bookingId, $signeeId);
         if ($signeeDetails) {
-            return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $signeeDetails], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $signeeDetails], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 404);
+            return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 404);
         }
     }
 
     /**
-     * Used to get list of signee whose speciality is matching with booking speciality by booking id.
+     * Used to get list of candidate whose speciality is matching with booking speciality by booking id.
      *
      * @param  int  $id
      *

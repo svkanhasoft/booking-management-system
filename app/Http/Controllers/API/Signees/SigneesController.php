@@ -72,13 +72,13 @@ class SigneesController extends Controller
             //print_r($requestData);exit();
             if ($request->hasFile('cv')) {
                 $files1 = $request->file('cv');
-                $name = time() . '_signee_' . $files1->getClientOriginalName();
+                $name = time() . '_candidate_' . $files1->getClientOriginalName();
                 $files1->move(public_path() . '/uploads/signee_docs/', $name);
                 $requestData['cv'] = $name;
             }
             if ($request->hasFile('profile_pic')) {
                 $files1 = $request->file('profile_pic');
-                $name2 = time() . '_signee_' . $files1->getClientOriginalName();
+                $name2 = time() . '_candidate_' . $files1->getClientOriginalName();
                 $files1->move(public_path() . '/uploads/signee_docs/', $name2);
                 $requestData['profile_pic'] = $name2;
             }
@@ -179,7 +179,7 @@ class SigneesController extends Controller
         $userObj = new User();
         $user = $userObj->getSigneeDetails($this->userId, Auth::user()->parent_id);
         if (!empty($user)) {
-            return response()->json(['status' => true, 'message' => 'Signee details get successfully.', 'data' => $user], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Candidate details get successfully.', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['message' => 'something will be wrong', 'status' => false], 200);
         }
@@ -350,11 +350,11 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for get list of all the organizations added by super admin and it is used when new signee registeres.
+     * This function is used for get list of all the organizations added by super admin and it is used when new candidate registeres.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
-    public function getOrganisation()   //while register signee
+    public function getOrganisation()   //while register candidate
     {
         $data = [];
         $query = User::select(
@@ -383,11 +383,11 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for get organization list in which signee wants to register except signee already register.
+     * This function is used for get organization list in which candidate wants to register except candidate already register.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
-    public function getOrganisationListAddOrg()  //while signee add multiple org
+    public function getOrganisationListAddOrg()  //while candidate add multiple org
     {
         $sigOrg = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
         $orgId = array_column($sigOrg, 'organization_id');
@@ -425,7 +425,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for logging out the logged-in signee.
+     * This function is used for logging out the logged-in candidate.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -488,7 +488,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * GET SIGNEE LOGIN MY SHIFT LIST.
+     * GET Candidate LOGIN MY SHIFT LIST.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -499,6 +499,7 @@ class SigneesController extends Controller
         $result['upcoming'] = $bookingMatching->getMyShift('upcoming');
         $result['past'] = $bookingMatching->getMyShift('past');
         $result['apply'] = $bookingMatching->getMyShift('apply');
+        $result['invite'] = $bookingMatching->getMyShift('invite');
         //print_r($result);exit();
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Your shift listed successfully', 'data' => $result], $this->successStatus);
@@ -508,7 +509,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for view shift details by signee
+     * This function is used for view shift details by candidate
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -529,8 +530,8 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for filter shifts by signee.
-     * Signee can filter shifts by day of shfts, hospital wise and speciality wise.
+     * This function is used for filter shifts by candidate.
+     * Candidate can filter shifts by day of shfts, hospital wise and speciality wise.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -546,7 +547,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for change the compliance status of the signee by staff user.
+     * This function is used for change the compliance status of the candidate by staff user.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -575,7 +576,7 @@ class SigneesController extends Controller
             $notification = $objNotification->addNotification($requestData);
 
             if (!empty($res)) {
-                return response()->json(['status' => true, 'message' => 'Signee status changed successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Candidate status changed successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
             }
@@ -585,7 +586,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used to register a signee to multiple organization at a time.
+     * This function is used to register a candidate to multiple organization at a time.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -615,7 +616,7 @@ class SigneesController extends Controller
         }
     }
     /**
-     * This function is for signee to upload his complience documents.
+     * This function is for candidate to upload his complience documents.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -667,7 +668,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for signee to update his specialities.
+     * This function is used for candidate to update his specialities.
      * @param  int  $id
      * @return \Illuminate\Http\Response
     */
@@ -697,7 +698,7 @@ class SigneesController extends Controller
         }
     }
     /**
-     * This function is used to get the all the specialities of the signee.
+     * This function is used to get the all the specialities of the candidate.
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -721,7 +722,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is for fetching the list of organization in which the signee is registered.
+     * This function is for fetching the list of organization in which the candidate is registered.
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -761,9 +762,9 @@ class SigneesController extends Controller
     }
 
      /**
-     * This function is for get signee's documents according to the keys or without key.
+     * This function is for get candidate's documents according to the keys or without key.
      * If key is passed then documents are fetched by that key only.
-     * If key is not passed then all the documents for that signee will be fetched.
+     * If key is not passed then all the documents for that candidate will be fetched.
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -799,7 +800,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for delete signee documents.
+     * This function is used for delete candidate documents.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -822,8 +823,8 @@ class SigneesController extends Controller
 
 
     /*
-        This function is for signee who will switch to the org which they are already registered.
-        Once the signee is logged in to one org then they can switch to an another organization.
+        This function is for candidate who will switch to the org which they are already registered.
+        Once the candidate is logged in to one org then they can switch to an another organization.
     */
     public function multiOrgLogin(Request $request)
     {
@@ -831,7 +832,7 @@ class SigneesController extends Controller
             $organization_id = $request->get('organization_id');
             $signee_id = $this->userId;
 
-            //to check signee is present in org or not
+            //to check candidate is present in org or not
             $data = SigneeOrganization::where(['user_id' => $signee_id, 'organization_id' => $organization_id])->first();
             if (!empty($data)) {
                 $signee = User::where('id', $this->userId)->first();
@@ -854,7 +855,7 @@ class SigneesController extends Controller
     }
 
     /**
-     * This function is used for signee who will apply for the shift..is is use for signee.
+     * This function is used for candidate who will apply for the shift..is is use for signee.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

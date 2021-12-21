@@ -460,7 +460,7 @@ class Booking extends Model
             return false;
         }
     }
-    //booking confirmed by signee email to org
+    //booking confirmed by Candidate email to org
     public function sendBookingConfirmedEmailToOrg($result)
     {
         //print_r($result);exit();
@@ -520,7 +520,7 @@ class Booking extends Model
         }
     }
 
-    //send offer to signee email
+    //send offer to Candidate email
     public function sendOfferToSigneeEmail($result)
     {
         //print_r($result);exit();
@@ -548,7 +548,7 @@ class Booking extends Model
         }
     }
 
-    //booking accepted by signee email to org
+    //booking accepted by Candidate email to org
     public function sendSigneeAccepBookingEmailToOrg($res)
     {
         //print_r($res);exit();
@@ -558,7 +558,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'signeeAccepBookingEmailToOrg',
-                'subject' => 'Booking Management System: Booking Accepted By Signee',
+                'subject' => 'Booking Management System: Booking Accepted By Candidate',
                 'data' => $res
             ];
             //print_r($details);exit();
@@ -604,7 +604,7 @@ class Booking extends Model
         }
     }
 
-    //booking reject by signee email to org
+    //booking reject by Candidate email to org
     public function sendSigneeCancelBookingEmailToOrg($res)
     {
         //print_r($res);exit();
@@ -614,7 +614,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'signeeCancelBookingEmailToOrg',
-                'subject' => 'Booking Management System: Booking Cancel By Signee',
+                'subject' => 'Booking Management System: Booking Cancel By Candidate',
                 'data' => $res
             ];
             //print_r($details);exit();
@@ -632,7 +632,7 @@ class Booking extends Model
         }
     }
 
-    //booking accepted by signee email
+    //booking accepted by Candidate email
     public function sendBookingAcceptBySigneeEmail($result)
     {
         //print_r($result);exit();
@@ -664,7 +664,7 @@ class Booking extends Model
     }
 
 
-    //booking canceled by signee email
+    //booking canceled by Candidate email
     public function sendBookingCancelBySigneeEmail($result)
     {
         // print_r($result);exit;
@@ -722,7 +722,7 @@ class Booking extends Model
         }
     }
 
-    //booking apply by signee mail to org
+    //booking apply by Candidate mail to org
     public function sendBookingApplyBySigneeEmailToOrg($result)
     {
         //print_r($result);exit();

@@ -64,10 +64,10 @@ class Notification extends Model
                 $date = date("d-m-Y", strtotime($bookingDetails['date']));
                 $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
 
-                //signee reject shift
+                //Candidate reject shift
                 if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
                     $msg = 'You reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
-                } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //signee accepts shift
+                } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //Candidate accepts shift
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';

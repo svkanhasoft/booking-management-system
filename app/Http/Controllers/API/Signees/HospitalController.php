@@ -32,7 +32,7 @@ class HospitalController extends Controller
     }
 
     /**
-     * Show Hospital list at filter shift when signee area.
+     * Show Hospital list at filter shift when candidate area.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -56,7 +56,7 @@ class HospitalController extends Controller
     }
 
     /**
-     * Show specilality list at filter shift when signee area.
+     * Show specilality list at filter shift when candidate area.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

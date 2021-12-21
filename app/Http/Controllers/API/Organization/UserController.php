@@ -397,10 +397,10 @@ class UserController extends Controller
 
 
 
-    //////////////////// Signee CRUD By Organisation ///////////////////////
+    //////////////////// candidate CRUD By Organisation ///////////////////////
 
     /*
-     * add new signee by organization
+     * add new candidate by organization
      *
      * @return \Illuminate\Http\Response
      */
@@ -449,10 +449,10 @@ class UserController extends Controller
                 if ($orgResult) {
                     $UserObj = new User();
                     $mailRes =  $UserObj->sendRegisterEmail($request);
-                    return response()->json(['status' => true, 'message' => 'Signee added Successfully', 'data' => $userCreated], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Candidate added Successfully', 'data' => $userCreated], $this->successStatus);
                 }
             } else {
-                return response()->json(['message' => 'Sorry, Signee added failed!', 'status' => false], 409);
+                return response()->json(['message' => 'Sorry, Candidate added failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -460,25 +460,25 @@ class UserController extends Controller
     }
 
     /*
-     * View signee by organization
+     * View candidate by organization
      *
      * @return \Illuminate\Http\Response
      */
-    public function viewSignee(Request $request)    //get all signee by organisation
+    public function viewSignee(Request $request)    //get all candidate by organisation
     {
         //print_r($this->userId);exit();
         $UserObj = new User();
         $user = $UserObj->getSignee($request, $this->userId);
         //print_r($user);exit();
         if (!empty($user)) {
-            return response()->json(['status' => true, 'message' => 'Signee Get Successfully', 'data' => $user], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Candidate Get Successfully', 'data' => $user], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Something is Wrong!', 'status' => false], 409);
         }
     }
 
     /*
-     * Edit signee by organization
+     * Edit candidate by organization
      *
      * @return \Illuminate\Http\Response
      */
@@ -515,10 +515,10 @@ class UserController extends Controller
                     $speciality = new Speciality();
                     $speciality->addOrUpdateSpeciality($requestData['speciality'], $requestData['id'], $signee->parent_id);
                     $user = User::find($this->userId)->SigneesDetail;
-                    return response()->json(['status' => true, 'message' => 'Signee Updated Successfully', 'data' =>  $signee], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Candidate Updated Successfully', 'data' =>  $signee], $this->successStatus);
                 }
             } else {
-                return response()->json(['message' => 'Sorry, Signee update failed!', 'status' => false], 409);
+                return response()->json(['message' => 'Sorry, Candidate update failed!', 'status' => false], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -526,7 +526,7 @@ class UserController extends Controller
     }
 
     /*
-     * Delete signee by organization
+     * Delete candidate by organization
      *
      * @return \Illuminate\Http\Response
      */
@@ -536,9 +536,9 @@ class UserController extends Controller
             $userDelete = User::find($id);
             $delete = SigneeOrganization::where(['user_id' => $id, 'organization_id' => $userDelete['parent_id']])->delete();
             if ($delete) {
-                return response()->json(['status' => true, 'message' => 'Signee deleted successfully.'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Candidate deleted successfully.'], $this->successStatus);
             } else {
-                return response()->json(['status' => false, 'message' => 'Sorry, Signee not deleted.'], 409);
+                return response()->json(['status' => false, 'message' => 'Sorry, Candidate not deleted.'], 409);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -566,19 +566,19 @@ class UserController extends Controller
     }
 
     /*
-     * Get signee by id by organization
+     * Get Candidate by id by organization
      *
      * @return \Illuminate\Http\Response
      */
-    public function getMySigneeById($id)  //get signee by id from org
+    public function getMySigneeById($id)  //get Candidate by id from org
     {
         try {
             $userObj = new User();
             $user = $userObj->getSigneeById($id);
             if ($user) {
-                return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $user], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $user], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 404);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -624,7 +624,7 @@ class UserController extends Controller
     }
 
     /*
-     * Change signee profile status
+     * Change Candidate profile status
      *
      * @return \Illuminate\Http\Response
      */
@@ -644,7 +644,7 @@ class UserController extends Controller
             $data->status = $requestData['status'];
             $res = $data->save();
             if (!empty($res)) {
-                return response()->json(['status' => true, 'message' => 'Signee profile status changed successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Candidate profile status changed successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
             }
@@ -654,7 +654,7 @@ class UserController extends Controller
     }
 
     /*
-     * Change booking status by signee and organization/staff
+     * Change booking status by Candidate and organization/staff
      *
      * @return \Illuminate\Http\Response
      */
@@ -732,7 +732,7 @@ class UserController extends Controller
             //print_r($signeeMatch);exit;
             //$mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
 
-            //send mail to signee organization
+            //send mail to candidate organization
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
             $orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($comArray);
@@ -760,14 +760,14 @@ class UserController extends Controller
             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
             //$mailSent = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
-            //send mail to signee organization
+            //send mail to candidate organization
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
             //print_r($comArray);exit;
             $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($comArray);
 
             if ($update) {
-                return response()->json(['status' => true, 'message' => 'Shift rejected by signee successfully'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Shift rejected by candidate successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
             }
@@ -879,7 +879,7 @@ class UserController extends Controller
     }
 
     /*
-     * Change signee document status
+     * Change Candidate document status
      *
      * @return \Illuminate\Http\Response
      */
@@ -927,7 +927,7 @@ class UserController extends Controller
             $result['data']['booking'] = $objBooking->getBooking($requestData['booking_id']);
             //print_r($result['data']);exit();
             if (!empty($result['data'])) {
-                $result['title'] = 'Signee Details';
+                $result['title'] = 'Candidate Details';
                 $result['date'] = date('m/d/Y');
                 //print_r($result);exit();
                 $pdf = App::make('dompdf.wrapper');
@@ -936,10 +936,10 @@ class UserController extends Controller
                 // return $pdf->stream();
                 $filePath = public_path() . '/uploads/signee_pdf/';
                 $time = date('Ymdhms');
-                $file = $filePath . "$time-signee.pdf";
+                $file = $filePath . "$time-candidate.pdf";
                 file_put_contents($file, $pdf->output());
-                $data['pdf_path'] = $downloadPath . "$time-signee.pdf";
-                return response()->download($file,  "$time-signee.pdf");
+                $data['pdf_path'] = $downloadPath . "$time-candidate.pdf";
+                return response()->download($file,  "$time-candidate.pdf");
                 // return response()->json(['status' => true, 'data' => $data, 'message' => 'pdf successfully generated'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'something will be wrong', 'status' => false], 400);
@@ -952,7 +952,7 @@ class UserController extends Controller
     }
 
     /*
-     * Invite signee for shift
+     * Invite candidate for shift
      *
      * @return \Illuminate\Http\Response
      */
@@ -973,7 +973,7 @@ class UserController extends Controller
             $result = $objBooking->getSigneeForInvite($requestData);
             $res = $objBooking->sendBookingInvitationMail($result);
             if ($res) {
-                return response()->json(['status' => true, 'message' => 'Signee Invited Successfully for the shift'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Candidate Invited Successfully for the shift'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
             }

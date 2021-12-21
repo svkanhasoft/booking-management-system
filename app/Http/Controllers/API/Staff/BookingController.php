@@ -19,10 +19,10 @@ use App\Models\Hospital;
 class BookingController extends Controller
 {
     public $successStatus = 200;
-    /** 
-     * login api 
-     * 
-     * @return \Illuminate\Http\Response 
+    /**
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     protected $userId;
 
@@ -226,7 +226,7 @@ class BookingController extends Controller
     }
 
     /**
-     * add signee by match with speciality.
+     * add Candidate by match with speciality.
      *
      * @param  int  $id
      *
@@ -254,7 +254,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Display the update Match By Signee user Id.
+     * Display the update Match By candidate user Id.
      *
      * @param  int  $id
      *
@@ -284,9 +284,9 @@ class BookingController extends Controller
         $signeeId = $request->get('signeeId');
         $signeeDetails = $booking->getSigneeByIdAndBookingId($bookingId, $signeeId);
         if ($signeeDetails) {
-            return response()->json(['status' => true, 'message' => 'Signee get successfully', 'data' => $signeeDetails], $this->successStatus);
+            return response()->json(['status' => true, 'message' => 'Candidate get successfully', 'data' => $signeeDetails], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Signee not available!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Candidate not available!', 'status' => false], 200);
         }
     }
 
