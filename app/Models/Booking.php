@@ -981,7 +981,7 @@ class Booking extends Model
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         } else if($bookingDetail['status'] == 'CREATED')
         {
-            $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','APPLY','OFFER','DECLINE','ACCEPT'));
+            $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
         }
 
         $subQuery->where('booking_matches.deleted_at');

@@ -968,12 +968,12 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            // print_r($requestData);exit();
             $objBooking = new Booking();
             $result = $objBooking->getSigneeForInvite($requestData);
-            $res = $objBooking->sendBookingInvitationMail($result);
-            if ($res) {
-                return response()->json(['status' => true, 'message' => 'Candidate Invited Successfully for the shift'], $this->successStatus);
+            // $res = $objBooking->sendBookingInvitationMail($result);
+            if ($result) {
+                BookingMatch::where('booking_id', $requestData['booking_id'])->whereIn('signee_id', $requestData['signee_id'])->update(['signee_booking_status' => 'INVITE']);
+                return response()->json(['status' => true, 'message' => 'Candidate invitation send successfully.'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
             }
