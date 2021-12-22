@@ -189,6 +189,7 @@ class User extends Authenticatable
             'signees_detail.candidate_id',
             'users.address_line_1',
             'users.address_line_2',
+            'users.status as profile_status',
             'users.password_change as is_password_change',
             'users.city',
             'users.postcode',
