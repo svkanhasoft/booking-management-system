@@ -60,6 +60,22 @@ class SigneeSpecialitie extends Model
         // return true;
     }
 
+    function updateSpecialityV2($postData, $userId, $orgId, $isDelete = false)
+    {
+
+        SigneeSpecialitie::where('user_id', '=', $userId)->where('organization_id', '=', $orgId)->whereNotIn('speciality_id', $postData)->delete();
+        foreach ($postData as $key => $val) {
+            $objSigneeSpecialitie = SigneeSpecialitie::where(['user_id' => $userId, 'speciality_id' => $val, 'organization_id' => $orgId])->firstOrNew();;
+            $objSigneeSpecialitie->speciality_id = $val;
+            $objSigneeSpecialitie->user_id = $userId;
+            $objSigneeSpecialitie->organization_id = $orgId;
+            $objSigneeSpecialitie->save();
+            $objSigneeSpecialitie = "";
+        }
+        return true;
+    }
+
+
     public function addSpeciality($postData, $userId, $isDelete = false)
     {
         if ($isDelete == true) {

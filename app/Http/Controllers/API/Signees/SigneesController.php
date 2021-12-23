@@ -92,7 +92,7 @@ class SigneesController extends Controller
                 $orgResult = SigneesDetail::create($requestData);
 
                 $objSpeciality = new SigneeSpecialitie();
-                $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $requestData['parent_id'], false);
+                $objSpeciality->updateSpecialityV2($requestData['speciality'], $userCreated['id'], $requestData['parent_id'], false);
 
                 $requestData['organization_id'] = $request->post('organization_id');
                 $requestData['user_id'] = $userCreated['id'];
@@ -679,7 +679,7 @@ class SigneesController extends Controller
         try {
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
-            $objSpeciality->updateSpeciality($requestData['speciality_id'], $userId, Auth::user()->parent_id, false);
+            $objSpeciality->updateSpecialityV2($requestData['speciality_id'], $userId, Auth::user()->parent_id, false);
 
             $bookingArray = new Booking();
             $booking = $bookingArray->editMetchBySigneeId($userId);
