@@ -392,7 +392,7 @@
                     <p style="float: right; font-size : 16px">Date : {{ $date }}</p></h3>
                 </div> -->
                 <div class="content-block ">
-                    <h2 style="padding-top: 10px; padding-left: 40%; font-size: 15px;">Signee Details</h2>
+                    <h2 style="padding-top: 10px; padding-left: 40%; font-size: 15px;">Candidate Details</h2>
                     <table class="table-block">
                         <tr>
                             <td class="blue-text">

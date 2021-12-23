@@ -708,9 +708,10 @@ class SigneesController extends Controller
             // DB::raw('GROUP_CONCAT( specialities.id SEPARATOR ",") AS speciality_id'),
             'specialities.id as speciality_id'
         );
-        $query->leftJoin('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
+        $query->join('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
 
         $query->where('signee_speciality.user_id', Auth::user()->id);
+        $query->where('signee_speciality.organization_id', Auth::user()->parent_id);
         $query->whereNull('signee_speciality.deleted_at');
         $query->groupBy('signee_speciality.speciality_id');
         $res = $query->get()->toArray();
