@@ -52,14 +52,11 @@ class Notification extends Model
             }else{
                 $postData['organization_id'] = Auth::user()->parent_id;
             }
-
-            //print_r($postData);exit();
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
 
             if((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION'))
             {
-                //echo "in if";exit;
                 $bookingDetails = Booking::findOrFail($postData['booking_id']);
                 $date = date("d-m-Y", strtotime($bookingDetails['date']));
                 $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
@@ -216,5 +213,58 @@ class Notification extends Model
         curl_close($ch);
         $reeed = json_decode($response);
         return $reeed->success;
+    }
+
+    public function addNotificationV2($postData,$type)
+    {
+        $signeeId = null;
+        if(isset($postData['signeeId']) && !empty($postData['signeeId'])){
+            $signeeId = $postData['signeeId'];
+        }else if(isset($postData['signee_id']) && !empty($postData['signee_id'])){
+            $signeeId = $postData['signee_id'];
+        }
+
+        $bookingDetails = Booking::findOrFail($postData['booking_id']);
+        $msg = '';
+            if($type == 'payment')
+            {
+                $msg = 'Your booking ' . $bookingDetails['reference_id'] .' payment status change with ' . ' ' . $postData['payment_status'] ;
+            } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
+                $msg = $postData['user_name'] .' '.'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+            }
+
+        if(!empty($signeeId) && Auth::user()->role !== 'SIGNEE'){
+            $userResult = User::find($signeeId);
+            $bookingId = '';
+            $status = $type;
+            if(isset($postData['booking_id']) && $postData['booking_id']){
+                $bookingId = $postData['booking_id'];
+            }else{
+                $bookingId = NULL;
+            }
+            if($userResult->device_id != '' && $userResult->platform == 'Android'){
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId,$status);
+            }else if($userResult->device_id != '' && $userResult->platform == 'Iphone'){
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId,$status);
+            }
+        }
+
+        $notification = new Notification();
+        $notification->signee_id = $signeeId;
+        $notification->organization_id = Auth::user()->id;
+        if(isset($postData['booking_id']) && $postData['booking_id']){
+            $notification->booking_id = $postData['booking_id'];
+        }else{
+            $notification->booking_id = NULL;
+        }
+        $notification->message = $msg;
+        $notification->status = $type;
+        $notification->is_read = 0;
+        $notification->is_sent = 0;
+        $notification->created_by = Auth::user()->id;
+        $notification->updated_by = Auth::user()->id;
+        $notification->is_showing_for = "SIGNEE";
+        $notification->save();
+        return true;
     }
 }

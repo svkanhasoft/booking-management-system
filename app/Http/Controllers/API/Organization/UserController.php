@@ -1019,8 +1019,11 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
+
         try {
             $booking = booking::findOrFail($requestData['booking_id']);
+            $notificationObj = new Notification();
+            $notificationObj->addNotificationV2($requestData,'payment');
             if ($booking['status'] == 'CONFIRMED') {
                 $bookingMatch = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
                     'payment_status' => $requestData['payment_status'],
@@ -1030,6 +1033,8 @@ class UserController extends Controller
                 } else {
                     return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
                 }
+            }else{
+                return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
