@@ -208,6 +208,7 @@ class OrganizationController extends Controller
             // $user = User::where('role', 'ORGANIZATION')->where('id', $this->userId)->first();
             if (!empty($user)) {
                 $userObj = User::find($user['id']);
+                $userObj['password_change'] = 1;
                 $userObj['password'] = Hash::make($request->post('password'));
                 $userObj->save();
                 return response()->json(['status' => true, 'message' => 'Password Successfully changed'], $this->successStatus);

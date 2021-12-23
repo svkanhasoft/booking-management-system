@@ -246,6 +246,7 @@ class UserController extends Controller
             if (!empty($user)) {
                 $userObj = User::find($this->userId);
                 $userObj['password'] = Hash::make($request->post('password'));
+                $userObj['password_change'] = 1;
                 $userObj->save();
                 return response()->json(['status' => true, 'message' => 'Password Successfully change.'], $this->successStatus);
             } else {

@@ -211,7 +211,7 @@ class SigneesController extends Controller
             $userObj = User::find($this->userId);
             // print_r($userObj);exit();
             $userObj['password'] = Hash::make($request->post('password'));
-            $userObj['password_change'] = true;
+            $userObj['password_change'] = 1;
             $userObj->save();
             return response()->json(['status' => true, 'message' => 'Password Changed Successfully.'], $this->successStatus);
         } else {
@@ -297,6 +297,7 @@ class SigneesController extends Controller
 
         $userObj = User::find($decodeId);
         $userObj['password'] = Hash::make($input['password']);
+        $userObj['password_change'] = 1;
         $res = $userObj->save();
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Your password Successfully changed'], $this->successStatus);
@@ -719,7 +720,7 @@ class SigneesController extends Controller
         if ($res) {
             return response()->json(['status' => true, 'message' => 'Speciality get successfully', 'data' => $res], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Speciality getting error!', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, Speciality not found', 'status' => false], 200);
         }
     }
 
