@@ -712,6 +712,7 @@ class SigneesController extends Controller
 
         $query->where('signee_speciality.user_id', Auth::user()->id);
         $query->whereNull('signee_speciality.deleted_at');
+        $query->groupBy('signee_speciality.speciality_id');
         $res = $query->get()->toArray();
 
         if ($res) {
