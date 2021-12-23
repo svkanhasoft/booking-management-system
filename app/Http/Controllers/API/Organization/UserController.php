@@ -714,6 +714,8 @@ class UserController extends Controller
                 }
             } else if ($requestData['status'] == 'OFFER') {
                 return $this->offerToSignee($requestData);
+            }else if ($requestData['status'] == 'REJECTED') {
+                return $this->rejectedToSignee($requestData);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -877,7 +879,24 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+    public function rejectedToSignee($postData)
+    {
+        //print_r($postData);exit;
+        try {
+            $objBooking = new Booking();
+            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $postData['signee_id'], 'booking_id' => $postData['booking_id']]);
+            $objBookingMatch->signee_booking_status = $postData['status'];
+            $objBookingMatch->save();
 
+            if ($objBookingMatch) {
+                return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
     /*
      * Change Candidate document status
      *
