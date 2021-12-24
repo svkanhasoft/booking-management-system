@@ -183,7 +183,7 @@ class Notification extends Model
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $body = $message;
-        $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
+        $notification = array('title' => $title,'status' => $status,'bookingId' => $bookingId,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
         // $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => array('bookingId'=>$bookingId,"message"=>$body), 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'subtitle' => $message,'data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
