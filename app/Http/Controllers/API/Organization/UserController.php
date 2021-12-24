@@ -995,7 +995,7 @@ class UserController extends Controller
             $res = $objBooking->sendBookingInvitationMail($result);
             if ($res) {
                 BookingMatch::where('booking_id', $requestData['booking_id'])->whereIn('signee_id', $requestData['signee_id'])->update(['signee_booking_status' => 'OFFER']);
-                return response()->json(['status' => true, 'message' => 'Candidate invitation send successfully.'], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Candidate offer send successfully.'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
             }

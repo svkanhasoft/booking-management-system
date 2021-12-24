@@ -54,13 +54,15 @@ class Notification extends Model
             }
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
-
+// print_r($postData);
+// exit;
             if((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION'))
             {
+
                 $bookingDetails = Booking::findOrFail($postData['booking_id']);
+
                 $date = date("d-m-Y", strtotime($bookingDetails['date']));
                 $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
-
                 //Candidate reject shift
                 if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
                     $msg = 'You reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
@@ -68,10 +70,10 @@ class Notification extends Model
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';
-                } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['organization_id'] == Auth::user()->id && ($postData['signee_booking_status'] == "OFFER" || $postData['signee_booking_status'] == "INVITE")) {
+                } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "OFFER" ) {
                     $msg = 'You got offer from' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward by admin';
                 } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
-                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
+                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name']. ' ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
                 } else if ($postData['status'] == "CREATED" && isset($postData['updated_by']) && $postData['updated_by'] != '') {
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been updated by admin';
                 } else  if ($postData['status'] == "CREATED" && ($postData['signee_booking_status'] == '' || $postData['signee_booking_status'] == 'PENDING')) {
@@ -93,6 +95,7 @@ class Notification extends Model
                 $msg = 'Your shift is confirmed in ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             }
         }
+
         if(!empty($postData['signeeId']) && Auth::user()->role !== 'SIGNEE'){
             $userResult = User::find($postData['signeeId']);
             $bookingId = '';
@@ -102,6 +105,7 @@ class Notification extends Model
             }else if(isset($postData['id']) && $postData['id']){
                 $bookingId = $postData['id'];
             }
+
             if (isset($postData['signee_booking_status'])) {
                 $status = $postData['signee_booking_status'];
             } else {

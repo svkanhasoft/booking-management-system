@@ -448,8 +448,8 @@ class Booking extends Model
             ];
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             //send notification
@@ -474,8 +474,8 @@ class Booking extends Model
             ];
             $emailRes = \Mail::to($result['org_email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             //send notification
@@ -508,8 +508,8 @@ class Booking extends Model
             // print_r($details['data']);exit();
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -536,8 +536,8 @@ class Booking extends Model
             // print_r($details['data']);exit();
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -564,8 +564,8 @@ class Booking extends Model
             //print_r($details);exit();
             $emailRes = \Mail::to($res['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -592,8 +592,8 @@ class Booking extends Model
             //print_r($details);exit();
             $emailRes = \Mail::to($res['org_email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -620,8 +620,8 @@ class Booking extends Model
             //print_r($details);exit();
             $emailRes = \Mail::to($res['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -651,8 +651,8 @@ class Booking extends Model
             // print_r($details['data']);exit();
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($result);
@@ -681,8 +681,8 @@ class Booking extends Model
             // print_r($details['data']);exit();
             $emailRes = \Mail::to($result['email'])
                 // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -710,8 +710,8 @@ class Booking extends Model
                 //print_r($details);exit();
                 $emailRes = \Mail::to($result['email'])
                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
                 $objNotification = new Notification();
@@ -739,8 +739,8 @@ class Booking extends Model
                 //print_r($details);exit();
                 $emailRes = \Mail::to($result['email'])
                     // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
+                // ->cc('maulik.kanhasoft@gmail.com')
+                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
                 $objNotification = new Notification();
@@ -751,8 +751,6 @@ class Booking extends Model
         }
     }
 
-
-    //booking invitation email
     public function sendBookingInvitationMail($result)
     {
         //print_r($result);exit();
@@ -763,25 +761,21 @@ class Booking extends Model
                     'title' => '',
                     'body' => 'Hello ',
                     'mailTitle' => 'bookingInvite',
-                    'subject' => 'Booking Management System: Invitation Mail',
+                    'subject' => 'Booking Management System: Offer Mail',
                     'data' => $val
                 ];
-                //print_r($details);exit();
                 $emailRes = \Mail::to($result)
-                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                    ->cc('maulik.kanhasoft@gmail.com')
-                    ->bcc('suresh.kanhasoft@gmail.com')
+                    // ->cc('maulik.kanhasoft@gmail.com')
+                    // ->bcc('suresh.kanhasoft@gmail.com')
                     ->send(new \App\Mail\SendSmtpMail($details));
-                    // $objNotification = new Notification();
-                    // $notification = $objNotification->addNotification($result);
-                    return true;
+                    $objNotification = new Notification();
+                    $notification = $objNotification->addNotification($val);
             }
+            return true;
         } else {
             return false;
         }
     }
-
-
 
     public function editMetchBySigneeId($signeeId = null)
     {
@@ -1037,11 +1031,16 @@ class Booking extends Model
     {
         $query = Booking::select(
             'bookings.*',
+            'bookings.id as booking_id',
             'booking_matches.signee_id',
+            'booking_matches.signee_booking_status',
+            'booking_matches.organization_id',
             'users.contact_number',
             'users.email',
             'users.postcode',
             'users.city',
+            'users.role',
+            'users.id as signeeId',
             'users.address_line_1',
             'users.address_line_2',
             'hospitals.hospital_name',
