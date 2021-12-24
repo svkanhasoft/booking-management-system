@@ -715,6 +715,8 @@ class UserController extends Controller
                 }
             } else if ($requestData['status'] == 'OFFER') {
                 return $this->offerToSignee($requestData);
+            }else if ($requestData['status'] == 'INVITE') {
+                return $this->offerToSignee($requestData);
             }else if ($requestData['status'] == 'REJECTED') {
                 return $this->rejectedToSignee($requestData);
             }
@@ -992,7 +994,7 @@ class UserController extends Controller
             $result = $objBooking->getSigneeForInvite($requestData);
             $res = $objBooking->sendBookingInvitationMail($result);
             if ($res) {
-                BookingMatch::where('booking_id', $requestData['booking_id'])->whereIn('signee_id', $requestData['signee_id'])->update(['signee_booking_status' => 'INVITE']);
+                BookingMatch::where('booking_id', $requestData['booking_id'])->whereIn('signee_id', $requestData['signee_id'])->update(['signee_booking_status' => 'OFFER']);
                 return response()->json(['status' => true, 'message' => 'Candidate invitation send successfully.'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
