@@ -1089,16 +1089,11 @@ class UserController extends Controller
             $requestData['organization_id'] = $this->userId;
             if($requestData['notification_id'] == 'All')
             {
-                $query = Notification::where(['signee_id' => $this->userId, 'organization_id' => Auth::user()->parent_id])->update([
+                $query = Notification::where(['signee_id' => $this->userId, 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
                     'is_sent'=>  true,
                     'is_read'=>  true,
                 ]);
-                if($query)
-                {
-                    return response()->json(['status' => true, 'message' => 'Notifications clear successfully'], $this->successStatus);
-                }else {
-                    return response()->json(['message' => 'Sorry, Notification not cleared!', 'status' => false], 404);
-                }
+                return response()->json(['status' => true, 'message' => 'Notifications clear successfully'], $this->successStatus);
             } else{
                 $notification = Notification::where('id', $requestData['notification_id'])->first();
                 // $res = Notification::find($notification['id']);
