@@ -500,7 +500,7 @@ class SigneesController extends Controller
         $result['upcoming'] = $bookingMatching->getMyShift('upcoming');
         $result['past'] = $bookingMatching->getMyShift('past');
         $result['apply'] = $bookingMatching->getMyShift('apply');
-        $result['invite'] = $bookingMatching->getMyShift('invite');
+        $result['offer'] = $bookingMatching->getMyShift('offer');
         //print_r($result);exit();
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Your shift listed successfully', 'data' => $result], $this->successStatus);
