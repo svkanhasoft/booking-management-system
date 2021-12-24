@@ -1045,23 +1045,22 @@ class UserController extends Controller
 
     public function getAllNotifications(Request $request)
     {
+
         $perPage = Config::get('constants.pagination.perPage');
         //print_r($showing);exit;
         try{
             $showing = $request->get('showing');
             $query = Notification::select('*');
-            if($showing == "ORGANIZATION")
+            if(Auth::user()->role == "SIGNEE")
             {
-                //echo "123";exit;
-                $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
-                // $query->where('organization_id', Auth::user()->parent_id);
-                // $query->where('is_showing_for1', $showing);
+                $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
+                $query->whereDate('created_at','>=', Carbon::now()->subDays());
+
+                // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             } else {
-                //echo "456";exit;
-                $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
-                // $query->where('signee_id', $this->userId);
-                // $query->where('organization_id', Auth::user()->parent_id);
-                // $query->where('is_showing_for', $showing);
+                $query->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
+                $query->whereDate('created_at', '>=',Carbon::now()->subDays(7));
+                // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
 
             $notification = $query->latest()->paginate($perPage);

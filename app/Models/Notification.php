@@ -137,7 +137,7 @@ class Notification extends Model
         }
         $notification->is_read = 0;
         $notification->is_sent = 0;
-        $notification->created_by = Auth::user()->role ? Auth::user()->id : Auth::user()->parent_id;
+        $notification->created_by = Auth::user()->id;
 
         if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
             $notification->is_showing_for = "ORGANIZATION";
