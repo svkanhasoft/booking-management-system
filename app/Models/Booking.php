@@ -772,8 +772,8 @@ class Booking extends Model
                     ->cc('maulik.kanhasoft@gmail.com')
                     ->bcc('suresh.kanhasoft@gmail.com')
                     ->send(new \App\Mail\SendSmtpMail($details));
-                    $objNotification = new Notification();
-                    $notification = $objNotification->addNotification($result);
+                    // $objNotification = new Notification();
+                    // $notification = $objNotification->addNotification($result);
                     return true;
             }
         } else {
