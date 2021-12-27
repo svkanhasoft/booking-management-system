@@ -892,6 +892,8 @@ class UserController extends Controller
             $objBookingMatch->save();
 
             if ($objBookingMatch) {
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotificationV2($postData,'REJECTED');
                 return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);

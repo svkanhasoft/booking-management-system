@@ -46,18 +46,16 @@ class Notification extends Model
             // echo "home";exit;
             // dd($postData['signee_booking_status']);
             //$data = SigneeOrganization::where(['user_id'=> $postData['signeeId'], 'organization_id'=> Auth::user()->id])->first();
-            if(Auth::user()->role == 'ORGANIZATION')
-            {
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $postData['organization_id'] = Auth::user()->id;
-            }else{
+            } else {
                 $postData['organization_id'] = Auth::user()->parent_id;
             }
             $msg = 'Your compliant status has been changed to ' . $postData['status'];
         } else {
-// print_r($postData);
-// exit;
-            if((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION'))
-            {
+            // print_r($postData);
+            // exit;
+            if ((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION')) {
 
                 $bookingDetails = Booking::findOrFail($postData['booking_id']);
 
@@ -70,25 +68,25 @@ class Notification extends Model
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';
-                } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "OFFER" ) {
+                } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "OFFER") {
                     $msg = 'You got offer from' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward by admin';
                 } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
-                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name']. ' ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
+                    $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
                 } else if ($postData['status'] == "CREATED" && isset($postData['updated_by']) && $postData['updated_by'] != '') {
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been updated by admin';
                 } else  if ($postData['status'] == "CREATED" && ($postData['signee_booking_status'] == '' || $postData['signee_booking_status'] == 'PENDING')) {
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been created by admin';
                 } else if (isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "CONFIRMED") {
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been confirmed';
-                }else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['signee_booking_status'] === "APPLY" && $postData['role'] === 'SIGNEE') {
+                } else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['signee_booking_status'] === "APPLY" && $postData['role'] === 'SIGNEE') {
                     $msg = 'Your have applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward';
                 }
             } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
-                $msg = $postData['user_name'] .' '.'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+                $msg = $postData['user_name'] . ' ' . 'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['signee_booking_status']) && isset($postData['signeeId']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
-                $msg = $postData['user_name'] .' '.'rejected your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+                $msg = $postData['user_name'] . ' ' . 'rejected your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['role'] == 'ORGANIZATION' && $postData['signee_booking_status'] == "APPLY") {
-                $msg = $postData['user_name'] .' '.'applied in shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+                $msg = $postData['user_name'] . ' ' . 'applied in shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CREATED') {
                 $msg = 'You created a new shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CONFIRMED' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] === 'CONFIRMED') {
@@ -96,13 +94,13 @@ class Notification extends Model
             }
         }
 
-        if(!empty($postData['signeeId']) && Auth::user()->role !== 'SIGNEE'){
+        if (!empty($postData['signeeId']) && Auth::user()->role !== 'SIGNEE') {
             $userResult = User::find($postData['signeeId']);
             $bookingId = '';
             $status = '';
-            if(isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')){
+            if (isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')) {
                 $bookingId = $postData['booking_id'];
-            }else if(isset($postData['id']) && $postData['id']){
+            } else if (isset($postData['id']) && $postData['id']) {
                 $bookingId = $postData['id'];
             }
 
@@ -111,10 +109,10 @@ class Notification extends Model
             } else {
                 $status = $postData['status'];
             }
-            if($userResult->device_id != '' && $userResult->platform == 'Android'){
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId,$status);
-            }else if($userResult->device_id != '' && $userResult->platform == 'Iphone'){
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId,$status);
+            if ($userResult->device_id != '' && $userResult->platform == 'Android') {
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status);
+            } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status);
             }
         }
 
@@ -122,11 +120,11 @@ class Notification extends Model
         $notification->signee_id = isset($postData['signeeId']) ? $postData['signeeId'] : NULL;
         $notification->organization_id = isset($postData['organization_id']) ? $postData['organization_id'] : $postData['id'];
         // $notification->booking_id = (isset($postData['id']) || isset($postData['booking_id'])) ? $postData['id'] : NULL;
-        if(isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')){
+        if (isset($postData['role']) || isset($postData['org_role']) && ($postData['role'] == 'ORGANIZATION' || $postData['org_role'] == 'ORGANIZATION')) {
             $notification->booking_id = $postData['booking_id'];
-        }else if(isset($postData['id']) && $postData['id']){
+        } else if (isset($postData['id']) && $postData['id']) {
             $notification->booking_id = $postData['id'];
-        }else{
+        } else {
             $notification->booking_id = NULL;
         }
         $notification->message = $msg;
@@ -149,13 +147,13 @@ class Notification extends Model
         return true;
     }
 
-    public function sendAndroidNotification($message, $token, $bookingId,$status)
+    public function sendAndroidNotification($message, $token, $bookingId, $status)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
-        $customData = array('bookingId' => $bookingId,'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
+        $customData = array('bookingId' => $bookingId, 'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         $notification = array('title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
@@ -180,17 +178,17 @@ class Notification extends Model
         curl_close($ch);
     }
 
-    public function sendIOSNotification($message, $token, $bookingId,$status)
+    public function sendIOSNotification($message, $token, $bookingId, $status)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $body = $message;
-        $notification = array('title' => $title,'status' => $status,'bookingId' => $bookingId,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
+        $notification = array('title' => $title, 'status' => $status, 'bookingId' => $bookingId, 'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
         // $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => array('bookingId'=>$bookingId,"message"=>$body), 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
-        $arrayToSend = array('to' => $token, 'subtitle' => $message,'data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
+        $arrayToSend = array('to' => $token, 'subtitle' => $message, 'data' => $notification, 'body' => $notification, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
 
         // $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => array('bookingId'=>$bookingId,"message"=>$body), 'sound' => 'default', 'badge' => '1');
@@ -219,46 +217,48 @@ class Notification extends Model
         return $reeed->success;
     }
 
-    public function addNotificationV2($postData,$type)
+    public function addNotificationV2($postData, $type)
     {
         $signeeId = null;
-        if(isset($postData['signeeId']) && !empty($postData['signeeId'])){
+        if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
-        }else if(isset($postData['signee_id']) && !empty($postData['signee_id'])){
+        } else if (isset($postData['signee_id']) && !empty($postData['signee_id'])) {
             $signeeId = $postData['signee_id'];
         }
 
         $bookingDetails = Booking::findOrFail($postData['booking_id']);
-        $msg = '';
-            if($type == 'payment')
-            {
-                $msg = 'Your booking ' . $bookingDetails['reference_id'] .' payment status change with ' . ' ' . $postData['payment_status'] ;
-            } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
-                $msg = $postData['user_name'] .' '.'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
-            }
 
-        if(!empty($signeeId) && Auth::user()->role !== 'SIGNEE'){
+        $msg = '';
+        if ($type == 'payment') {
+            $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status change with ' . ' ' . $postData['payment_status'];
+        } else if ($type == 'REJECTED') {
+            $msg = 'Your Are rejected from shift ' . $bookingDetails['reference_id']. ' for date ' . $bookingDetails['date'];
+        } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
+            $msg = $postData['user_name'] . ' ' . 'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+        }
+
+        if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
             $userResult = User::find($signeeId);
             $bookingId = '';
             $status = $type;
-            if(isset($postData['booking_id']) && $postData['booking_id']){
+            if (isset($postData['booking_id']) && $postData['booking_id']) {
                 $bookingId = $postData['booking_id'];
-            }else{
+            } else {
                 $bookingId = NULL;
             }
-            if($userResult->device_id != '' && $userResult->platform == 'Android'){
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId,$status);
-            }else if($userResult->device_id != '' && $userResult->platform == 'Iphone'){
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId,$status);
+            if ($userResult->device_id != '' && $userResult->platform == 'Android') {
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status);
+            } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status);
             }
         }
 
         $notification = new Notification();
         $notification->signee_id = $signeeId;
         $notification->organization_id = Auth::user()->id;
-        if(isset($postData['booking_id']) && $postData['booking_id']){
+        if (isset($postData['booking_id']) && $postData['booking_id']) {
             $notification->booking_id = $postData['booking_id'];
-        }else{
+        } else {
             $notification->booking_id = NULL;
         }
         $notification->message = $msg;
