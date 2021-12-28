@@ -757,20 +757,19 @@ class UserController extends Controller
         //print_r(Auth::user()->id);exit;
         try {
             $update = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
-                'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
+                'signee_booking_status' => 'CANCEL', 'booking_cancel_date' => Carbon::now(),
             ]);
             $objBooking = new Booking();
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
-            //print_r($signeeMatch);exit;
+            // print_r($signeeMatch);exit;
             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
             //$mailSent = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
             //send mail to candidate organization
-            $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
-            $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
+            // $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
+            // $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
             //print_r($comArray);exit;
-            $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($comArray);
-
+            $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($signeeMatch);
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Shift rejected by candidate successfully'], $this->successStatus);
             } else {
@@ -1064,7 +1063,7 @@ class UserController extends Controller
                 // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             } else {
                 $query->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
-                $query->whereDate('created_at', '>=',Carbon::now()->subDays(7));
+                $query->whereDate('created_at', '>=',Carbon::now()->subDays(10));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
             $notification = $query->latest()->paginate($perPage);
@@ -1091,14 +1090,22 @@ class UserController extends Controller
         }
         try{
             $requestData = $request->all();
-            // print_r($this->userId);exit;
+
             $requestData['organization_id'] = $this->userId;
             if($requestData['notification_id'] == 'All')
             {
-                $query = Notification::where(['signee_id' => $this->userId, 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
-                    'is_sent'=>  1,
-                    'is_read'=>  1,
-                ]);
+                if(Auth::user()->role !== 'SIGNEE'){
+                    Notification::where(['organization_id' => Auth::user()->id])->update([
+                        'is_sent'=>  1,
+                        'is_read'=>  1,
+                    ]);
+                }else{
+                    Notification::where(['signee_id' => $this->userId, 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
+                        'is_sent'=>  1,
+                        'is_read'=>  1,
+                    ]);
+                }
+
                 return response()->json(['status' => true, 'message' => 'Notifications clear successfully'], $this->successStatus);
             } else{
                 $notification = Notification::where('id', $requestData['notification_id'])->first();

@@ -369,6 +369,8 @@ class Booking extends Model
     public function getMetchByBookingIdAndSigneeId($bookingId = null, $signeeId = null)
     {
         $subQuery = Booking::select(
+            'users.first_name',
+            'users.last_name',
             'users.email',
             'signee_preference.user_id as signeeId',
             'bookings.id as booking_id',
@@ -384,6 +386,7 @@ class Booking extends Model
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
+            'bookings.date as booking_date',
             DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
             DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
             DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),

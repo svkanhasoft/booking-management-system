@@ -35,7 +35,7 @@ class Notification extends Model
 
     public function addNotification($postData)
     {
-        //print_r($postData);exit;
+        // print_r($postData);exit;
         //print_r($postData['signee_booking_status']);exit;
         // echo $postData['signeeId'] . " signe <br/>";
         // echo Auth::user()->id . " login user <br/>";
@@ -63,7 +63,7 @@ class Notification extends Model
                 $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
                 //Candidate reject shift
                 if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
-                    $msg = 'You reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
+                    $msg = $postData['first_name'] . ' '. $postData['last_name']. ' reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in ' . $postData['ward_name'] . ' ward with date is '. $postData['booking_date'];
                 } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //Candidate accepts shift
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
@@ -137,7 +137,8 @@ class Notification extends Model
         $notification->is_sent = 0;
         $notification->created_by = Auth::user()->id;
 
-        if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
+        if (Auth::user()->role == 'SIGNEE') {
+        // if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
             $notification->is_showing_for = "ORGANIZATION";
         } else {
             $notification->is_showing_for = "SIGNEE";
