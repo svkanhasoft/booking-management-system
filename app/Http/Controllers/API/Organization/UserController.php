@@ -921,6 +921,10 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
+            // echo 'dddd';exit;
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotificationV2($requestData,'DOCS',$requestData['key']);
+
             $signeeDocs = SigneeDocument::where(['signee_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id'], 'key' => $requestData['key']])->get()->toArray();
             $idArrray = array_column($signeeDocs, 'id');
             $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status'], 'updated_by'=>Auth::user()->id));
@@ -1056,18 +1060,18 @@ class UserController extends Controller
             if(Auth::user()->role == "SIGNEE")
             {
                 $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
-                $query->whereDate('created_at','>=', Carbon::now()->subDays());
-
+                $query->whereDate('created_at','>=', Carbon::now()->subDays(10));
                 // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             } else {
                 $query->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
                 $query->whereDate('created_at', '>=',Carbon::now()->subDays(7));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
-
             $notification = $query->latest()->paginate($perPage);
+            $unread = $query->where('is_read',0)->count();
+            // echo $notification['count'];exit;
             if (!empty($notification)) {
-                return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification,'unread'=>$unread], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Notification not available!', 'status' => false], 404);
             }
@@ -1092,8 +1096,8 @@ class UserController extends Controller
             if($requestData['notification_id'] == 'All')
             {
                 $query = Notification::where(['signee_id' => $this->userId, 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
-                    'is_sent'=>  true,
-                    'is_read'=>  true,
+                    'is_sent'=>  1,
+                    'is_read'=>  1,
                 ]);
                 return response()->json(['status' => true, 'message' => 'Notifications clear successfully'], $this->successStatus);
             } else{

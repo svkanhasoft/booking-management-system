@@ -51,7 +51,7 @@ class Notification extends Model
             } else {
                 $postData['organization_id'] = Auth::user()->parent_id;
             }
-            $msg = 'Your compliant status has been changed to ' . $postData['status'];
+            $msg = 'Your profile status has been changed to ' . $postData['status'];
         } else {
             // print_r($postData);
             // exit;
@@ -217,7 +217,7 @@ class Notification extends Model
         return $reeed->success;
     }
 
-    public function addNotificationV2($postData, $type)
+    public function addNotificationV2($postData, $type,$key = '')
     {
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
@@ -225,16 +225,30 @@ class Notification extends Model
         } else if (isset($postData['signee_id']) && !empty($postData['signee_id'])) {
             $signeeId = $postData['signee_id'];
         }
-
-        $bookingDetails = Booking::findOrFail($postData['booking_id']);
+        $bookingDetails = [];
+        if(isset($postData['booking_id']) && !empty($postData['booking_id'])){
+            $bookingDetails = Booking::findOrFail($postData['booking_id']);
+        }
 
         $msg = '';
         if ($type == 'payment') {
             $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status change with ' . ' ' . $postData['payment_status'];
         } else if ($type == 'REJECTED') {
             $msg = 'Your Are rejected from shift ' . $bookingDetails['reference_id']. ' for date ' . $bookingDetails['date'];
+        }else if ($type == 'DOCS') {
+            // $docsContent = array
+            // (array('key'=>$postData['key'],'name'=>'Copy of Passport in Colour including front cover.'),
+            // );
+            if($postData['document_status'] == 'SUCCESS'){
+                $customeDocsMsg = 'Accepted';
+            }else if($postData['document_status'] == 'PENDING'){
+                $customeDocsMsg = 'Pending';
+            }else{
+                $customeDocsMsg = 'Rejected';
+            }
+            $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status $customeDocsMsg";
         } else if (isset($postData['role']) && $postData['role'] === 'ORGANIZATION' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] == "ACCEPT") {
-            $msg = $postData['user_name'] . ' ' . 'accepted your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+            $msg = $postData['user_name'] .  ' accepted your offer at ' . $postData['hospital_name'] .   ' hospital in '. $postData['ward_name'] .'ward created by you';
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
