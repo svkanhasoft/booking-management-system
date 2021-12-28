@@ -1091,7 +1091,7 @@ class UserController extends Controller
         }
         try{
             $requestData = $request->all();
-            //print_r($requestData);exit;
+            // print_r($this->userId);exit;
             $requestData['organization_id'] = $this->userId;
             if($requestData['notification_id'] == 'All')
             {
@@ -1103,7 +1103,8 @@ class UserController extends Controller
             } else{
                 $notification = Notification::where('id', $requestData['notification_id'])->first();
                 // $res = Notification::find($notification['id']);
-                $notification->is_read = $requestData['is_read'];
+                $notification->is_sent = 1;
+                $notification->is_read = 1;
                 $update = $notification->update();
                 if($update)
                 {
