@@ -644,7 +644,9 @@ class UserController extends Controller
             $data = User::findOrFail($requestData['signee_id']);
             $data->status = $requestData['status'];
             $res = $data->save();
-            if (!empty($res)) {
+            // $objNotification = new Notification();
+            // $notification = $objNotification->addNotificationV2($requestData,'profile_status');
+            if (!empty($notification)) {
                 return response()->json(['status' => true, 'message' => 'Candidate profile status changed successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
@@ -687,15 +689,27 @@ class UserController extends Controller
                 //echo "123";exit;
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
-               // echo '123';exit;
-
+                //echo '123';exit;
+                // echo Auth::user()->role;exit;
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->signee_booking_status = $requestData['status'];
                 $objBookingMatch->save();
 
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-                $objBooking->sendBookingConfirmEmail($matchSignee);
+
+                if(Auth::user()->role == "SIGNEE")
+                {
+                    $objNotification = new Notification();
+                    $notification = $objNotification->addNotificationV2($matchSignee, 'shift_accept');
+                    if ($notification) {
+                        return response()->json(['status' => true, 'message' => 'Candidate successfully accepted the shift'], $this->successStatus);
+                    } else {
+                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
+                    }
+                } else {
+                    $objBooking->sendBookingConfirmEmail($matchSignee);
+                }
 
                 //send mail and noti to org
                 // $objBooking = new Booking();
@@ -711,7 +725,7 @@ class UserController extends Controller
                 if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
                 } else {
-                    return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+                    return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                 }
             } else if ($requestData['status'] == 'OFFER') {
                 return $this->offerToSignee($requestData);
@@ -727,7 +741,6 @@ class UserController extends Controller
 
     public function acceptShiftBySignee($requestData)
     {
-        //echo Auth::user()->id;exit;
         try {
             $objBooking = new Booking();
             $update = BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
@@ -883,7 +896,6 @@ class UserController extends Controller
     }
     public function rejectedToSignee($postData)
     {
-        //print_r($postData);exit;
         try {
             $objBooking = new Booking();
             $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $postData['signee_id'], 'booking_id' => $postData['booking_id']]);
@@ -1026,15 +1038,14 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
         try {
             $booking = booking::findOrFail($requestData['booking_id']);
-            $notificationObj = new Notification();
-            $notificationObj->addNotificationV2($requestData,'payment');
             if ($booking['status'] == 'CONFIRMED') {
                 $bookingMatch = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
                     'payment_status' => $requestData['payment_status'],
                 ]);
+                $notificationObj = new Notification();
+                $notificationObj->addNotificationV2($requestData,'payment');
                 if ($bookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Payment status changed successfully'], $this->successStatus);
                 } else {

@@ -572,7 +572,7 @@ class Booking extends Model
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
-            $notification = $objNotification->addNotification($res);
+            $notification = $objNotification->addNotificationV2($res, 'shift_accept');
             return true;
         } else {
             return false;

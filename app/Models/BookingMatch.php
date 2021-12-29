@@ -70,7 +70,7 @@ class BookingMatch extends Model
             //$objBookingMatch = '';
 
             $objNotification = new Notification();
-            $notification = $objNotification->addNotification($values);
+            $notification = $objNotification->addNotificationV2($values, 'shift_edit');
 
             // $objBooking = new Booking();
             // $org = User::select(
