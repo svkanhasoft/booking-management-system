@@ -1066,8 +1066,9 @@ class UserController extends Controller
                 $query->whereDate('created_at', '>=',Carbon::now()->subDays(10));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
-            $notification = $query->latest()->paginate($perPage);
             $unread = $query->where('is_read',0)->count();
+            $notification = $query->latest()->paginate($perPage);
+
             // echo $notification['count'];exit;
             if (!empty($notification)) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification,'unread'=>$unread], $this->successStatus);
