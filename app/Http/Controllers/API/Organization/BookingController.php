@@ -145,7 +145,7 @@ class BookingController extends Controller
      */
     public function edit(Request $request)
     {
-        print_r(Auth::user()->id);exit;
+        // print_r(Auth::user()->id);exit;
         $requestData = $request->all();
 
         $validator = Validator::make($request->all(), [
