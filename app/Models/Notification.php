@@ -267,7 +267,8 @@ class Notification extends Model
             $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'super_assign'){ //Notification for staff or org super assign any candidate
             $msg = 'Admin has assigned shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
-        // } else if ($type == 'shift_confirm'){ //Notification for staff or org confirmed any shift
+        }
+        //else if ($type == 'shift_confirm'){ //Notification for staff or org confirmed any shift
         //     $msg = 'Shift '. $postData['reference_id'] .' status has been changed to '.$postData['status'];
         // }
 
