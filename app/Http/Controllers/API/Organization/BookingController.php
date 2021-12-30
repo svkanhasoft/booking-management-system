@@ -4,7 +4,8 @@ namespace App\Http\Controllers\API\Organization;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
+use Auth;
 use Validator;
 use App\Http\Requests;
 use App\Models\User;
@@ -144,6 +145,7 @@ class BookingController extends Controller
      */
     public function edit(Request $request)
     {
+        print_r(Auth::user()->id);exit;
         $requestData = $request->all();
 
         $validator = Validator::make($request->all(), [
