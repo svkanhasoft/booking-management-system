@@ -615,8 +615,8 @@ class UserController extends Controller
                 $booking->save();
             }
 
-            $objNotification = new Notification();
-            $notification = $objNotification->addNotificationV2($booking,'shift_confirm');
+            // $objNotification = new Notification();
+            // $notification = $objNotification->addNotificationV2($booking,'shift_confirm');
 
             if (!empty($booking)) {
                 return response()->json(['status' => true, 'message' => 'Shift status changed successfully', 'data' => $booking], $this->successStatus);

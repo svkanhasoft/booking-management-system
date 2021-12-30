@@ -267,9 +267,9 @@ class Notification extends Model
             $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'super_assign'){ //Notification for staff or org super assign any candidate
             $msg = 'Admin has assigned shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
-        } else if ($type == 'shift_confirm'){ //Notification for staff or org confirmed any shift
-            $msg = 'Shift '. $postData['reference_id'] .' status has been changed to '.$postData['status'];
-        }
+        // } else if ($type == 'shift_confirm'){ //Notification for staff or org confirmed any shift
+        //     $msg = 'Shift '. $postData['reference_id'] .' status has been changed to '.$postData['status'];
+        // }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
             $userResult = User::find($signeeId);
@@ -290,13 +290,7 @@ class Notification extends Model
         $notification = new Notification();
         $notification->signee_id = $signeeId;
         //$notification->organization_id = Auth::user()->id;
-        if(isset($type) && $type == 'shift_confirm')
-        {
-            $notification->organization_id = $postData['user_id'];
-        } else{
-            $notification->organization_id = $postData['organization_id'];
-        }
-
+        $notification->organization_id = $postData['organization_id'];
         if (isset($postData['booking_id']) && $postData['booking_id']) {
             $notification->booking_id = $postData['booking_id'];
         } else {
