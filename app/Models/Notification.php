@@ -223,7 +223,7 @@ class Notification extends Model
 
     public function addNotificationV2($postData, $type,$key = '')
     {
-        //print_r($key);exit;
+        // print_r($postData);exit;
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
@@ -265,6 +265,10 @@ class Notification extends Model
             $msg = $postData['user_name'] . ' ' . 'accepted your shift offer for' . ' ' . $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'invite_candidate'){ //Notification for staff or org invite candidate for shift
             $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
+        } else if ($type == 'super_assign'){ //Notification for staff or org super assign any candidate
+            $msg = 'Admin has assigned shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
+        } else if ($type == 'shift_confirm'){ //Notification for staff or org confirmed any shift
+            $msg = 'Shift '. $postData['reference_id'] .' status has been changed to '.$postData['status'];
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {

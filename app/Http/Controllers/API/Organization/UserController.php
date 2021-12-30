@@ -614,6 +614,10 @@ class UserController extends Controller
                 $booking->status = $requestData['status'];
                 $booking->save();
             }
+
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotificationV2($booking,'shift_confirm');
+
             if (!empty($booking)) {
                 return response()->json(['status' => true, 'message' => 'Shift status changed successfully', 'data' => $booking], $this->successStatus);
             } else {
@@ -698,29 +702,20 @@ class UserController extends Controller
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
 
+                $objNotification = new Notification();
                 if(Auth::user()->role == "SIGNEE")
                 {
-                    $objNotification = new Notification();
                     $notification = $objNotification->addNotificationV2($matchSignee, 'shift_accept');
                     if ($notification) {
                         return response()->json(['status' => true, 'message' => 'Candidate successfully accepted the shift'], $this->successStatus);
                     } else {
                         return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                     }
+                } else if(Auth::user()->role == "ORGANIZATION" || Auth::user()->role == "STAFF"){
+                    $notification = $objNotification->addNotificationV2($matchSignee, 'super_assign');
                 } else {
                     $objBooking->sendBookingConfirmEmail($matchSignee);
                 }
-
-                //send mail and noti to org
-                // $objBooking = new Booking();
-                // $org = User::select(
-                //     'id', 'status as org_status', 'email as org_email', 'first_name', 'last_name', 'role as org_role'
-                // );
-                // $org->where('id', $matchSignee['organization_id']);
-                // $orgDetail = $org->first()->toArray();
-                // $comArray = array_merge($matchSignee->toArray(), $orgDetail);
-                // //print_r($comArray);exit;
-                // $orgMailSent = $objBooking->sendBookingConfirmedEmailToOrg($comArray);
 
                 if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
@@ -732,12 +727,10 @@ class UserController extends Controller
             }else if ($requestData['status'] == 'INVITE') {
                 return $this->offerToSignee($requestData);
             }else if ($requestData['status'] == 'REJECTED') {
-                // echo Auth::user()->role;exit;
                 if(Auth::user()->role == "STAFF" || Auth::user()->role == "ORGANIZATION")
                 {
                     return $this->rejectedToSignee($requestData);
                 }
-
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
