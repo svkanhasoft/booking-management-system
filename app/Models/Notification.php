@@ -139,9 +139,9 @@ class Notification extends Model
 
         if (Auth::user()->role == 'SIGNEE') {
         // if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
-            $notification->is_showing_for = "SIGNEE";
-        } else {
             $notification->is_showing_for = "ORGANIZATION";
+        } else {
+            $notification->is_showing_for = "SIGNEE";
         }
         $notification->save();
         //print_r($notification);exit;
@@ -287,9 +287,9 @@ class Notification extends Model
         $notification->updated_by = Auth::user()->id;
         if (Auth::user()->role == 'SIGNEE') {
             // if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
-            $notification->is_showing_for = "SIGNEE";
-        } else {
             $notification->is_showing_for = "ORGANIZATION";
+        } else {
+            $notification->is_showing_for = "SIGNEE";
         }
         //$notification->is_showing_for = "SIGNEE";
         $notification->save();
