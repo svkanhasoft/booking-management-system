@@ -223,7 +223,7 @@ class Notification extends Model
 
     public function addNotificationV2($postData, $type,$key = '')
     {
-        // print_r($postData);exit;
+        //print_r($key);exit;
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
@@ -233,8 +233,10 @@ class Notification extends Model
         $bookingDetails = [];
         if(isset($postData['booking_id']) && !empty($postData['booking_id'])){
             $bookingDetails = Booking::findOrFail($postData['booking_id']);
+            $date = date("d-m-Y", strtotime($bookingDetails['date']));
         }
-        $date = date("d-m-Y", strtotime($bookingDetails['date']));
+        // dd($bookingDetails);
+
 
 
         $msg = '';
