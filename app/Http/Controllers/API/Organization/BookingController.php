@@ -4,8 +4,7 @@ namespace App\Http\Controllers\API\Organization;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-// use Illuminate\Support\Facades\Auth;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Requests;
 use App\Models\User;
