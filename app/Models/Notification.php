@@ -223,7 +223,7 @@ class Notification extends Model
 
     public function addNotificationV2($postData, $type,$key = '')
     {
-        //print_r($postData);exit;
+        // print_r($postData);exit;
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
@@ -254,7 +254,7 @@ class Notification extends Model
             }else{
                 $customeDocsMsg = 'Rejected';
             }
-            $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status has been changed changed to $customeDocsMsg";
+            $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status has been changed to $customeDocsMsg";
         } else if ($type == 'shift_edit'){ //Notification for shift edit
             $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been updated by admin';
         } else if ($type == 'shift_create'){ //Notification for shift create
@@ -283,7 +283,8 @@ class Notification extends Model
 
         $notification = new Notification();
         $notification->signee_id = $signeeId;
-        $notification->organization_id = Auth::user()->id;
+        //$notification->organization_id = Auth::user()->id;
+        $notification->organization_id = $postData['organization_id'];
         if (isset($postData['booking_id']) && $postData['booking_id']) {
             $notification->booking_id = $postData['booking_id'];
         } else {
@@ -302,6 +303,7 @@ class Notification extends Model
             $notification->is_showing_for = "SIGNEE";
         }
         //$notification->is_showing_for = "SIGNEE";
+        // print_r($notification);exit;
         $notification->save();
         return true;
     }
