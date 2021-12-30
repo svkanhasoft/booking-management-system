@@ -772,7 +772,7 @@ class Booking extends Model
                     // ->bcc('suresh.kanhasoft@gmail.com')
                     ->send(new \App\Mail\SendSmtpMail($details));
                     $objNotification = new Notification();
-                    $notification = $objNotification->addNotification($val);
+                    $notification = $objNotification->addNotificationV2($val, 'invite_candidate');
             }
             return true;
         } else {

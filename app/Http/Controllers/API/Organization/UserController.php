@@ -676,10 +676,10 @@ class UserController extends Controller
             $objBooking = new Booking();
             //dd(Auth::user()->role);
             if ($requestData['status'] == 'CANCEL' || $requestData['status'] == 'DECLINE' || $requestData['status'] == 'PENDING') {
-               // echo Auth::user()->role;exit;
+               //echo Auth::user()->role;exit;
                 //$signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
                 if (Auth::user()->role == 'SIGNEE') {
-                    // dd($requestData);
+                    //dd(Auth::user()->role);
                     return $this->cancelShiftBySignee($requestData);
                 } else if (Auth::user()->role == 'STAFF' || Auth::user()->role == 'ORGANIZATION') {
                     //print_r(Auth::user()->role);exit();
@@ -907,9 +907,10 @@ class UserController extends Controller
             $objBookingMatch->signee_booking_status = $postData['status'];
             $objBookingMatch->save();
 
+            $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
             if ($objBookingMatch) {
                 $objNotification = new Notification();
-                $notification = $objNotification->addNotificationV2($postData,'REJECTED');
+                $notification = $objNotification->addNotificationV2($signeeMatch,'REJECTED');
                 return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);

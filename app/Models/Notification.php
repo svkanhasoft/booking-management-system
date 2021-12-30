@@ -35,13 +35,16 @@ class Notification extends Model
 
     public function addNotification($postData)
     {
-        // print_r($postData);exit;
+        //print_r($postData);exit;
         //print_r($postData['signee_booking_status']);exit;
         // echo $postData['signeeId'] . " signe <br/>";
         // echo Auth::user()->id . " login user <br/>";
         // echo $postData['signee_booking_status'] . " signee_booking_status <br/>";
         // exit;
         $msg = '';
+        $bookingDetails = Booking::findOrFail($postData['booking_id']);
+
+        $date = date("d-m-Y", strtotime($bookingDetails['date']));
         if (isset($postData['status']) && $postData['status'] != 'CREATED' && $postData['status'] != 'CONFIRMED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'Active') {
             // echo "home";exit;
             // dd($postData['signee_booking_status']);
@@ -57,13 +60,13 @@ class Notification extends Model
             // exit;
             if ((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION')) {
 
-                $bookingDetails = Booking::findOrFail($postData['booking_id']);
+                // $bookingDetails = Booking::findOrFail($postData['booking_id']);
 
-                $date = date("d-m-Y", strtotime($bookingDetails['date']));
+                // $date = date("d-m-Y", strtotime($bookingDetails['date']));
                 $time = date("h:i A", strtotime($bookingDetails['start_time'])) . ' ' . 'To' . ' ' . date("h:i A", strtotime($bookingDetails['end_time']));
                 //Candidate reject shift
                 if ((isset($postData['signeeId']) && isset($postData['signee_booking_status'])) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
-                    $msg = $postData['first_name'] . ' '. $postData['last_name']. ' reject shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in ' . $postData['ward_name'] . ' ward with date is '. $postData['booking_date'].' offered by Admin ';
+                    $msg = $postData['first_name'] . ' '. $postData['last_name']. ' rejected your shift offer for' . ' ' . $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward ) on the day of '. $date;
                 } else  if (isset($postData['signeeId']) && isset($postData['signee_booking_status']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "ACCEPT") { //Candidate accepts shift
                     $msg = 'You accepted shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward sent by admin';
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
@@ -86,7 +89,7 @@ class Notification extends Model
             } else if (isset($postData['signee_booking_status']) && isset($postData['signeeId']) && $postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] == "CANCEL") {
                 $msg = $postData['user_name'] . ' ' . 'rejected your offer at' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
             } else if (isset($postData['signee_booking_status']) && isset($postData['role']) && $postData['role'] == 'ORGANIZATION' && $postData['signee_booking_status'] == "APPLY") {
-                $msg = $postData['user_name'] . ' ' . 'applied in shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward created by you';
+                $msg = $postData['user_name'] . ' ' . 'applied in your shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('. $postData['ward_name'] . ' ' . 'ward) on the day of'.' '. $date;
             } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CREATED') {
                 $msg = 'You created a new shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward';
             } else if (isset($postData['org_role']) && $postData['org_role'] == 'ORGANIZATION' && isset($postData['status']) && $postData['status'] === 'CONFIRMED' && isset($postData['signee_booking_status']) && $postData['signee_booking_status'] === 'CONFIRMED') {
@@ -220,7 +223,7 @@ class Notification extends Model
 
     public function addNotificationV2($postData, $type,$key = '')
     {
-        // print_r($type);exit;
+        //print_r($postData);exit;
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
@@ -231,13 +234,16 @@ class Notification extends Model
         if(isset($postData['booking_id']) && !empty($postData['booking_id'])){
             $bookingDetails = Booking::findOrFail($postData['booking_id']);
         }
+        $date = date("d-m-Y", strtotime($bookingDetails['date']));
+
 
         $msg = '';
         if ($type == 'payment') {
             $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status has been changed to ' . ' ' . $postData['payment_status'];
-        } else if ($type == 'REJECTED') {
-            $msg = 'You Are rejected from shift ' . $bookingDetails['reference_id']. ' for date ' . $bookingDetails['date'] . ' by Admin ';
-        }else if ($type == 'DOCS') {
+        } else if ($type == 'REJECTED') {//staff / org rejected shift applied by candidate
+            //$msg = 'Shift you applied in ' . $bookingDetails['reference_id']. ' for date ' . $date . ' has been rejected ';
+            $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ') ward has been rejected by admin';
+        } else if ($type == 'DOCS') {
             // $docsContent = array
             // (array('key'=>$postData['key'],'name'=>'Copy of Passport in Colour including front cover.'),
             // );
@@ -249,12 +255,14 @@ class Notification extends Model
                 $customeDocsMsg = 'Rejected';
             }
             $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status has been changed changed to $customeDocsMsg";
-        } else if ($type == 'shift_edit'){
-            $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward has been updated by admin';
-        } else if ($type == 'shift_create'){
-            $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward has been created by admin';
-        } else if ($type == 'shift_accept'){
-            $msg = $postData['user_name'] . ' ' . 'accepted shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward offered by Admin';
+        } else if ($type == 'shift_edit'){ //Notification for shift edit
+            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been updated by admin';
+        } else if ($type == 'shift_create'){ //Notification for shift create
+            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been created by admin';
+        } else if ($type == 'shift_accept'){ //Notification for shift accept by candidate
+            $msg = $postData['user_name'] . ' ' . 'accepted your shift offer for' . ' ' . $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
+        } else if ($type == 'invite_candidate'){ //Notification for staff or org invite candidate for shift
+            $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
