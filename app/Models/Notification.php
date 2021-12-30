@@ -234,7 +234,7 @@ class Notification extends Model
 
         $msg = '';
         if ($type == 'payment') {
-            $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status change to ' . ' ' . $postData['payment_status'];
+            $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status has been changed to ' . ' ' . $postData['payment_status'];
         } else if ($type == 'REJECTED') {
             $msg = 'You Are rejected from shift ' . $bookingDetails['reference_id']. ' for date ' . $bookingDetails['date'] . ' by Admin ';
         }else if ($type == 'DOCS') {
@@ -248,11 +248,13 @@ class Notification extends Model
             }else{
                 $customeDocsMsg = 'Rejected';
             }
-            $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status changed to $customeDocsMsg";
+            $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status has been changed changed to $customeDocsMsg";
         } else if ($type == 'shift_edit'){
             $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward has been updated by admin';
+        } else if ($type == 'shift_create'){
+            $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward has been created by admin';
         } else if ($type == 'shift_accept'){
-            $msg = $postData['user_name'] . ' ' . 'accepted shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward offered by you';
+            $msg = $postData['user_name'] . ' ' . 'accepted shift' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward offered by Admin';
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
