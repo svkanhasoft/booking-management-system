@@ -223,7 +223,7 @@ class Notification extends Model
 
     public function addNotificationV2($postData, $type,$key = '')
     {
-        // print_r($postData);exit;
+        //print_r($postData);exit;
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
@@ -290,7 +290,13 @@ class Notification extends Model
         $notification = new Notification();
         $notification->signee_id = $signeeId;
         //$notification->organization_id = Auth::user()->id;
-        $notification->organization_id = $postData['organization_id'];
+        if(isset($type) && $type == 'shift_confirm')
+        {
+            $notification->organization_id = $postData['user_id'];
+        } else{
+            $notification->organization_id = $postData['organization_id'];
+        }
+
         if (isset($postData['booking_id']) && $postData['booking_id']) {
             $notification->booking_id = $postData['booking_id'];
         } else {
