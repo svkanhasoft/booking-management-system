@@ -70,7 +70,7 @@ class BookingMatch extends Model
             //$objBookingMatch = '';
 
             $objNotification = new Notification();
-            if($values['updated_by'] == 0)
+            if($values['updated_by'] == NULL)
             {
                 $notification = $objNotification->addNotificationV2($values, 'shift_create');
             } else {

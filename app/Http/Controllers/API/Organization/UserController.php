@@ -732,7 +732,12 @@ class UserController extends Controller
             }else if ($requestData['status'] == 'INVITE') {
                 return $this->offerToSignee($requestData);
             }else if ($requestData['status'] == 'REJECTED') {
-                return $this->rejectedToSignee($requestData);
+                // echo Auth::user()->role;exit;
+                if(Auth::user()->role == "STAFF" || Auth::user()->role == "ORGANIZATION")
+                {
+                    return $this->rejectedToSignee($requestData);
+                }
+
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
