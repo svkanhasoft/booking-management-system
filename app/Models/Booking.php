@@ -756,6 +756,7 @@ class Booking extends Model
 
     public function sendBookingInvitationMail($result)
     {
+        // print_r(Auth::user()->role);exit;
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
             foreach ($result as $key => $val) {

@@ -408,13 +408,15 @@ class User extends Authenticatable
             'signee_organization.status as compliance_status',
             'users.postcode',
             'signees_detail.nationality',
-            'signees_detail.date_of_birth',
+            //'signees_detail.date_of_birth',
+            DB::raw('DATE_FORMAT(signees_detail.date_of_birth, "%d-%m-%Y")AS date_of_birth'),
             // 'signees_detail.mobile_number',
             // 'signees_detail.phone_number',
             'signees_detail.candidate_referred_from',
             DB::raw('candidate_referred_froms.name AS candidate_referred_name'),
             'signees_detail.nmc_dmc_pin',
-            DB::raw('date(users.created_at) AS date_registered'),
+            DB::raw('DATE_FORMAT(users.created_at, "%d-%m-%Y") AS date_registered'),
+            //DB::raw('date(users.created_at) AS date_registered'),
             //DB::raw('GROUP_CONCAT( specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
         );
         $query->leftJoin('signees_detail',  'signees_detail.user_id', '=', 'users.id');
