@@ -42,9 +42,7 @@ class Notification extends Model
         // echo $postData['signee_booking_status'] . " signee_booking_status <br/>";
         // exit;
         $msg = '';
-        $bookingDetails = Booking::findOrFail($postData['booking_id']);
 
-        $date = date("d-m-Y", strtotime($bookingDetails['date']));
         if (isset($postData['status']) && $postData['status'] != 'CREATED' && $postData['status'] != 'CONFIRMED' && $postData['status'] != 'CANCEL' && $postData['status'] != 'Active') {
             // echo "home";exit;
             // dd($postData['signee_booking_status']);
@@ -58,6 +56,9 @@ class Notification extends Model
         } else {
             // print_r($postData);
             // exit;
+            $bookingDetails = Booking::findOrFail($postData['booking_id']);
+
+            $date = date("d-m-Y", strtotime($bookingDetails['date']));
             if ((isset($postData['role']) && $postData['role'] == 'SIGNEE') || (isset($postData['org_role']) && $postData['org_role'] != 'ORGANIZATION')) {
 
                 // $bookingDetails = Booking::findOrFail($postData['booking_id']);
