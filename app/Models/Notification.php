@@ -268,10 +268,9 @@ class Notification extends Model
             $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'super_assign'){ //Notification for staff or org super assign any candidate
             $msg = 'Admin has assigned shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
+        } else if ($type == 'org_accept'){ //Notification for staff or org accept shift applied by candidate
+            $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ') ward has been accepted by admin';
         }
-        //else if ($type == 'shift_confirm'){ //Notification for staff or org confirmed any shift
-        //     $msg = 'Shift '. $postData['reference_id'] .' status has been changed to '.$postData['status'];
-        // }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
             $userResult = User::find($signeeId);

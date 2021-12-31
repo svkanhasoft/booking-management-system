@@ -712,13 +712,14 @@ class UserController extends Controller
                         return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                     }
                 } else if(Auth::user()->role == "ORGANIZATION" || Auth::user()->role == "STAFF"){
-                    $notification = $objNotification->addNotificationV2($matchSignee, 'super_assign');
+                    // echo Auth::user()->role;exit;
+                    $notification = $objNotification->addNotificationV2($matchSignee, 'org_accept');
                 } else {
                     $objBooking->sendBookingConfirmEmail($matchSignee);
                 }
 
                 if ($objBookingMatch) {
-                    return response()->json(['status' => true, 'message' => 'Booking confirmed successfully'], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Admin successfully accepted shift in which you applied'], $this->successStatus);
                 } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                 }
