@@ -772,9 +772,16 @@ class Booking extends Model
                 $emailRes = \Mail::to($result)
                     // ->cc('maulik.kanhasoft@gmail.com')
                     // ->bcc('suresh.kanhasoft@gmail.com')
-                    ->send(new \App\Mail\SendSmtpMail($details));
-                    $objNotification = new Notification();
-                    $notification = $objNotification->addNotificationV2($val, 'invite_candidate');
+                ->send(new \App\Mail\SendSmtpMail($details));
+                $objNotification = new Notification();
+
+                if(Auth::user()->role == "ORGANIZATION")
+                {
+                    $notification = $objNotification->addNotificationV2($val, 'org_invite_candidate');
+                } else {
+                    $notification = $objNotification->addNotificationV2($val, 'staff_invite_candidate');
+                }
+
             }
             return true;
         } else {

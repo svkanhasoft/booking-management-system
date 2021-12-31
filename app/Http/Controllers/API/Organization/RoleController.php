@@ -42,7 +42,7 @@ class RoleController extends Controller
             return response()->json(['status' => true, 'message' => 'Role added Successfully', 'data' => $request->all()], $this->successStatus);
         }
         $validator = Validator::make($request->all(), [
-            'role_name' => 'unique:roles,role_name,NULL,id,user_id,'.$this->userId
+            'role_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255|unique:roles,role_name,NULL,id,user_id,'.$this->userId
         ]);
 
         if ($validator->fails()) {
@@ -90,7 +90,7 @@ class RoleController extends Controller
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             'id' => 'required',
-            'role_name' => 'unique:roles,role_name,'.$requestData['id'].'NULL,id,user_id,'.$this->userId
+            'role_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255|unique:roles,role_name,'.$requestData['id'].'NULL,id,user_id,'.$this->userId
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();

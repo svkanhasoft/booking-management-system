@@ -114,9 +114,9 @@ class Notification extends Model
                 $status = $postData['status'];
             }
             if ($userResult->device_id != '' && $userResult->platform == 'Android') {
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status);
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status, $userResult->parent_id);
             } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status);
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status, $userResult->parent_id);
             }
         }
 
@@ -245,7 +245,7 @@ class Notification extends Model
             $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status has been changed to ' . ' ' . $postData['payment_status'];
         } else if ($type == 'REJECTED') {//staff / org rejected shift applied by candidate
             //$msg = 'Shift you applied in ' . $bookingDetails['reference_id']. ' for date ' . $date . ' has been rejected ';
-            $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ') ward has been rejected by admin';
+            $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) has been rejected by admin';
         } else if ($type == 'DOCS') {
             // $docsContent = array
             // (array('key'=>$postData['key'],'name'=>'Copy of Passport in Colour including front cover.'),
@@ -259,17 +259,21 @@ class Notification extends Model
             }
             $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status has been changed to $customeDocsMsg";
         } else if ($type == 'shift_edit'){ //Notification for shift edit
-            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been updated by admin';
+            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been updated by admin';
         } else if ($type == 'shift_create'){ //Notification for shift create
-            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been created by admin';
+            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been created by admin';
         } else if ($type == 'candidate_accept'){ //Notification for shift accept by candidate
             $msg = $postData['user_name'] . ' ' . 'accepted your shift offer for' . ' ' . $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
-        } else if ($type == 'invite_candidate'){ //Notification for staff or org invite candidate for shift
+        } else if ($type == 'org_invite_candidate'){ //Notification for org invite candidate for shift
             $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
+        } else if ($type == 'staff_invite_candidate'){ //Notification for staff invite candidate for shift
+            $msg = 'Organisation staff invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'super_assign'){ //Notification for staff or org super assign any candidate
             $msg = 'Admin has assigned shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
-        } else if ($type == 'org_accept'){ //Notification for staff or org accept shift applied by candidate
-            $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ') ward has been accepted by admin';
+        } else if ($type == 'org_accept'){ //Notification for org accept shift applied by candidate
+            $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) has been accepted by admin';
+        } else if ($type == 'invited_signee_rejected'){ //Notification for when org / staff reject candidate after  invited
+            $msg = 'Admin rejected you for the shift '.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) on the day of '. $date;
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {

@@ -735,7 +735,13 @@ class UserController extends Controller
             }else if ($requestData['status'] == 'REJECTED') {
                 if(Auth::user()->role == "STAFF" || Auth::user()->role == "ORGANIZATION")
                 {
-                    return $this->rejectedToSignee($requestData);
+                    $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+                    if($matchSignee->signee_status == 'Interested')
+                    {
+                        return $this->rejectedToSignee($requestData);
+                    } else {
+                        return $this->rejectedToInvitedSignee($requestData);
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -918,6 +924,28 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    public function rejectedToInvitedSignee($postData)
+    {
+        try {
+            $objBooking = new Booking();
+            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $postData['signee_id'], 'booking_id' => $postData['booking_id']]);
+            $objBookingMatch->signee_booking_status = $postData['status'];
+            $objBookingMatch->save();
+
+            $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
+            if ($objBookingMatch) {
+                $objNotification = new Notification();
+                $notification = $objNotification->addNotificationV2($signeeMatch,'invited_signee_rejected');
+                return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
     /*
      * Change Candidate document status
      *
