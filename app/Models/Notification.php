@@ -152,13 +152,13 @@ class Notification extends Model
         return true;
     }
 
-    public function sendAndroidNotification($message, $token, $bookingId, $status)
+    public function sendAndroidNotification($message, $token, $bookingId, $status, $organizationId)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
-        $customData = array('bookingId' => $bookingId, 'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
+        $customData = array('bookingId' => $bookingId, 'organizationId' => $organizationId, 'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         $notification = array('title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
@@ -183,14 +183,14 @@ class Notification extends Model
         curl_close($ch);
     }
 
-    public function sendIOSNotification($message, $token, $bookingId, $status)
+    public function sendIOSNotification($message, $token, $bookingId, $status, $organizationId)
     {
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $token;
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $body = $message;
-        $notification = array('title' => $title, 'status' => $status, 'bookingId' => $bookingId, 'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
+        $notification = array('title' => $title, 'status' => $status, 'bookingId' => $bookingId, 'organizationId' => $organizationId,'subtitle' => $message, 'body' => $body, 'sound' => 'default', 'badge' => '1');
         // $notification = array('title' => $title,'bookingId' => $bookingId,'subtitle' => $message, 'body' => array('bookingId'=>$bookingId,"message"=>$body), 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('data' => $notification,'body' => $notification, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'subtitle' => $message, 'data' => $notification, 'body' => $notification, 'notification' => $notification, 'priority' => 'high');
@@ -275,6 +275,7 @@ class Notification extends Model
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
             $userResult = User::find($signeeId);
+            //print_r($userResult);exit;
             $bookingId = '';
             $status = $type;
             if (isset($postData['booking_id']) && $postData['booking_id']) {
@@ -283,9 +284,9 @@ class Notification extends Model
                 $bookingId = NULL;
             }
             if ($userResult->device_id != '' && $userResult->platform == 'Android') {
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status);
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status,$userResult['parent_id']);
             } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status);
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status,$userResult['parent_id']);
             }
         }
 

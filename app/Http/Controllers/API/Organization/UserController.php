@@ -1076,9 +1076,21 @@ class UserController extends Controller
                 $query->whereDate('created_at', '>=',Carbon::now()->subDays(10));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
-            $unread = $query->where('is_read',0)->count();
+            // $unread = $query->where('is_read',0)->count();
             $notification = $query->latest()->paginate($perPage);
 
+            $query2 = Notification::select('*');
+            if(Auth::user()->role == "SIGNEE")
+            {
+                $query2->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
+                $query2->whereDate('created_at','>=', Carbon::now()->subDays(10));
+                // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
+            } else {
+                $query2->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
+                $query2->whereDate('created_at', '>=',Carbon::now()->subDays(10));
+                // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
+            }
+            $unread = $query2->where('is_read',0)->count();
             // echo $notification['count'];exit;
             if (!empty($notification)) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification,'unread'=>$unread], $this->successStatus);
