@@ -178,9 +178,9 @@ class BookingController extends Controller
                 $requestData['end_time'] = $bookingShift['end_time'];
                 if(Auth::user()->role == 'ORGANIZATION')
                 {
-                    $booking->updated_by = $this->userId;
+                    $requestData['updated_by'] = $this->userId;
                 }else{
-                    $booking->updated_by = $this->userId;
+                    $requestData['updated_by'] = $this->userId;
                 }
                 $booking->update($requestData);
                 $objBookingSpeciality = new BookingSpeciality();
