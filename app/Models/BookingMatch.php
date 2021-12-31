@@ -41,7 +41,7 @@ class BookingMatch extends Model
         //print_r($signeeidArray);exit;
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
-            print_r($values); exit;
+            //print_r($values); exit;
             $this->sendMatchEmail($values);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
