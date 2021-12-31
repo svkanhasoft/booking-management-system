@@ -705,21 +705,26 @@ class UserController extends Controller
                 $objNotification = new Notification();
                 if(Auth::user()->role == "SIGNEE")
                 {
-                    $notification = $objNotification->addNotificationV2($matchSignee, 'shift_accept');
+                    $notification = $objNotification->addNotificationV2($matchSignee, 'candidate_accept');
                     if ($notification) {
                         return response()->json(['status' => true, 'message' => 'Candidate successfully accepted the shift'], $this->successStatus);
                     } else {
                         return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                     }
                 } else if(Auth::user()->role == "ORGANIZATION" || Auth::user()->role == "STAFF"){
-                    // echo Auth::user()->role;exit;
-                    $notification = $objNotification->addNotificationV2($matchSignee, 'org_accept');
+                    if($matchSignee->signee_status == 'Interested')
+                    {
+                        $notification = $objNotification->addNotificationV2($matchSignee, 'org_accept');
+                        return response()->json(['status' => true, 'message' => 'Admin successfully accepted shift in which you applied'], $this->successStatus);
+                    } else {
+                        $notification = $objNotification->addNotificationV2($matchSignee, 'super_assign');
+                    }
                 } else {
                     $objBooking->sendBookingConfirmEmail($matchSignee);
                 }
 
                 if ($objBookingMatch) {
-                    return response()->json(['status' => true, 'message' => 'Admin successfully accepted shift in which you applied'], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Admin successfully assigned shift to you'], $this->successStatus);
                 } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                 }

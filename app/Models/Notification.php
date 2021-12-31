@@ -262,7 +262,7 @@ class Notification extends Model
             $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been updated by admin';
         } else if ($type == 'shift_create'){ //Notification for shift create
             $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ') ward has been created by admin';
-        } else if ($type == 'shift_accept'){ //Notification for shift accept by candidate
+        } else if ($type == 'candidate_accept'){ //Notification for shift accept by candidate
             $msg = $postData['user_name'] . ' ' . 'accepted your shift offer for' . ' ' . $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'invite_candidate'){ //Notification for staff or org invite candidate for shift
             $msg = 'Admin invited you for the shift '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;

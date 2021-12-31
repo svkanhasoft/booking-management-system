@@ -382,6 +382,7 @@ class Booking extends Model
             'bookings.user_id as organization_id',
             'bookings.*',
             'booking_matches.signee_booking_status',
+            'booking_matches.signee_status',
             'shift_type.shift_type',
             'hospitals.hospital_name',
             'ward.ward_name',
