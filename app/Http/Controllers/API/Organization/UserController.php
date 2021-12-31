@@ -936,7 +936,13 @@ class UserController extends Controller
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
             if ($objBookingMatch) {
                 $objNotification = new Notification();
-                $notification = $objNotification->addNotificationV2($signeeMatch,'invited_signee_rejected');
+                if(Auth::user()->role == "ORGANIZATION")
+                {
+                    $notification = $objNotification->addNotificationV2($signeeMatch,'invited_signee_rejected_byAdmin');
+                } else {
+                    $notification = $objNotification->addNotificationV2($signeeMatch,'invited_signee_rejected_byStaff');
+                }
+
                 return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);

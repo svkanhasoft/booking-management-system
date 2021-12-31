@@ -272,8 +272,10 @@ class Notification extends Model
             $msg = 'Admin has assigned shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
         } else if ($type == 'org_accept'){ //Notification for org accept shift applied by candidate
             $msg = 'Shift you applied in'.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) has been accepted by admin';
-        } else if ($type == 'invited_signee_rejected'){ //Notification for when org / staff reject candidate after  invited
+        } else if ($type == 'invited_signee_rejected_byAdmin'){ //Notification for when org / staff reject candidate after  invited
             $msg = 'Admin rejected you for the shift '.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) on the day of '. $date;
+        } else if ($type == 'invited_signee_rejected_byStaff'){ //Notification for when org / staff reject candidate after  invited
+            $msg = 'Organisation staff rejected you for the shift '.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) on the day of '. $date;
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
