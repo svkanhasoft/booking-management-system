@@ -114,9 +114,9 @@ class Notification extends Model
                 $status = $postData['status'];
             }
             if ($userResult->device_id != '' && $userResult->platform == 'Android') {
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status, $userResult->parent_id);
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
             } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status, $userResult->parent_id);
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
             }
         }
 
@@ -280,7 +280,6 @@ class Notification extends Model
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
             $userResult = User::find($signeeId);
-            //print_r($userResult);exit;
             $bookingId = '';
             $status = $type;
             if (isset($postData['booking_id']) && $postData['booking_id']) {
@@ -289,9 +288,9 @@ class Notification extends Model
                 $bookingId = NULL;
             }
             if ($userResult->device_id != '' && $userResult->platform == 'Android') {
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status,$userResult['parent_id']);
+                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
             } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
-                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status,$userResult['parent_id']);
+                $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
             }
         }
 
