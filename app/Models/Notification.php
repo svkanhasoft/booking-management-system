@@ -73,7 +73,7 @@ class Notification extends Model
                 } else if (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "CANCEL" && $postData['organization_id'] == Auth::user()->id) { //Staff/Org reject shift
                     $msg = 'Shift you applied in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ' . 'ward at ' . $date . ' ' . $time . ' ' . 'has been rejected by admin';
                 } elseif (isset($postData['signee_booking_status']) && isset($postData['organization_id']) && $postData['signee_booking_status'] == "OFFER") {
-                    $msg = 'You got offer from' . ' ' . $postData['hospital_name'] . ' ' . 'hospital in' . ' ' . $postData['ward_name'] . ' ' . 'ward by admin';
+                    $msg = 'Admin offered you shift of '. $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date . ' to you';
                 } else if ($postData['signeeId'] == Auth::user()->id && $postData['signee_booking_status'] && $postData['signee_booking_status'] == "CANCEL") {
                     $msg = 'Shift in' . ' ' . $postData['hospital_name'] . ' ' . 'hospital of' . ' ' . $postData['ward_name'] . ' ward at ' . $date . ' ' . $time . ' ' . 'has been canceled';
                 } else if (($postData['status'] == "CONFIRMED" || $postData['status'] == "CREATED") && isset($postData['updated_by']) && $postData['updated_by'] != '') {
@@ -159,7 +159,7 @@ class Notification extends Model
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $customData = array('bookingId' => $bookingId, 'organizationId' => $organizationId, 'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
-        $notification = array('title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
+        $notification = array('title' => $title, 'text' => $message, 'body' => $message,'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
@@ -222,7 +222,7 @@ class Notification extends Model
         return $reeed->success;
     }
 
-    public function addNotificationV2($postData, $type,$key = '')
+    public function addNotificationV2($postData, $type,$key = '', $interval = NULL)
     {
         //print_r($postData);exit;
         $signeeId = null;
@@ -236,7 +236,7 @@ class Notification extends Model
             $bookingDetails = Booking::findOrFail($postData['booking_id']);
             $date = date("d-m-Y", strtotime($bookingDetails['date']));
         }
-        // dd($bookingDetails);
+        // dd($bookingDetail);
 
 
 
@@ -276,6 +276,8 @@ class Notification extends Model
             $msg = 'Admin rejected you for the shift '.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) on the day of '. $date;
         } else if ($type == 'invited_signee_rejected_byStaff'){ //Notification for when org / staff reject candidate after  invited
             $msg = 'Organisation staff rejected you for the shift '.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) on the day of '. $date;
+        } else if ($type == 'shift_start_noti' && isset($interval)){ //Notification before x hours of shift starts
+            $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) starts after '.$interval->h.' hour';
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
@@ -300,7 +302,9 @@ class Notification extends Model
         $notification->organization_id = $postData['organization_id'];
         if (isset($postData['booking_id']) && $postData['booking_id']) {
             $notification->booking_id = $postData['booking_id'];
-        } else {
+        } else if(isset($postData['id']) && $postData['id']){
+            $notification->booking_id = $postData['id'];
+        } else{
             $notification->booking_id = NULL;
         }
         $notification->message = $msg;
@@ -316,7 +320,7 @@ class Notification extends Model
             $notification->is_showing_for = "SIGNEE";
         }
         //$notification->is_showing_for = "SIGNEE";
-        // print_r($notification);exit;
+        //print_r($notification);exit;
         $notification->save();
         return true;
     }
