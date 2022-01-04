@@ -366,6 +366,32 @@ class Booking extends Model
         return $res;
     }
 
+    public function getConfirmedCandidates($matchiId = null)
+    {
+        // print_r($matchiId);exit;
+        $subQuery = Booking::select(
+            'booking_matches.signee_id as signeeId',
+            'booking_matches.signee_booking_status',
+            'booking_matches.id as bookingMatchId',
+            'bookings.*',
+            'bookings.user_id as organization_id',
+            'shift_type.shift_type',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+        );
+        $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+
+        $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        $subQuery->where('bookings.id', $matchiId);
+        $subQuery->whereNull('bookings.deleted_at');
+
+        $res = $subQuery->get()->toArray();
+        return $res;
+    }
+
     public function getMetchByBookingIdAndSigneeId($bookingId = null, $signeeId = null)
     {
         $subQuery = Booking::select(

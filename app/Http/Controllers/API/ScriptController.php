@@ -17,9 +17,11 @@ use Illuminate\Support\Carbon;
 use PDF;
 use App;
 use App\Models\Booking;
+use App\Models\Notification;
 
 class ScriptController extends Controller
 {
+    public $successStatus = 200;
     public function __construct()
     {
     }
@@ -52,6 +54,39 @@ class ScriptController extends Controller
                     $userUpdateObj->status = 'Inactive';
                     $userUpdateObj->save();
                 }
+            }
+        }
+    }
+
+    function getBooking()
+    {
+        date_default_timezone_set('Asia/Kolkata');
+
+        $objBooking = new Booking();
+        \Log::info(" Sent shift start notification cron ");
+        $bokObj = Booking::select('*')->where('bookings.date', '>=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
+
+        foreach ($bokObj as $key => $val) {
+            //print_r($val);exit;
+            $date1 =  date('Y-m-d H:i:s');
+            $date2 = $val['date'].' '. $val['start_time'];
+            $x = new DateTime($date1);
+            $y = new DateTime($date2);
+            $interval = $y->diff($x);
+            //dd($interval);
+
+
+            if(($interval->h >= 4) || $interval->h >= 6 || $interval->h >= 7)
+            {
+                $confirmedCandidate = $objBooking->getConfirmedCandidates($val['id']);
+                foreach($confirmedCandidate as $key => $candidate)
+                {
+                    $objNotification = new Notification();
+                    $sendNotification = $objNotification->addNotificationV2($candidate, 'shift_start_noti', '',$interval);
+                }
+                return response()->json(['status' => true, 'message' => 'Your shift '.$candidate['hospital_name'].' hospital ('.$candidate['ward_name'].' ward) starts after '.$interval->h.' hour(s)'], $this->successStatus);
+            } else{
+                echo "errors";exit;
             }
         }
     }

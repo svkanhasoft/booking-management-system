@@ -7,7 +7,7 @@ use App\Http\Controllers\API\Organization\{OrganizationController,RoleController
 use App\Http\Controllers\API\Organization\SpecialitiesController;
 use App\Http\Controllers\API\Organization\{ TrustsController,OrganizationShiftController,BookingController,ShiftTypeController,WardTypeController,UserController };
 use App\Http\Controllers\API\Signees\{ UserController as SigneesUserController,SigneesController,AvailabilityController,SigneePreferencesController,HospitalController };
-use App\Http\Controllers\API\TestController;
+use App\Http\Controllers\API\{TestController, ScriptController};
 use App\Http\Controllers\API\DashboardController;
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +51,7 @@ Route::prefix('organization')->group(function () {
     Route::post('/otp-verify', [OrganizationController::class, 'otpVerify']);
     //Route::post('/reset-password', [App\Http\Controllers\API\Signees\OrganizationController::class, 'resetPassword']);
     Route::middleware(['auth:api'])->group(function () {
+        Route::get('/booking-notification-cron', [ScriptController::class, 'getBooking']);
         Route::get('/get-designation-list', [DesignationController::class, 'list']);
         Route::post('/update', [OrganizationController::class, 'update']);
         Route::post('/change-password', [OrganizationController::class, 'changePassword']);
@@ -144,6 +145,7 @@ Route::prefix('signee')->group(function () {
     Route::get('/get-org-specialities/{id}', [SigneesController::class, 'getOrgSpecialities']);
     Route::get('/generate-candidateId', [SigneesController::class, 'getCandidateId']);
     Route::post('/get-email-organisation', [SigneesController::class, 'getEmailOrganisation']);
+
     Route::middleware(['auth:api'])->group(function () {
         Route::get('/get-signee-details', [SigneesController::class, 'getDetails']);
         Route::post('/signee-change-password', [SigneesController::class, 'changePassword']);
@@ -182,4 +184,5 @@ Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
 Route::get('/send-notification', [TestController::class, 'notification']);
 Route::get('/dashboard', [DashboardController::class, 'totalUser']);
+
 // Route::get('/pdf/{signee_id?}', [TestController::class, 'pdf']);

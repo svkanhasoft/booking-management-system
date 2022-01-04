@@ -159,7 +159,7 @@ class Notification extends Model
         $serverKey = 'AAAAQTG-TuM:APA91bGshsDaQvEHRTxNG8ikpOjIgPhaq6BTIIjQ0TECZ_aRfY59w3-AAT8msqeleYNtfBdt1Q2eS1X_KXqSGtp9AfPZ8ud4wkltowSnxnIrym3UiOAVIEZzDM7VCwUaUelaYQn58ZkR';
         $title = "Pluto";
         $customData = array('bookingId' => $bookingId, 'organizationId' => $organizationId, 'status' => $status, 'title' => $title, 'text' => $message, 'sound' => 'default', 'badge' => '1');
-        $notification = array('title' => $title, 'text' => $message, 'body' => $message,'sound' => 'default', 'badge' => '1');
+        $notification = array('title' => $title, 'text' => $message, 'body' => $message, 'sound' => 'default', 'badge' => '1');
         // $arrayToSend = array('to' => $token, 'notification' => $notification, 'priority' => 'high');
         $arrayToSend = array('to' => $token, 'data' => $customData, 'notification' => $notification, 'priority' => 'high');
         $json = json_encode($arrayToSend);
@@ -224,7 +224,6 @@ class Notification extends Model
 
     public function addNotificationV2($postData, $type,$key = '', $interval = NULL)
     {
-        //print_r($postData);exit;
         $signeeId = null;
         if (isset($postData['signeeId']) && !empty($postData['signeeId'])) {
             $signeeId = $postData['signeeId'];
@@ -278,6 +277,14 @@ class Notification extends Model
             $msg = 'Organisation staff rejected you for the shift '.' '. $postData['hospital_name'] . ' hospital (' . $postData['ward_name'] . ' ward) on the day of '. $date;
         } else if ($type == 'shift_start_noti' && isset($interval)){ //Notification before x hours of shift starts
             $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) starts after '.$interval->h.' hour';
+        } else if ($type == 'shift_delete'){ //Notification when shift deleted
+            if(Auth::user()->role == "ORGANIZATION")
+            {
+                $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by admin';
+            } else if(Auth::user()->role == "STAFF")
+            {
+                $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by organisation staff';
+            }
         }
 
         if (!empty($signeeId) && Auth::user()->role !== 'SIGNEE') {
@@ -314,13 +321,13 @@ class Notification extends Model
         $notification->created_by = Auth::user()->id;
         $notification->updated_by = Auth::user()->id;
         if (Auth::user()->role == 'SIGNEE') {
-            // if ((isset($postData['role']) && $postData['role'] == "ORGANIZATION")) {
             $notification->is_showing_for = "ORGANIZATION";
         } else {
             $notification->is_showing_for = "SIGNEE";
         }
+        //dd($notification);
         //$notification->is_showing_for = "SIGNEE";
-        //print_r($notification);exit;
+        //print_r($notification);
         $notification->save();
         return true;
     }

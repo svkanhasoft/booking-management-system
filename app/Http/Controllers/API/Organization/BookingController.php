@@ -219,12 +219,20 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
+        //dd(Auth::user()->role);
         //print_r($id);exit();
-        $booking = Booking::where('id', $id)->delete();
+        $bookingObj = new Booking();
+        $booking = Booking::find($id);
         //print_r($booking);exit();
-        // $shift = BookingMatch::where(['booking_id' => $id])->delete();
-        // $booking = BookingSpeciality::where(['booking_id' => $id])->delete();
+        $bookingMatch = $bookingObj->getMetchByBookingId($booking->id);
+        //print_r($bookingMatch);exit;
         if ($booking) {
+            $objNotification = new Notification();
+            foreach($bookingMatch as $key=>$val)
+            {
+                $notification = $objNotification->addNotificationV2($val, 'shift_delete');
+            }
+            $bookingDelete = $booking->delete();
             return response()->json(['status' => true, 'message' => 'Booking deleted!'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 409);
