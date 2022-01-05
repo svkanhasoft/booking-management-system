@@ -56,9 +56,9 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
-            "first_name" => 'required',
-            "last_name" => 'required',
-            "contact_number" => 'required',
+            "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "contact_number" => 'required|numeric',
             "role_id" => 'required',
             "designation_id" => 'required',
         ]);
@@ -409,8 +409,11 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
-            "first_name" => 'required',
-            "last_name" => 'required',
+            "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "city" => 'regex:/^[a-zA-Z]+$/u|max:255',
+            "nationality" => 'regex:/^[a-zA-Z]+$/u|max:255',
+            "postcode" => 'numeric',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
