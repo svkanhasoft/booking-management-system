@@ -491,8 +491,11 @@ class UserController extends Controller
         $requestData = $request->all();
         //print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
-            "first_name" => 'required',
-            "last_name" => 'required',
+            "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "city" => 'regex:/^[a-zA-Z]+$/u|max:255',
+            "nationality" => 'regex:/^[a-zA-Z]+$/u|max:255',
+            "postcode" => 'numeric',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
