@@ -243,7 +243,7 @@ class SpecialitiesController extends Controller
             $booking = BookingSpeciality::where(['speciality_id' => $id])->get();
             if(count($signee) > 0 || count($booking) > 0)
             {
-                return response()->json(['message' => 'Sorry, You can\'t delete this speciality it\'s already assigned', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, You can\'t delete this speciality it\'s already assigned', 'status' => false]);
             } else {
                 $speciality =  Speciality::destroy($id);
                 if ($speciality) {
