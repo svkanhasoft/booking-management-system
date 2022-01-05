@@ -301,7 +301,7 @@ class Notification extends Model
                 $bookingId = NULL;
             }
             if ($userResult->device_id != '' && $userResult->platform == 'Android') {
-                $this->sendAndroidNotification($msg, $userResult->device_id, $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
+                $this->sendAndroidNotification($msg, $userResult->device_id, ($type == 'shift_delete') ? $bookingId = NULL : $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
             } else if ($userResult->device_id != '' && $userResult->platform == 'Iphone') {
                 $this->sendIOSNotification($msg, $userResult->device_id, $bookingId, $status, (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id);
             }

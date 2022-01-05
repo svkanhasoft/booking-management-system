@@ -47,7 +47,7 @@ class TrustsController extends Controller
             "email_address" => 'required|email',
             "address_line_1" => 'required',
             "city" => 'required',
-            "post_code" => 'required',
+            "post_code" => 'required|numeric',
             "trust_portal_url" => 'required|url',
             "portal_email" => 'required|email',
             "portal_password" => 'required',
