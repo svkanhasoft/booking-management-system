@@ -262,7 +262,11 @@ class Notification extends Model
                 $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been updated by organisation staff';
             }
         } else if ($type == 'shift_create'){ //Notification for shift create
-            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been created by admin';
+            if(Auth::user()->role == "ORGANIZATION") {
+                $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been created by admin';
+            } else {
+                $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been created by organisation staff';
+            }
         } else if ($type == 'candidate_accept'){ //Notification for shift accept by candidate
             $msg = $postData['user_name'] . ' ' . 'accepted your shift offer for' . ' ' . $postData['hospital_name'] .' '.'hospital ('. $postData['ward_name'] .' '.'ward) on the day of '. $date;
         } else if ($type == 'org_invite_candidate'){ //Notification for org invite candidate for shift
@@ -281,9 +285,9 @@ class Notification extends Model
             $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) starts after '.$interval->h.' hour';
         } else if ($type == 'shift_delete'){ //Notification when shift deleted
             if(Auth::user()->role == "ORGANIZATION") {
-                $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by admin';
+                $msg = 'Shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by admin';
             } else {
-                $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by organisation staff';
+                $msg = 'Shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by organisation staff';
             }
         }
 
