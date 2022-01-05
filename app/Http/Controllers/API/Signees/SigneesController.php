@@ -523,6 +523,12 @@ class SigneesController extends Controller
         $end_time = strtotime($result['end_time']);
         $diff = gmdate('H:i:s', $end_time - $start_time);
         $result['duration'] = $diff;
+        if($result['date'] > date('Y-m-d'))
+        {
+            $result['is_past'] = true;
+        }else{
+            $result['is_past'] = false;
+        }
         if ($result) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
         } else {
