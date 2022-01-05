@@ -970,8 +970,7 @@ class Booking extends Model
 
     public function getMatchByBooking($bookingId, $status,$bookingStatus)
     {
-
-        //print_r($bookingId);exit;
+        // dd($status);
         $subQuery = Booking::select(
             'users.id as signeeId',
             'users.address_line_1',
@@ -991,7 +990,7 @@ class Booking extends Model
         );
         $subQuery->Join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('users',  'users.id', '=', 'booking_matches.signee_id');
-        $subQuery->Join('signee_organization',  'signee_organization.user_id', '=', 'users.id');
+        $subQuery->leftJoin('signee_organization',  'signee_organization.user_id', '=', 'users.id');
 
 
         if (Auth::user()->role == 'ORGANIZATION') {
@@ -1015,7 +1014,7 @@ class Booking extends Model
         //     $subQuery->where('booking_matches.signee_status', $status);
         //     $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
         // }
-        if($status == 'CONFIRMED'){
+        if($bookingStatus == 'CONFIRMED'){
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         }else{
             // $bookingDetail = Booking::findOrFail($bookingId);
@@ -1025,10 +1024,14 @@ class Booking extends Model
             // } else if($bookingDetail['status'] == 'CREATED')
             // {
                 $subQuery->where('booking_matches.signee_status', $status);
+                $subQuery->whereNull('signee_organization.deleted_at');
                 $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
             // }
         }
         $subQuery->where('booking_matches.deleted_at');
+
+        // $res = $subQuery->toSql();
+        // print_r($res);exit;
         $res = $subQuery->get()->toArray();
 
         return $res;
