@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API\Organization;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\BookingSpeciality;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Models\User;
 use App\Models\Organization;
+use App\Models\SigneeSpecialitie;
 use Hash;
 use Config;
 use App\Models\Speciality;
@@ -234,13 +236,21 @@ class SpecialitiesController extends Controller
      */
     public function destroy($id)
     {
+        //echo $id;exit;
         try
         {
-            $speciality =  Speciality::destroy($id);
-            if ($speciality) {
-                return response()->json(['status' => true, 'message' => 'Speciality delete Successfully', 'data' => $speciality], $this->successStatus);
+            $signee = SigneeSpecialitie::where(['speciality_id' => $id])->get();
+            $booking = BookingSpeciality::where(['speciality_id' => $id])->get();
+            if(count($signee) || count($booking) > 0)
+            {
+                return response()->json(['message' => 'Sorry, You can\'t delete this speciality it\'s already assigned', 'status' => false], 404);
             } else {
-                return response()->json(['message' => 'Sorry, Speciality delete failed!', 'status' => false], 409);
+                $speciality =  Speciality::destroy($id);
+                if ($speciality) {
+                    return response()->json(['status' => true, 'message' => 'Speciality delete Successfully', 'data' => $speciality], $this->successStatus);
+                } else {
+                    return response()->json(['message' => 'Sorry, Speciality delete failed!', 'status' => false], 400);
+                }
             }
         }
         catch(\Exception $e)
