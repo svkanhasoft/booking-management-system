@@ -1111,43 +1111,33 @@ class UserController extends Controller
         //print_r($showing);exit;
         try{
             $showing = $request->get('showing');
-            // $query = Notification::select(
-            //     'notification.*',
-            //     'booking_matches.signee_status',
-            //     'booking_matches.signee_booking_status',
-            // );
-            // $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'notification.booking_id');
+            $query = Notification::select('*');
 
-            // if(Auth::user()->role == "SIGNEE")
-            // {
-            //     $query->Where(['notification.signee_id' => Auth::user()->id, 'notification.organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
-            //     $query->whereDate('notification.created_at','>=', Carbon::now()->subDays(10));
-            // } else {
-            //     $query->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
-            //     $query->whereDate('created_at', '>=',Carbon::now()->subDays(10));
-            // }
-            // // $unread = $query->where('is_read',0)->count();
-            // $notification = $query->latest()->paginate($perPage);
-
-
-            $query2 = Notification::select(
-                'notification.*',
-                'booking_matches.signee_status',
-                'booking_matches.signee_booking_status',
-            );
-            $query2->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'notification.booking_id');
             if(Auth::user()->role == "SIGNEE")
             {
-                $query2->Where(['notification.signee_id' => Auth::user()->id, 'notification.organization_id' => Auth::user()->parent_id, 'notification.is_showing_for' => "SIGNEE"]);
-                $query2->whereDate('notification.created_at','>=', Carbon::now()->subDays(10));
+                $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
+                $query->whereDate('created_at','>=', Carbon::now()->subDays(10));
                 // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             } else {
-                $query2->Where(['notification.organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'notification.is_showing_for' => 'ORGANIZATION']);
-                $query2->whereDate('notification.created_at', '>=',Carbon::now()->subDays(10));
+                $query->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
+                $query->whereDate('created_at', '>=',Carbon::now()->subDays(10));
+                // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
+            }
+            // $unread = $query->where('is_read',0)->count();
+            $notification = $query->latest()->paginate($perPage);
+
+            $query2 = Notification::select('*');
+            if(Auth::user()->role == "SIGNEE")
+            {
+                $query2->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
+                $query2->whereDate('created_at','>=', Carbon::now()->subDays(10));
+                // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
+            } else {
+                $query2->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
+                $query2->whereDate('created_at', '>=',Carbon::now()->subDays(10));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
             $unread = $query2->where('is_read',0)->count();
-            $notification = $query2->latest()->paginate($perPage);
             // echo $notification['count'];exit;
             if (!empty($notification)) {
                 return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification,'unread'=>$unread], $this->successStatus);
