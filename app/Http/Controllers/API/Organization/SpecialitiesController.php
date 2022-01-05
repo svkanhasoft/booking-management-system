@@ -249,7 +249,7 @@ class SpecialitiesController extends Controller
                 if ($speciality) {
                     return response()->json(['status' => true, 'message' => 'Speciality delete Successfully', 'data' => $speciality], $this->successStatus);
                 } else {
-                    return response()->json(['message' => 'Sorry, Speciality delete failed!', 'status' => false], 400);
+                    return response()->json(['message' => 'Sorry, Speciality delete failed!', 'status' => false], 404);
                 }
             }
         }
