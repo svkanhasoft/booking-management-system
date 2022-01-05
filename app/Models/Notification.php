@@ -237,8 +237,6 @@ class Notification extends Model
         }
         // dd($bookingDetail);
 
-
-
         $msg = '';
         if ($type == 'payment') {
             $msg = 'Your booking ' . $bookingDetails['reference_id'] . ' payment status has been changed to ' . ' ' . $postData['payment_status'];
@@ -258,7 +256,11 @@ class Notification extends Model
             }
             $msg = 'Your '.str_replace("_"," ",$postData['key']). " document status has been changed to $customeDocsMsg";
         } else if ($type == 'shift_edit'){ //Notification for shift edit
-            $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been updated by admin';
+            if(Auth::user()->role == "ORGANIZATION") {
+                $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been updated by admin';
+            } else {
+                $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been updated by organisation staff';
+            }
         } else if ($type == 'shift_create'){ //Notification for shift create
             $msg = 'Shift ' . ' ' . $postData['hospital_name'] . ' ' . 'hospital ('.$postData['ward_name']. ' ward) has been created by admin';
         } else if ($type == 'candidate_accept'){ //Notification for shift accept by candidate
@@ -278,11 +280,9 @@ class Notification extends Model
         } else if ($type == 'shift_start_noti' && isset($interval)){ //Notification before x hours of shift starts
             $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) starts after '.$interval->h.' hour';
         } else if ($type == 'shift_delete'){ //Notification when shift deleted
-            if(Auth::user()->role == "ORGANIZATION")
-            {
+            if(Auth::user()->role == "ORGANIZATION") {
                 $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by admin';
-            } else if(Auth::user()->role == "STAFF")
-            {
+            } else {
                 $msg = 'Your shift '.$postData['hospital_name'].' hospital ('.$postData['ward_name'].' ward) has been deleted by organisation staff';
             }
         }

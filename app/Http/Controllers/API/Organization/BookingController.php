@@ -219,13 +219,9 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
-        //dd(Auth::user()->role);
-        //print_r($id);exit();
         $bookingObj = new Booking();
         $booking = Booking::find($id);
-        //print_r($booking);exit();
         $bookingMatch = $bookingObj->getMetchByBookingId($booking->id);
-        //print_r($bookingMatch);exit;
         if ($booking) {
             $objNotification = new Notification();
             foreach($bookingMatch as $key=>$val)
