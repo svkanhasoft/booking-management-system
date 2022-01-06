@@ -309,7 +309,6 @@ class BookingMatch extends Model
         $booking->where('bookings.id', $id);
         $booking->where('users.id', Auth::user()->id);
         $booking->whereNull('booking_specialities.deleted_at');
-        $booking->whereNull('bookings.deleted_at');
         // $booking->groupBy('specialities.id'); // 15 Desc shailesh
         //$booking->groupBy('bookings.id');
         $res = $booking->first();
@@ -321,8 +320,9 @@ class BookingMatch extends Model
             }else{
                 $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
             }
+        }else{
+            return false;
         }
-        return $res;
     }
 
 

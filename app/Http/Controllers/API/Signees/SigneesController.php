@@ -354,7 +354,7 @@ class SigneesController extends Controller
      * This function is used for get list of all the organizations added by super admin and it is used when new candidate registeres.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function getOrganisation()   //while register candidate
     {
         $data = [];
@@ -387,7 +387,7 @@ class SigneesController extends Controller
      * This function is used for get organization list in which candidate wants to register except candidate already register.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function getOrganisationListAddOrg()  //while candidate add multiple org
     {
         $sigOrg = SigneeOrganization::where('user_id', $this->userId)->get()->toArray();
@@ -414,7 +414,7 @@ class SigneesController extends Controller
      * This function is used to get specialities of particular organization.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function getOrgSpecialities($id)
     {
         $speciality = Speciality::select('id', 'speciality_name')->where('user_id', $id)->get()->toArray();
@@ -429,7 +429,7 @@ class SigneesController extends Controller
      * This function is used for logging out the logged-in candidate.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function logout(Request $request)
     {
         $user = Auth::user()->token();
@@ -456,7 +456,7 @@ class SigneesController extends Controller
      * This function generates unique candidate id.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function getCandidateId(Request $request)
     {
         try {
@@ -476,7 +476,7 @@ class SigneesController extends Controller
      * This function is for display shift list created by organization and staff user.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function shiftList(Request $request)
     {
         $bookingMatching = new BookingMatch();
@@ -492,7 +492,7 @@ class SigneesController extends Controller
      * GET Candidate LOGIN MY SHIFT LIST.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function myshift()
     {
         $result = [];
@@ -513,26 +513,25 @@ class SigneesController extends Controller
      * This function is used for view shift details by candidate
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function viewShiftDetails($id)
     {
         $bookingMatch = new BookingMatch();
         $result = $bookingMatch->viewShiftDetails($id);
-       // print_r($result);exit();
+        // print_r($result);exit();
         if ($result) {
             $start_time = strtotime($result['start_time']);
             $end_time = strtotime($result['end_time']);
             $diff = gmdate('H:i:s', $end_time - $start_time);
             $result['duration'] = $diff;
-            if($result['date'] < date('Y-m-d'))
-            {
+            if ($result['date'] < date('Y-m-d')) {
                 $result['is_past'] = true;
-            }else{
+            } else {
                 $result['is_past'] = false;
             }
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $result], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Something is wrong.', 'status' => false], 200);
+            return response()->json(['message' => 'Sorry, shift details not available.', 'status' => false], 200);
         }
     }
 
@@ -541,7 +540,7 @@ class SigneesController extends Controller
      * Candidate can filter shifts by day of shfts, hospital wise and speciality wise.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function filterBookings(Request $request)
     {
         $bookingMatch = new BookingMatch();
@@ -557,7 +556,7 @@ class SigneesController extends Controller
      * This function is used for change the compliance status of the candidate by staff user.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function changeSigneeComplianceStatus(Request $request)
     {
         $requestData = $request->all();
@@ -596,7 +595,7 @@ class SigneesController extends Controller
      * This function is used to register a candidate to multiple organization at a time.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function addOrg(Request $request)
     {
         $requestData = $request->all();
@@ -626,7 +625,7 @@ class SigneesController extends Controller
      * This function is for candidate to upload his complience documents.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function documentUpload(Request $request)
     {
         $requestData = $request->all();
@@ -678,7 +677,7 @@ class SigneesController extends Controller
      * This function is used for candidate to update his specialities.
      * @param  int  $id
      * @return \Illuminate\Http\Response
-    */
+     */
     public function updateSpeciality(Request $request, $userId)
     {
         //dd(Auth::user()->parent_id);
@@ -770,7 +769,7 @@ class SigneesController extends Controller
         }
     }
 
-     /**
+    /**
      * This function is for get candidate's documents according to the keys or without key.
      * If key is passed then documents are fetched by that key only.
      * If key is not passed then all the documents for that candidate will be fetched.
@@ -885,8 +884,8 @@ class SigneesController extends Controller
         }
         try {
             $res =  BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
-                'signee_status'=>  $requestData['signee_status'],
-                'signee_booking_status'=>  'APPLY',
+                'signee_status' =>  $requestData['signee_status'],
+                'signee_booking_status' =>  'APPLY',
             ]);
             $objBooking = new Booking();
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
@@ -929,7 +928,7 @@ class SigneesController extends Controller
         try {
             $bookingArray = new Booking();
             $booking = $bookingArray->editMetchBySigneeId($id);
-// dd($booking);
+            // dd($booking);
             $objBookingMatch = new BookingMatch();
             $bookingMatch = $objBookingMatch->editBookingMatchBySignee($booking, $id);
         } catch (\Exception $e) {
@@ -963,9 +962,8 @@ class SigneesController extends Controller
                     $signeeUser->profile_pic = $new_name;
                     $docUpload = $signeeUser->save();
                     $data['profile_pic'] = $new_name;
-                    if(!empty($docUpload))
-                    {
-                        return response()->json(['status' => true,'data'=> $data, 'message' => 'Profile picture uploaded successfully'], $this->successStatus);
+                    if (!empty($docUpload)) {
+                        return response()->json(['status' => true, 'data' => $data, 'message' => 'Profile picture uploaded successfully'], $this->successStatus);
                     }
                 }
             } else {

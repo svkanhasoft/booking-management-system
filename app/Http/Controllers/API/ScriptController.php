@@ -64,7 +64,8 @@ class ScriptController extends Controller
 
         $objBooking = new Booking();
         \Log::info(" Sent shift start notification cron ");
-        $bokObj = Booking::select('*')->where('bookings.date', '>=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
+        $bokObj = Booking::select('*')->where('bookings.date', '=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
+        // $bokObj = Booking::select('*')->where('bookings.date', '>=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
 
         foreach ($bokObj as $key => $val) {
             //print_r($val);exit;
@@ -74,9 +75,8 @@ class ScriptController extends Controller
             $y = new DateTime($date2);
             $interval = $y->diff($x);
             //dd($interval);
-
-
-            if(($interval->h >= 4) || $interval->h >= 6 || $interval->h >= 7)
+            if($interval->h == 4 || $interval->h == 6 || $interval->h == 7)
+            // if(($interval->h >= 4) || $interval->h >= 6 || $interval->h >= 7)
             {
                 $confirmedCandidate = $objBooking->getConfirmedCandidates($val['id']);
                 foreach($confirmedCandidate as $key => $candidate)
