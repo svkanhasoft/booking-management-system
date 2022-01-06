@@ -313,12 +313,14 @@ class BookingMatch extends Model
         // $booking->groupBy('specialities.id'); // 15 Desc shailesh
         //$booking->groupBy('bookings.id');
         $res = $booking->first();
-        $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
-        if(!$result){
-            $res['signee_booking_status'] = '';
-            $res['booking_record_perm_for_signees'] = $this->managePermission('',$res['profile_status']);
-        }else{
-            $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
+        if(!empty($res)){
+            $result = BookingMatch::where('deleted_at')->where('signee_id', '=', $res['signeeid'])->where('booking_id', $id)->first();
+            if(!$result){
+                $res['signee_booking_status'] = '';
+                $res['booking_record_perm_for_signees'] = $this->managePermission('',$res['profile_status']);
+            }else{
+                $res['booking_record_perm_for_signees'] = $this->managePermission($res['compliance_status'],$res['profile_status']);
+            }
         }
         return $res;
     }
