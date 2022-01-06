@@ -1124,7 +1124,7 @@ class UserController extends Controller
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
             // $unread = $query->where('is_read',0)->count();
-            $notification = $query->latest()->paginate($perPage);
+            $notification = $query->orderBy('id','desc')->paginate($perPage);
 
             $query2 = Notification::select('*');
             if(Auth::user()->role == "SIGNEE")
