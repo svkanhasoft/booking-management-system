@@ -150,7 +150,7 @@ class SigneesController extends Controller
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
             $checkRecord->parent_id =  request('organization_id');
             $checkRecord->last_login_date =  date('Y-m-d H:i:s');
-            if ($request->header('platform') == 'Iphone' || $request->header('platform') == 'Android') {
+            if (!empty($request->header('deviceId')) && !empty($request->header('platform')) && ($request->header('platform') == 'Iphone' || $request->header('platform') == 'Android')) {
                 $checkRecord->device_id =  !empty($request->header('deviceId')) ? $request->header('deviceId') : Auth::user()->device_id;
                 $checkRecord->platform =  !empty($request->header('platform')) ? $request->header('platform') : 'Web';
             }
@@ -439,7 +439,7 @@ class SigneesController extends Controller
             if (Auth::user()) {
                 $user->revoke();
                 $userDetail = User::findOrFail($user['user_id']);
-                $userDetail['device_id'] = NULL;
+                // $userDetail['device_id'] = NULL;
                 $userDetail->save();
                 return response()->json([
                     'status' => true,
