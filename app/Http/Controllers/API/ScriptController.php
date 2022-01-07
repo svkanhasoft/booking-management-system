@@ -74,6 +74,7 @@ class ScriptController extends Controller
             $x = new DateTime($date1);
             $y = new DateTime($date2);
             $interval = $y->diff($x);
+            echo $val['id'] . " => " .$val['reference_id']. " => Hours $interval->h <br/>" ;
             //dd($interval);
             if($interval->h == 4 || $interval->h == 6 || $interval->h == 7)
             // if(($interval->h >= 4) || $interval->h >= 6 || $interval->h >= 7)
