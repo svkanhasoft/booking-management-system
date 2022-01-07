@@ -86,7 +86,7 @@ class ScriptController extends Controller
                 }
                 return response()->json(['status' => true, 'message' => 'Your shift '.$candidate['hospital_name'].' hospital ('.$candidate['ward_name'].' ward) starts after '.$interval->h.' hour(s)'], $this->successStatus);
             } else{
-                echo "errors";exit;
+                echo "errors";
             }
         }
     }
