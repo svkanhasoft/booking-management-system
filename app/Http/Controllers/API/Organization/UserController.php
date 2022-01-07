@@ -1089,6 +1089,7 @@ class UserController extends Controller
                 $bookingMatch = BookingMatch::where(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']])->update([
                     'payment_status' => $requestData['payment_status'],
                 ]);
+                $requestData['organization_id'] = (Auth::user()->role == "ORGANIZATION") ? Auth::user()->id : Auth::user()->parent_id;
                 $notificationObj = new Notification();
                 $notificationObj->addNotificationV2($requestData,'payment');
                 if ($bookingMatch) {
