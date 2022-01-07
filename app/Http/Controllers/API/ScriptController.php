@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
@@ -26,9 +27,9 @@ class ScriptController extends Controller
     {
     }
 
-    public function addsignee(Request $request){
+    public function addsignee(Request $request)
+    {
         echo "Fsdsd";
-
     }
 
     /**
@@ -61,35 +62,57 @@ class ScriptController extends Controller
     function getBooking()
     {
         date_default_timezone_set('Asia/Kolkata');
-
         $objBooking = new Booking();
-        \Log::info(" Sent shift start notification cron ");
+        \Log::info("Conjob run for send notification for shift with current time ".date('Y-m-d H:i:s')) ;
         $bokObj = Booking::select('*')->where('bookings.date', '=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
         // $bokObj = Booking::select('*')->where('bookings.date', '>=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
+        $userAdmin = User::select('id', 'email', 'first_name', 'last_login_date')->where('role', 'SUPERADMIN')->first();
 
         foreach ($bokObj as $key => $val) {
-            //print_r($val);exit;
-            $date1 =  date('Y-m-d H:i:s');
-            $date2 = $val['date'].' '. $val['start_time'];
-            $x = new DateTime($date1);
-            $y = new DateTime($date2);
+            $today =  date('Y-m-d H:i:s');
+            $shiftDate = $val['date'] . ' ' . $val['start_time'];
+
+            $x = new DateTime($today);
+            $y = new DateTime($shiftDate);
             $interval = $y->diff($x);
-            echo $val['id'] . " => " .$val['reference_id']. " => Hours $interval->h <br/>" ;
+
+            echo $val['id'] . " => " . $val['reference_id'] . " => Hours $interval->h <br/>";
             //dd($interval);
-            if($interval->h == 4 || $interval->h == 6 || $interval->h == 7)
+            if ($interval->h == 4 || $interval->h == 6 || $interval->h == 7)
             // if(($interval->h >= 4) || $interval->h >= 6 || $interval->h >= 7)
             {
                 $confirmedCandidate = $objBooking->getConfirmedCandidates($val['id']);
-                foreach($confirmedCandidate as $key => $candidate)
-                {
+                foreach ($confirmedCandidate as $key => $candidate) {
+                    $msg = 'Hello ' . $candidate['first_name'] . ' Your shift ' . $candidate['hospital_name'] . ' hospital (' . $candidate['ward_name'] . ' ward) start after ' . $interval->h . ' hour(s)';
+                    echo "<br/>$msg<br/>";
+                    $notification = new Notification();
+                    $notification->signee_id = $candidate['signeeId'];
+                    //$notification->organization_id = Auth::user()->id;
+                    $notification->organization_id = $candidate['organization_id'];
+                    $notification->booking_id = $candidate['booking_id'];
+                    $notification->message = $msg;
+                    $notification->status = 'shift_start_noti';
+                    $notification->is_read = 0;
+                    $notification->is_sent = 0;
+                    $notification->created_by = $userAdmin->id;
+                    $notification->updated_by = $userAdmin->id;
+                    $notification->is_showing_for = "SIGNEE";
+                    //dd($notification);
+                    //print_r($notification);
+                    $notification->save();
                     $objNotification = new Notification();
-                    $sendNotification = $objNotification->addNotificationV2($candidate, 'shift_start_noti', '',$interval);
+                    if ($candidate['device_id'] != '' && $candidate['platform'] == 'Android') {
+                        $objNotification->sendAndroidNotification($msg, $candidate['device_id'], $candidate['booking_id'], 'shift_start_noti', $candidate['organization_id']);
+                    } else if ($candidate['device_id'] != '' && $candidate['platform'] == 'Iphone') {
+                        $objNotification->sendIOSNotification($msg, $candidate['device_id'], $candidate['booking_id'], 'shift_start_noti', $candidate['organization_id']);
+                    }
+                    // $objNotification = new Notification();
+                    // $sendNotification = $objNotification->addNotificationV2($candidate, 'shift_start_noti', '',$interval);
                 }
-                return response()->json(['status' => true, 'message' => 'Your shift '.$candidate['hospital_name'].' hospital ('.$candidate['ward_name'].' ward) starts after '.$interval->h.' hour(s)'], $this->successStatus);
-            } else{
-                echo "errors";
+                // return response()->json(['status' => true, 'message' => 'Your shift '.$candidate['hospital_name'].' hospital ('.$candidate['ward_name'].' ward) starts after '.$interval->h.' hour(s)'], $this->successStatus);
+            } else {
+                // echo "errors";
             }
         }
     }
-
 }

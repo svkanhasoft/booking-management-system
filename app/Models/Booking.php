@@ -378,12 +378,17 @@ class Booking extends Model
             'shift_type.shift_type',
             'hospitals.hospital_name',
             'ward.ward_name',
+            'users.first_name',
+            'users.last_name',
+            'users.platform',
+            'users.device_id',
+            'booking_matches.booking_id',
         );
         $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-
+        $subQuery->leftJoin('users',  'users.id', '=', 'booking_matches.signee_id');
         $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         $subQuery->where('bookings.id', $matchiId);
         $subQuery->whereNull('bookings.deleted_at');
