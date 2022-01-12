@@ -540,9 +540,12 @@ class UserController extends Controller
     public function deleteSignee($id)
     {
         try {
-            $userDelete = User::find($id);
-            $delete = SigneeOrganization::where(['user_id' => $id, 'organization_id' => $userDelete['parent_id']])->delete();
-            if ($delete) {
+            $user = User::find($id);
+            $deleteUser = User::where('id',$id)->delete();
+            $deleteSigneeOrg = SigneeOrganization::where(['user_id' => $id, 'organization_id' => $user['parent_id']])->delete();
+            $deleteSigneeDetail = SigneesDetail::where(['user_id' => $id])->delete();
+            $deleteSigneeSpec = SigneeSpecialitie::where(['user_id' => $id]);
+            if ($user) {
                 return response()->json(['status' => true, 'message' => 'Candidate deleted successfully.'], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Sorry, Candidate not deleted.'], 409);
@@ -651,12 +654,15 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
+            // $statusChanged = User::where(['id' => $requestData['signee_id'], 'parent_id'=> Auth::user()->id])->update([
+            //     'status' => $requestData['status']           
+            // ]);
             $data = User::findOrFail($requestData['signee_id']);
             $data->status = $requestData['status'];
             $res = $data->save();
             // $objNotification = new Notification();
             // $notification = $objNotification->addNotificationV2($requestData,'profile_status');
-            if (!empty($notification)) {
+            if (!empty($res)) {
                 return response()->json(['status' => true, 'message' => 'Candidate profile status changed successfully'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, status not change.', 'status' => false], 409);
@@ -1166,12 +1172,12 @@ class UserController extends Controller
             if($requestData['notification_id'] == 'All')
             {
                 if(Auth::user()->role !== 'SIGNEE'){
-                    Notification::where(['organization_id' => Auth::user()->id])->update([
+                    Notification::where(['organization_id' => Auth::user()->id, 'is_showing_for'=> 'ORGANIZATION'])->update([
                         'is_sent'=>  1,
                         'is_read'=>  1,
                     ]);
                 }else{
-                    Notification::where(['signee_id' => $this->userId, 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
+                    Notification::where(['signee_id' => $this->userId, 'is_showing_for' => 'SIGNEE', 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
                         'is_sent'=>  1,
                         'is_read'=>  1,
                     ]);
