@@ -975,7 +975,8 @@ class Booking extends Model
 
     public function getMatchByBooking($bookingId, $status,$bookingStatus)
     {
-        // dd($status);
+        // print_r($status);
+        // print_r($bookingStatus);exit;
         $subQuery = Booking::select(
             'users.id as signeeId',
             'users.address_line_1',
@@ -1019,8 +1020,9 @@ class Booking extends Model
         //     $subQuery->where('booking_matches.signee_status', $status);
         //     $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
         // }
-        if($bookingStatus == 'CONFIRMED'){
+        if($bookingStatus == 'CONFIRMED' && $status == 'Matching'){
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+            $subQuery->where('booking_matches.signee_status', 'Matching');
         }else{
             // $bookingDetail = Booking::findOrFail($bookingId);
             // if($bookingDetail['status'] == 'CONFIRMED')
