@@ -99,7 +99,7 @@ class SigneesController extends Controller
                 $sing = SigneeOrganization::create($requestData);
                 if ($orgResult) {
                     $UserObj = new User();
-                    $mailRes =  $UserObj->sendRegisterEmail($request);
+                    //$mailRes =  $UserObj->sendRegisterEmail($request);
                     $this->addsigneeMatch($userCreated['id']);
                     return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
                 }
@@ -268,7 +268,7 @@ class SigneesController extends Controller
     public function forgot(Request $request)
     {
         $userObj = new User();
-        $mailRes =  $userObj->sendForgotEmail($request);
+        //$mailRes =  $userObj->sendForgotEmail($request);
         if ($mailRes) {
             return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
@@ -895,8 +895,8 @@ class SigneesController extends Controller
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
             //print_r($comArray);exit;
-            $orgMailSent = $objBooking->sendBookingApplyBySigneeEmailToOrg($comArray);
-            if ($orgMailSent) {
+            //$orgMailSent = $objBooking->sendBookingApplyBySigneeEmailToOrg($comArray);
+            if ($signeeMatch) {
                 return response()->json(['status' => true, 'message' => 'You have successfully applied for this shift'], $this->successStatus);
             } else {
                 return response()->json(['status' => false, 'message' => 'Oops, Something went wrong'], 409);

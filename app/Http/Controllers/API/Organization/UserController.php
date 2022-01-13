@@ -58,7 +58,7 @@ class UserController extends Controller
             "email" => 'required|unique:users',
             "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
             "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-            "contact_number" => 'required|numeric',
+            "contact_number" => 'required|numeric|regex:/^\d{10}$/',
             "role_id" => 'required',
             "designation_id" => 'required',
         ]);
@@ -84,7 +84,7 @@ class UserController extends Controller
                 if ($orgResult) {
                     $UserObj = new User();
                     $userCreated = $UserObj->getOrganizationDetails($userCreated['id']);
-                    $mailRes =  $UserObj->sendRegisterEmail($request);
+                    //$mailRes =  $UserObj->sendRegisterEmail($request);
                     return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
                 }
             } else {
@@ -413,14 +413,19 @@ class UserController extends Controller
             "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
             "city" => 'regex:/^[a-zA-Z]+$/u|max:255',
             "nationality" => 'regex:/^[a-zA-Z]+$/u|max:255',
-            "postcode" => 'numeric',
+            "postcode" => 'numeric|regex:/^\d{6}$/',
+            "contact_number" => 'numeric|regex:/^\d{10}$/',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         $requestData = $request->all();
-        // print_r($requestData);exit();
+        // if(strlen((string)$requestData['postcode']) > 6)
+        // {
+        //     return response()->json(['message' => 'Post code must be 6 digits only!'], 400);
+        // }
+        //print_r(strlen((string)$requestData['postcode']));exit();
         // if ($request->hasFile('cv')) {
         //     $files1 = $request->file('cv');
         //     $name = time() . '_signee_' . $files1->getClientOriginalName();
@@ -452,7 +457,7 @@ class UserController extends Controller
                 $sing = SigneeOrganization::create($requestData);
                 if ($orgResult) {
                     $UserObj = new User();
-                    $mailRes =  $UserObj->sendRegisterEmail($request);
+                    //$mailRes =  $UserObj->sendRegisterEmail($request);
                     return response()->json(['status' => true, 'message' => 'Candidate added Successfully', 'data' => $userCreated], $this->successStatus);
                 }
             } else {
@@ -732,7 +737,7 @@ class UserController extends Controller
                         $notification = $objNotification->addNotificationV2($matchSignee, 'super_assign');
                     }
                 } else {
-                    $objBooking->sendBookingConfirmEmail($matchSignee);
+                    //$objBooking->sendBookingConfirmEmail($matchSignee);
                 }
 
                 if ($objBookingMatch) {
@@ -775,7 +780,7 @@ class UserController extends Controller
             //send mail to candidate organization
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
-            $orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($comArray);
+            //$orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($comArray);
 
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Offer accepted successfully'], $this->successStatus);
@@ -804,7 +809,7 @@ class UserController extends Controller
             // $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             // $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
             //print_r($comArray);exit;
-            $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($signeeMatch);
+            //$orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($signeeMatch);
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Shift rejected by candidate successfully'], $this->successStatus);
             } else {
@@ -867,7 +872,7 @@ class UserController extends Controller
                     'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                 ]);
             $signees = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-            $objBooking->sendBookingCancelByStaffEmail($signees);
+            //$objBooking->sendBookingCancelByStaffEmail($signees);
                 // $booking['status'] = $requestData['status'];
                 // $booking->update();
             }
@@ -905,7 +910,7 @@ class UserController extends Controller
             $objBookingMatch->save();
 
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
-            $mailSent = $objBooking->sendOfferToSigneeEmail($signeeMatch);
+            //$mailSent = $objBooking->sendOfferToSigneeEmail($signeeMatch);
 
             if ($objBookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Offer successfully send to candidate'], $this->successStatus);
@@ -1060,7 +1065,7 @@ class UserController extends Controller
         try {
             $objBooking = new Booking();
             $result = $objBooking->getSigneeForInvite($requestData);
-            $res = $objBooking->sendBookingInvitationMail($result);
+            //$res = $objBooking->sendBookingInvitationMail($result);
             if ($res) {
                 BookingMatch::where('booking_id', $requestData['booking_id'])->whereIn('signee_id', $requestData['signee_id'])->update(['signee_booking_status' => 'OFFER']);
                 return response()->json(['status' => true, 'message' => 'Candidate offer send successfully.'], $this->successStatus);
