@@ -24,6 +24,7 @@ use App\Models\SigneeDocument;
 use Carbon\Carbon;
 use Config;
 use DB;
+use DateTime;
 
 class UserController extends Controller
 {
@@ -420,18 +421,16 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
+
         $requestData = $request->all();
-        // if(strlen((string)$requestData['postcode']) > 6)
-        // {
-        //     return response()->json(['message' => 'Post code must be 6 digits only!'], 400);
-        // }
-        //print_r(strlen((string)$requestData['postcode']));exit();
-        // if ($request->hasFile('cv')) {
-        //     $files1 = $request->file('cv');
-        //     $name = time() . '_signee_' . $files1->getClientOriginalName();
-        //     $files1->move(public_path() . '/uploads/signee_docs/', $name);
-        //     $requestData['cv'] = $name;
-        // }
+        $a = new DateTime($requestData['date_of_birth']);
+        $b = new Datetime(date('Y-m-d'));
+        $interval = $b->diff($a); 
+        if($interval->y < 18)
+        {
+            return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
+        }
+
         try {
             $requestData['password'] = Hash::make($request->post('password'));
             $requestData['parent_id'] = $this->userId;
