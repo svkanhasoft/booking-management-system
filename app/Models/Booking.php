@@ -975,7 +975,7 @@ class Booking extends Model
 
     public function getMatchByBooking($bookingId, $status,$bookingStatus)
     {
-        // print_r($status);
+        //print_r($status);
         // print_r($bookingStatus);exit;
         $subQuery = Booking::select(
             'users.id as signeeId',
@@ -1023,17 +1023,12 @@ class Booking extends Model
         if($bookingStatus == 'CONFIRMED' && $status == 'Matching'){
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
             $subQuery->where('booking_matches.signee_status', 'Matching');
-        }else{
-            // $bookingDetail = Booking::findOrFail($bookingId);
-            // if($bookingDetail['status'] == 'CONFIRMED')
-            // {
-            //     $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
-            // } else if($bookingDetail['status'] == 'CREATED')
-            // {
-                $subQuery->where('booking_matches.signee_status', $status);
-                $subQuery->whereNull('signee_organization.deleted_at');
-                $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
-            // }
+        } else if($bookingStatus == 'CONFIRMED' && $status == 'CONFIRMED'){
+            $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        } else { 
+            $subQuery->where('booking_matches.signee_status', $status);
+            $subQuery->whereNull('signee_organization.deleted_at');
+            $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
         }
         $subQuery->where('booking_matches.deleted_at');
 
