@@ -247,7 +247,7 @@ class Notification extends Model
             // $docsContent = array
             // (array('key'=>$postData['key'],'name'=>'Copy of Passport in Colour including front cover.'),
             // );
-            if($postData['document_status'] == 'SUCCESS'){
+            if($postData['document_status'] == 'ACCEPTED'){
                 $customeDocsMsg = 'Accepted';
             }else if($postData['document_status'] == 'PENDING'){
                 $customeDocsMsg = 'Pending';
