@@ -67,7 +67,7 @@ class SpecialitiesController extends Controller
             }
             $validator = Validator::make($request->all(), [
                 // "speciality_name" => 'required',
-                'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,' . $this->userId
+                'speciality_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255|unique:specialities,speciality_name,NULL,id,user_id,' . $this->userId
                 // 'speciality_name' => 'unique:specialities,speciality_name,NULL,id,user_id,'.$this->userId,'deleted_at,NULL'
 
             ]);
@@ -199,7 +199,7 @@ class SpecialitiesController extends Controller
             $requestData = $request->all();
             $validator = Validator::make($request->all(), [
                 // "speciality_name" => 'required',
-                'speciality_name' => 'unique:specialities,speciality_name,' . $requestData['speciality_id'] . 'NULL,id,user_id,' . $this->userId,
+                'speciality_name' => 'regex:/^[a-zA-Z]+$/u|max:255|unique:specialities,speciality_name,' . $requestData['speciality_id'] . 'NULL,id,user_id,' . $this->userId,
                 "speciality_id" => 'required',
             ]);
             if ($validator->fails()) {
