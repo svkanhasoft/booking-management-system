@@ -61,15 +61,15 @@ class OrganizationController extends Controller
      */
     public function signup(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             // 'organization_name' => 'required',
-            'organization_name' => 'unique:organizations,organization_name',
-            'contact_person_name' => 'required',
-            'contact_number' => 'required',
+            'organization_name' => 'regex:/^[a-zA-Z]+$/u|max:255|unique:organizations,organization_name',
+            'contact_person_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'contact_number' => 'required|numeric|regex:/^\d{10}$/',
             'address_line_1' => 'required',
+            "postcode" => 'numeric|regex:/^\d{6}$/',
             // 'address_line_2' => 'required',
-            'city' => 'required',
+            'city' => 'required|regex:/^[a-zA-Z]+$/u',
             // 'password' => 'required|min:6',
             'email' => 'required|email|unique:users',
         ]);
