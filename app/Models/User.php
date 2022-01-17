@@ -17,7 +17,7 @@ use Config;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Carbon\Carbon;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
@@ -672,4 +672,21 @@ class User extends Authenticatable
     {
         return  Speciality::where(['user_id',$id])->get()->toArray();
     }
+
+
+    public function getDashboard($dayName)
+    {
+        $today = Carbon::now()->format('Y-m-d');
+        if($dayName == 'today'){
+            return  User::where('role', 'ORGANIZATION')->where('created_at', '=', $today)->count();
+            // return  User::where('created_at', '=', $today)->get()->toArray();
+        }else if($dayName == 'week'){
+            return  User::where('role', 'ORGANIZATION')->where('created_at', '>=', Carbon::now()->subDays(7)->format('Y-m-d'))->count();
+        }else if($dayName == 'month'){
+            return  User::where('role', 'ORGANIZATION')->where('created_at', '>=', Carbon::now()->subMonth(1)->format('Y-m-d'))->count();
+        }else if($dayName == 'year'){
+            return  User::where('role', 'ORGANIZATION')->whereYear('created_at', date('Y'))->count();
+        }
+    }
+
 }

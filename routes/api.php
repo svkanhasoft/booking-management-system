@@ -24,6 +24,7 @@ Route::post('/forgot', [SuperAdminController::class, 'forgot']);
 Route::post('/reset-password', [OrganizationController::class, 'resetPassword']);
 
 Route::prefix('superadmin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'dashboard']);
     Route::post('/signin', [SuperAdminController::class, 'signinV2']);
     Route::post('/otp-verify', [SuperAdminController::class, 'otpVerify']);
     Route::middleware(['auth:api'])->group(function () {
@@ -183,6 +184,6 @@ Route::prefix('signee')->group(function () {
 Route::get('/test/{id}', [TestController::class, 'test']);
 Route::get('/inactive', [TestController::class, 'inactive']);
 Route::get('/send-notification', [TestController::class, 'notification']);
-Route::get('/dashboard', [DashboardController::class, 'totalUser']);
+
 
 // Route::get('/pdf/{signee_id?}', [TestController::class, 'pdf']);

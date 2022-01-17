@@ -61,9 +61,13 @@ class ScriptController extends Controller
 
     function getBooking()
     {
-        date_default_timezone_set('Asia/Kolkata');
+        echo  date('Y-m-d H:i:s');
+        if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1' || $_SERVER['REMOTE_ADDR'] == 'localhost') {
+            date_default_timezone_set('Asia/Kolkata');
+        }
+
         $objBooking = new Booking();
-        \Log::info("Conjob run for send notification for shift with current time ".date('Y-m-d H:i:s')) ;
+        \Log::info("Conjob run for send notification for shift with current time " . date('Y-m-d H:i:s'));
         $bokObj = Booking::select('*')->where('bookings.date', '=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
         // $bokObj = Booking::select('*')->where('bookings.date', '>=', date('Y-m-d'))->where('status', 'CONFIRMED')->get()->toArray();
         $userAdmin = User::select('id', 'email', 'first_name', 'last_login_date')->where('role', 'SUPERADMIN')->first();
