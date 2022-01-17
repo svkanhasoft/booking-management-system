@@ -149,11 +149,7 @@ class BookingMatch extends Model
                 'subject' => 'Booking Management System: Review your match',
                 'data' => $result
             ];
-            $emailRes = \Mail::to($result['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
             return false;

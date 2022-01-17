@@ -239,10 +239,7 @@ class User extends Authenticatable
                 'subject' => 'Booking Management System: Forgot Password',
                 'data' => $user,
             ];
-            $emailRes = \Mail::to($user['email'])
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
             return false;
@@ -264,10 +261,7 @@ class User extends Authenticatable
                 'subject' => 'Booking Management System: Registration Done!',
                 'data' => $user,
             ];
-            $emailRes = \Mail::to($user['email'])
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
             return false;

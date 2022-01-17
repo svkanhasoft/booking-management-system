@@ -425,7 +425,7 @@ class UserController extends Controller
         $requestData = $request->all();
         $a = new DateTime($requestData['date_of_birth']);
         $b = new Datetime(date('Y-m-d'));
-        $interval = $b->diff($a); 
+        $interval = $b->diff($a);
         if($interval->y < 18)
         {
             return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
@@ -659,7 +659,7 @@ class UserController extends Controller
         }
         try {
             // $statusChanged = User::where(['id' => $requestData['signee_id'], 'parent_id'=> Auth::user()->id])->update([
-            //     'status' => $requestData['status']           
+            //     'status' => $requestData['status']
             // ]);
             $data = User::findOrFail($requestData['signee_id']);
             $data->status = $requestData['status'];
@@ -904,12 +904,16 @@ class UserController extends Controller
         //print_r($postData);exit;
         try {
             $objBooking = new Booking();
-            $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $postData['signee_id'], 'booking_id' => $postData['booking_id']]);
-            $objBookingMatch->signee_booking_status = $postData['status'];
-            $objBookingMatch->save();
+            // $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $postData['signee_id'], 'booking_id' => $postData['booking_id']]);
+            // $objBookingMatch->signee_booking_status = $postData['status'];
+            // $objBookingMatch->save();
+
+            $objBookingMatch = BookingMatch::where(['booking_id' => $postData['booking_id'], 'signee_id' => $postData['signee_id']])->update([
+                'signee_booking_status' => $postData['status']
+            ]);
 
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
-            //$mailSent = $objBooking->sendOfferToSigneeEmail($signeeMatch);
+            $mailSent = $objBooking->sendOfferToSigneeEmail($signeeMatch);
 
             if ($objBookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Offer successfully send to candidate'], $this->successStatus);

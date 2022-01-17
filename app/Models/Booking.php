@@ -546,9 +546,6 @@ class Booking extends Model
             ];
             // print_r($details['data']);exit();
             $emailRes = \Mail::to($result['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
@@ -572,12 +569,8 @@ class Booking extends Model
                 'subject' => 'Booking Management System: Offer For Shift',
                 'data' => $result
             ];
-            // print_r($details['data']);exit();
-            $emailRes = \Mail::to($result['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($result);
@@ -600,12 +593,8 @@ class Booking extends Model
                 'subject' => 'Booking Management System: Booking Accepted By Candidate',
                 'data' => $res
             ];
-            //print_r($details);exit();
-            $emailRes = \Mail::to($res['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+
+            // $emailRes = \Mail::to($res['email'])->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotificationV2($res, 'shift_accept');
@@ -629,11 +618,7 @@ class Booking extends Model
                 'data' => $res
             ];
             //print_r($details);exit();
-            $emailRes = \Mail::to($res['org_email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            // $emailRes = \Mail::to($res['org_email'])->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($res);
@@ -657,11 +642,8 @@ class Booking extends Model
                 'data' => $res
             ];
             //print_r($details);exit();
-            $emailRes = \Mail::to($res['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+
+            // $emailRes = \Mail::to($res['email'])->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($res);
@@ -687,12 +669,7 @@ class Booking extends Model
                 'subject' => 'Booking Management System: Booking Accepted',
                 'data' => $result
             ];
-            // print_r($details['data']);exit();
-            $emailRes = \Mail::to($result['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($result);
 
@@ -717,12 +694,8 @@ class Booking extends Model
                 'subject' => 'Booking Management System: Your booking is cancelled',
                 'data' => $result
             ];
-            // print_r($details['data']);exit();
-            $emailRes = \Mail::to($result['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($result);
@@ -747,11 +720,7 @@ class Booking extends Model
                     'data' => $result
                 ];
                 //print_r($details);exit();
-                $emailRes = \Mail::to($result['email'])
-                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+                // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
                 $objNotification = new Notification();
                 $notification = $objNotification->addNotification($result);
@@ -776,11 +745,7 @@ class Booking extends Model
                     'data' => $result
                 ];
                 //print_r($details);exit();
-                $emailRes = \Mail::to($result['email'])
-                    // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                // ->cc('maulik.kanhasoft@gmail.com')
-                // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+                // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
                 $objNotification = new Notification();
                 $notification = $objNotification->addNotification($result);
