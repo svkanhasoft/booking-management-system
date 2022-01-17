@@ -226,10 +226,10 @@ class BookingController extends Controller
             $objNotification = new Notification();
             foreach($bookingMatch as $key=>$val)
             {
-                $notification = $objNotification->addNotificationV2($val, 'shift_delete');
+                $objNotification->addNotificationV2($val, 'shift_delete');
             }
-            $bookingDelete = $booking->delete();
-            return response()->json(['status' => true, 'message' => 'Booking deleted!'], $this->successStatus);
+            $booking->delete();
+            return response()->json(['status' => true, 'message' => 'Booking deleted succssfully!'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 409);
         }

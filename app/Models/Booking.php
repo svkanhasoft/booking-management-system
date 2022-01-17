@@ -309,6 +309,9 @@ class Booking extends Model
             'users.address_line_2',
             'users.city',
             'users.role',
+            'users.device_id',
+            'users.platform',
+            'users.deleted_at as userDelete',
             'bookings.user_id as organization_id',
             'bookings.*',
             'shift_type.shift_type',
@@ -341,6 +344,7 @@ class Booking extends Model
         $subQuery->whereNull('signee_speciality.deleted_at');
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
+        $subQuery->whereNull('users.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
 
@@ -1025,7 +1029,7 @@ class Booking extends Model
             $subQuery->where('booking_matches.signee_status', 'Matching');
         } else if($bookingStatus == 'CONFIRMED' && $status == 'CONFIRMED'){
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
-        } else { 
+        } else {
             $subQuery->where('booking_matches.signee_status', $status);
             $subQuery->whereNull('signee_organization.deleted_at');
             $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
