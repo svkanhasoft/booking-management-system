@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Organization;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\Hospital;
+use App\Models\Booking;
 use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Trust;
@@ -75,11 +76,10 @@ class TrustsController extends Controller
         try {
             $requestData = $request->all();
             //print_r($requestData);exit;
-            if(Auth::user()->role == 'ORGANIZATION')
-            {
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['user_id'] = Auth::user()->id;
                 $requestData['created_by'] = Auth::user()->id;
-            }else{
+            } else {
                 $requestData['user_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
@@ -169,10 +169,9 @@ class TrustsController extends Controller
             //print_r($requestData);exit();
             $requestData['password'] = Hash::make($request->post('portal_password'));
             $trustResult = Trust::findOrFail($requestData['id']);
-            if(Auth::user()->role == 'ORGANIZATION')
-            {
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $trustResult->updated_by = Auth::user()->id;
-            }else{
+            } else {
                 $trustResult->updated_by = Auth::user()->id;
             }
             $trustResult->update($requestData);
@@ -226,13 +225,13 @@ class TrustsController extends Controller
         } else {
             $keyword = $request->get('search');
             // $query = Trust::where('user_id', $this->userId);
-            if(Auth::user()->role == 'ORGANIZATION'){
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
                 $staffIdArray = array_column($staff, 'id');
                 $staffIdArray[] = Auth::user()->id;
                 $query = Trust::whereIn('user_id', $staffIdArray);
-            }else{
-                $query = Trust::whereIn('user_id',array(Auth::user()->id,Auth::user()->parent_id));
+            } else {
+                $query = Trust::whereIn('user_id', array(Auth::user()->id, Auth::user()->parent_id));
             }
             if (!empty($keyword)) {
                 $query->Where('name',  'LIKE', "%$keyword%");
@@ -256,17 +255,22 @@ class TrustsController extends Controller
      */
     function destroy($trustId)
     {
-        $wardRes = Hospital::select('id')->where('trust_id', $trustId)->groupBy('id')->get()->toArray();
-        $hospitalId = array_column($wardRes, 'id');
-        Ward::where('hospital_id', '=', $hospitalId)->delete();
-        // Ward::where('trust_id', $trustId)->delete();
-        Traning::where('trust_id', $trustId)->delete();
-        Hospital::where('trust_id', $trustId)->delete();
-        $result = Trust::where('id', $trustId)->delete();
-        if ($result) {
-            return response()->json(['status' => true, 'message' => 'Trust Delete successfully.'], $this->successStatus);
+        $count = Booking::where('trust_id', $trustId)->where('date', '>', date('Y-m-d'))->count();
+        if ($count == 0) {
+            $wardRes = Hospital::select('id')->where('trust_id', $trustId)->groupBy('id')->get()->toArray();
+            $hospitalId = array_column($wardRes, 'id');
+            Ward::where('hospital_id', '=', $hospitalId)->delete();
+            // Ward::where('trust_id', $trustId)->delete();
+            Traning::where('trust_id', $trustId)->delete();
+            Hospital::where('trust_id', $trustId)->delete();
+            $result = Trust::where('id', $trustId)->delete();
+            if ($result) {
+                return response()->json(['status' => true, 'message' => 'Trust Delete successfully.'], $this->successStatus);
+            } else {
+                return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted.'], 409);
+            }
         } else {
-            return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted.'], 409);
+            return response()->json(['status' => false, 'message' => 'Sorry, Trust not deleted bacuase already assign to shift.'], 200);
         }
     }
 }

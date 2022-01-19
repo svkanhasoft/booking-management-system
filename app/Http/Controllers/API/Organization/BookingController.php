@@ -121,6 +121,11 @@ class BookingController extends Controller
         $booking = $objBooking->getBooking($id);
 
         if($booking){
+            if ($booking['date'] < date('Y-m-d')) {
+                $booking['is_past'] = true;
+            } else {
+                $booking['is_past'] = false;
+            }
             $obj = new BookingSpeciality();
             $booking['speciality'] = $obj->getBookingSpeciality($id);
             $booking['matching'] = $objBooking->getMatchByBooking($id,'Matching',$booking['status']);

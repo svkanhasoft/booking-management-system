@@ -570,7 +570,7 @@ class Booking extends Model
                 'data' => $result
             ];
 
-            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
+            $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($result);
