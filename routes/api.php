@@ -24,7 +24,7 @@ Route::post('/forgot', [SuperAdminController::class, 'forgot']);
 Route::post('/reset-password', [OrganizationController::class, 'resetPassword']);
 
 Route::prefix('superadmin')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'dashboard']);
+    Route::get('/dashboard/{year}', [DashboardController::class, 'dashboard']);
     Route::post('/signin', [SuperAdminController::class, 'signinV2']);
     Route::post('/otp-verify', [SuperAdminController::class, 'otpVerify']);
     Route::middleware(['auth:api'])->group(function () {

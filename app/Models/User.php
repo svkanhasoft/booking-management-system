@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
@@ -29,7 +30,7 @@ class User extends Authenticatable
     protected $fillable = [
         'user_id', 'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
         'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'password_change', 'password_change', 'last_login_date', 'is_deleted',
-        'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number','device_id','platform', 'created_by', 'updated_by'
+        'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number', 'device_id', 'platform', 'created_by', 'updated_by'
     ];
 
     /**
@@ -218,11 +219,11 @@ class User extends Authenticatable
     }
     public function stafdetails()
     {
-        return  $this->hasOneThrough(OrganizationUserDetail::class, Designation::class,'id','designation_id');
+        return  $this->hasOneThrough(OrganizationUserDetail::class, Designation::class, 'id', 'designation_id');
     }
     public function designation()
     {
-        return  $this->hasOneThrough(OrganizationUserDetail::class, Designation::class,'id','designation_id');
+        return  $this->hasOneThrough(OrganizationUserDetail::class, Designation::class, 'id', 'designation_id');
     }
     public function Organization()
     {
@@ -327,9 +328,9 @@ class User extends Authenticatable
         // $query->whereIn('signee_organization.organization_id', array(40 ,107));
         $query->where('users.role', "SIGNEE");
         //$query->where('users.parent_id', $userId);
-        if(Auth::user()->role == 'ORGANIZATION'){
+        if (Auth::user()->role == 'ORGANIZATION') {
             //echo "123";exit;
-            $staffList = SigneeOrganization::where('organization_id' , Auth::user()->id)->get()->toArray();
+            $staffList = SigneeOrganization::where('organization_id', Auth::user()->id)->get()->toArray();
             //print_r($staffList);exit;
 
             $staffIdArray = array_column($staffList, 'user_id');
@@ -340,8 +341,7 @@ class User extends Authenticatable
             //$signeeIdArray = array_column($signeeList, 'id');
             //print_r($signeeIdArray);exit;
             $query->whereIn('users.id', $staffIdArray);
-        }
-        else{
+        } else {
 
             $query->whereIn('signee_organization.organization_id', array(Auth::user()->id, Auth::user()->parent_id));
         }
@@ -362,7 +362,7 @@ class User extends Authenticatable
         $query->groupBy('signee_organization.user_id');
         // $query->groupBy('signee_speciality.user_id');
         //print_r($query->toSql());exit();
-         return $query->latest('users.created_at')->paginate($perPage);
+        return $query->latest('users.created_at')->paginate($perPage);
     }
 
     public function speciality()
@@ -422,10 +422,10 @@ class User extends Authenticatable
         $query->leftJoin('organizations',  'organizations.user_id', '=', 'users.parent_id');
         $query->leftJoin('signee_organization',  'signee_organization.user_id', '=', 'users.id');
 
-        if(Auth::user()->role == 'ORGANIZATION'){
+        if (Auth::user()->role == 'ORGANIZATION') {
             //print(Auth::user()->id);exit;
             $query->where('signee_organization.organization_id', Auth::user()->id);
-        }else{
+        } else {
             //print(Auth::user()->role);exit;
             $query->where('signee_organization.organization_id', Auth::user()->parent_id);
         }
@@ -450,10 +450,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query3->where('signee_id', $userId);
-        $query3->where('key', '=','passport');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query3->where('key', '=', 'passport');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query3->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query3->where('organization_id', Auth::user()->parent_id);
         }
         $userPassportDocs = $query3->get()->toArray();
@@ -464,10 +464,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query4->where('signee_id', $userId);
-        $query4->where('key', '=','immunisation_records');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query4->where('key', '=', 'immunisation_records');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query4->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query4->where('organization_id', Auth::user()->parent_id);
         }
         $userIRDocs = $query4->get()->toArray();
@@ -479,10 +479,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query5->where('signee_id', $userId);
-        $query5->where('key', '=','training_certificates');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query5->where('key', '=', 'training_certificates');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query5->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query5->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -494,10 +494,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query6->where('signee_id', $userId);
-        $query6->where('key', '=','nursing_certificates');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query6->where('key', '=', 'nursing_certificates');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query6->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query6->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -509,10 +509,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query7->where('signee_id', $userId);
-        $query7->where('key', '=','professional_indemnity_insurance');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query7->where('key', '=', 'professional_indemnity_insurance');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query7->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query7->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -524,10 +524,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query8->where('signee_id', $userId);
-        $query8->where('key', '=','nmc_statement');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query8->where('key', '=', 'nmc_statement');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query8->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query8->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -539,10 +539,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query9->where('signee_id', $userId);
-        $query9->where('key', '=','dbs_disclosure_certificate');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query9->where('key', '=', 'dbs_disclosure_certificate');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query9->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query9->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -554,10 +554,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query10->where('signee_id', $userId);
-        $query10->where('key', '=','cv');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query10->where('key', '=', 'cv');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query10->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query10->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -569,10 +569,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query11->where('signee_id', $userId);
-        $query11->where('key', '=','employment');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query11->where('key', '=', 'employment');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query11->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query11->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -584,10 +584,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query12->where('signee_id', $userId);
-        $query12->where('key', '=','address_proof');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query12->where('key', '=', 'address_proof');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query12->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query12->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -599,10 +599,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query13->where('signee_id', $userId);
-        $query13->where('key', '=','passport_photo');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query13->where('key', '=', 'passport_photo');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query13->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query13->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -614,10 +614,10 @@ class User extends Authenticatable
             'document_status'
         );
         $query14->where('signee_id', $userId);
-        $query14->where('key', '=','proof_of_ni');
-        if(Auth::user()->role == 'ORGANIZATION'){
+        $query14->where('key', '=', 'proof_of_ni');
+        if (Auth::user()->role == 'ORGANIZATION') {
             $query14->where('organization_id', Auth::user()->id);
-        }else{
+        } else {
             $query14->where('organization_id', Auth::user()->parent_id);
         }
 
@@ -628,21 +628,21 @@ class User extends Authenticatable
 
         $result = [];
         $result = $userDetais;
-       // print_r( explode (',',$userSpec->speciality_id));exit;
+        // print_r( explode (',',$userSpec->speciality_id));exit;
         $userSpec->speciality_id =  array_map('intval', explode(',', $userSpec->speciality_id));
         $result->speciality = $userSpec;
-        $result->documents = array('passport'=>$userPassportDocs);
-        $result->documents += array('immunisation_records'=>$userIRDocs);
-        $result->documents += array('training_certificates'=>$userTCDocs);
-        $result->documents += array('nursing_certificates'=>$userNCDocs);
-        $result->documents += array('professional_indemnity_insurance'=>$userPIIDocs);
-        $result->documents += array('nmc_statement'=>$userNMCDocs);
-        $result->documents += array('dbs_disclosure_certificate'=>$userDDCDocs);
-        $result->documents += array('cv'=>$userCVDocs);
-        $result->documents += array('employment'=>$userEmpDocs);
-        $result->documents += array('address_proof'=>$userAPDocs);
-        $result->documents += array('passport_photo'=>$userPPDocs);
-        $result->documents += array('proof_of_ni'=>$userNIDocs);
+        $result->documents = array('passport' => $userPassportDocs);
+        $result->documents += array('immunisation_records' => $userIRDocs);
+        $result->documents += array('training_certificates' => $userTCDocs);
+        $result->documents += array('nursing_certificates' => $userNCDocs);
+        $result->documents += array('professional_indemnity_insurance' => $userPIIDocs);
+        $result->documents += array('nmc_statement' => $userNMCDocs);
+        $result->documents += array('dbs_disclosure_certificate' => $userDDCDocs);
+        $result->documents += array('cv' => $userCVDocs);
+        $result->documents += array('employment' => $userEmpDocs);
+        $result->documents += array('address_proof' => $userAPDocs);
+        $result->documents += array('passport_photo' => $userPPDocs);
+        $result->documents += array('proof_of_ni' => $userNIDocs);
         $result->preferences = $signeePref;
         return $result;
     }
@@ -652,35 +652,77 @@ class User extends Authenticatable
         // return  $this->hasManyThrough(SigneeOrganization::class, User::class );
         // return  $this->hasManyThrough(SigneeOrganization::class, User::class,'id','user_id','id');
 
-        return  $this->hasManyThrough( User::class,SigneeOrganization::class,'user_id','id');  // Working
+        return  $this->hasManyThrough(User::class, SigneeOrganization::class, 'user_id', 'id');  // Working
 
         // return  $this->belongsToMany( User::class,SigneeOrganization::class,'user_id','id');  // Working
 
         // return  $this->morphMany( SigneeOrganization::class,'specialitys','user_id');
 
         // return $this->hasMany(SigneeOrganization::class,'user_id');
-        return $this->hasMany(SigneeSpecialitie::class,'user_id');
+        return $this->hasMany(SigneeSpecialitie::class, 'user_id');
     }
 
     public function specialitys($id)
     {
-        return  Speciality::where(['user_id',$id])->get()->toArray();
+        return  Speciality::where(['user_id', $id])->get()->toArray();
     }
 
 
-    public function getDashboard($dayName)
+    public function getDashboard($dayName,$year = '')
     {
         $today = Carbon::now()->format('Y-m-d');
-        if($dayName == 'today'){
+
+        $month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $usermcount =   $userArr =  [];
+
+        if ($dayName == 'today') {
             return  User::where('role', 'ORGANIZATION')->where('created_at', '=', $today)->count();
-            // return  User::where('created_at', '=', $today)->get()->toArray();
-        }else if($dayName == 'week'){
+        } else if ($dayName == 'week') {
             return  User::where('role', 'ORGANIZATION')->where('created_at', '>=', Carbon::now()->subDays(7)->format('Y-m-d'))->count();
-        }else if($dayName == 'month'){
+        } else if ($dayName == 'month') {
             return  User::where('role', 'ORGANIZATION')->where('created_at', '>=', Carbon::now()->subMonth(1)->format('Y-m-d'))->count();
-        }else if($dayName == 'year'){
+        } else if ($dayName == 'year') {
             return  User::where('role', 'ORGANIZATION')->whereYear('created_at', date('Y'))->count();
+        } else if ($dayName == 'block_user') {
+            return  User::where('role', 'ORGANIZATION')->where('status', 'Inactive')->count();
+        } else if ($dayName == 'total_user') {
+            return  User::where('role', 'ORGANIZATION')->count();
+        } else if ($dayName == 'monthly_details') {
+            $users = User::select('id', 'created_at')->whereYear('created_at', $year)->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
+            // $users = User::select('id', 'created_at')->whereYear('created_at', date('Y'))->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
+                return Carbon::parse($date->created_at)->format('m');
+            });
+            $userArr[] = array("Element", "Monthly User Details", array( 'role' => "style"));
+            foreach ($users as $key => $value) {
+                $usermcount[(int)$key] = count($value);
+            }
+            for ($i = 1; $i <= 12; $i++) {
+                $userArr[] = array($month[$i - 1], (!empty($usermcount[$i])) ? $usermcount[$i] : 0,$this->bgcolor());
+                // $userArr[] = array('label' => $month[$i - 1], 'y' => (!empty($usermcount[$i])) ? $usermcount[$i] : 0);
+            }
+            return $userArr;
+        } else if ($dayName == 'yearly_details') {
+            $users = User::select('id', 'created_at')->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
+                return Carbon::parse($date->created_at)->format('Y');
+            });
+            $userArr[] = array("Element", "Yearly User Details", array( 'role' => "style"));
+            foreach ($users as $key => $value) {
+                $usermcount[(int)$key] = count($value);
+            }
+            foreach ($usermcount as $key => $value) {
+                $userArr[] = array("$key", $value,$this->bgcolor());
+                // $userArr[] = array('label' => $key, 'y' => $value);
+            }
+            return $userArr;
         }
+    }
+
+    public function bgcolor(){
+        // return "color: #" . dechex(rand(0,10000000));
+        $res= array("color: #bc8c99","color: #9261be","color: #55fbf8","color: #c54094","color: #6b3223","color: #2b0b95","color: #74952e","color: #1f5ada","color: #deadd0","color: #2a4453", "color: #e6d21a","color: #1d3151","color: #cdd53c", "color: #3da117","color: #adf9e9");
+        $key =  array_rand($res);
+        return $res[$key];
+        // return "color: #" . dechex(rand(0x000000, 0xFFFFFF));
     }
 
 }
