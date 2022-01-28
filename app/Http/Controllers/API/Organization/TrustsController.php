@@ -41,19 +41,19 @@ class TrustsController extends Controller
     function add(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "name" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             // "code" => 'required',
-            "code" => 'numeric|unique:trusts,code',
+            "code" => 'required|unique:trusts,code',
             "preference_invoice_method" => 'required',
             "email_address" => 'required|email',
             "address_line_1" => 'required',
-            "city" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "city" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             "post_code" => 'required|numeric|regex:/^\d{6}$/',
             "trust_portal_url" => 'required|url',
             "portal_email" => 'required|email',
             "portal_password" => 'required',
-            "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-            "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "first_name" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
+            "last_name" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             "contact_email_address" => 'required|email',
             "phone_number" => 'required|numeric|regex:/^\d{10}$/',
             'hospital' => 'required:hospital,[
@@ -62,12 +62,12 @@ class TrustsController extends Controller
             'training' => 'required:training,[]',
             // 'ward' => 'required:ward,[]',
 
-            'hospital.*.hospital_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'hospital.*.hospital_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             'hospital.*.ward' => 'required',
-            'hospital.*.ward.*.ward_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'hospital.*.ward.*.ward_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             'hospital.*.ward.*.ward_type_id' => 'required',
             'hospital.*.ward.*.ward_number' => 'required|numeric',
-            'training.*.training_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'training.*.training_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
@@ -132,19 +132,19 @@ class TrustsController extends Controller
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             "id" => 'required',
-            "name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "name" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             //"code" => 'required',
-            "code" => 'numeric|unique:trusts,code,' . $requestData['id'] . 'NULL,id,user_id,' . $this->userId,
+            "code" => 'required|unique:trusts,code,' . $requestData['id'] . 'NULL,id,user_id,' . $this->userId,
             "preference_invoice_method" => 'required',
             "email_address" => 'required|email',
             "address_line_1" => 'required',
-            "city" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "city" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             "post_code" => 'required|numeric|regex:/^\d{6}$/',
             "trust_portal_url" => 'required|url',
             "portal_email" => 'required|email',
             "portal_password" => 'required',
-            "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-            "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            "first_name" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
+            "last_name" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             "contact_email_address" => 'required|email',
             "phone_number" => 'required|numeric|regex:/^\d{10}$/',
             'hospital' => 'required:hospital,[
@@ -153,20 +153,29 @@ class TrustsController extends Controller
             'training' => 'required:training,[]',
             //'ward' => 'required:ward,[]',
 
-            'hospital.*.hospital_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'hospital.*.hospital_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             'hospital.*.ward' => 'required',
-            'hospital.*.ward.*.ward_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'hospital.*.ward.*.ward_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             'hospital.*.ward.*.ward_type_id' => 'required',
             'hospital.*.ward.*.ward_number' => 'required|numeric',
-            'training.*.training_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+            'training.*.training_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            $requestData = $request->all();
-            //print_r($requestData);exit();
+
+            $hospitalidArray = array_column($requestData['hospital'], null,  'id');
+            $hospitals = Hospital::select('id')->where('trust_id', '=', $requestData['id'])->whereNotIn('id', $hospitalidArray)->get()->toArray();
+            $hospital = array_map(function ($e) {
+                return is_object($e) ? $e->id : $e['id'];
+            }, $hospitals);
+            $bookingCount = Booking::whereIn('hospital_id', $hospital)->where('date', '>=', date('Y-m-d'))->count();
+            if($bookingCount > 0){
+                return response()->json(['status' => false, 'message' => "Hospital should no deleted because already assign to shift"], 200);
+            }
+
             $requestData['password'] = Hash::make($request->post('portal_password'));
             $trustResult = Trust::findOrFail($requestData['id']);
             if (Auth::user()->role == 'ORGANIZATION') {
@@ -246,6 +255,30 @@ class TrustsController extends Controller
         }
     }
 
+    function getTrustDetailV2(Request $request)
+    {
+        $keyword = $request->get('search');
+        // $query = Trust::where('user_id', $this->userId);
+        if (Auth::user()->role == 'ORGANIZATION') {
+            $staff = User::select('id')->where('parent_id', $this->userId)->get()->toArray();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            $query = Trust::whereIn('user_id', $staffIdArray);
+        } else {
+            $query = Trust::whereIn('user_id', array(Auth::user()->id, Auth::user()->parent_id));
+        }
+        if (!empty($keyword)) {
+            $query->Where('name',  'LIKE', "%$keyword%");
+        }
+        $result = $query->get();
+        if (count($result) > 0) {
+            return response()->json(['status' => true, 'message' => 'Trust list get successfully.', 'data' => $result], $this->successStatus);
+        } else {
+            return response()->json(['status' => false, 'message' => 'Sorry, Trust not available.'], 404);
+        }
+    }
+
+
     /**
      * Delete trust.
      *
@@ -255,7 +288,7 @@ class TrustsController extends Controller
      */
     function destroy($trustId)
     {
-        $count = Booking::where('trust_id', $trustId)->where('date', '>', date('Y-m-d'))->count();
+        $count = Booking::where('trust_id', $trustId)->where('date', '>=', date('Y-m-d'))->count();
         if ($count == 0) {
             $wardRes = Hospital::select('id')->where('trust_id', $trustId)->groupBy('id')->get()->toArray();
             $hospitalId = array_column($wardRes, 'id');

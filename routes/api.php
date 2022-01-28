@@ -74,6 +74,7 @@ Route::prefix('organization')->group(function () {
         Route::post('/add-trust', [TrustsController::class, 'add']);
         Route::post('/update-trust', [TrustsController::class, 'update']);
         Route::get('/get-trust/{id?}', [TrustsController::class, 'getTrustDetail']);
+        Route::get('/get-trusts', [TrustsController::class, 'getTrustDetailV2']);
         Route::delete('/delete-trust/{id}', [TrustsController::class, 'destroy']);
         Route::post('/add-shift', [OrganizationShiftController::class, 'create']);
         Route::post('/edit-shift', [OrganizationShiftController::class, 'edit']);

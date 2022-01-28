@@ -426,8 +426,7 @@ class UserController extends Controller
         $a = new DateTime($requestData['date_of_birth']);
         $b = new Datetime(date('Y-m-d'));
         $interval = $b->diff($a);
-        if($interval->y < 18)
-        {
+        if ($interval->y < 18) {
             return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
         }
 
@@ -435,10 +434,9 @@ class UserController extends Controller
             $requestData['password'] = Hash::make($request->post('password'));
             $requestData['parent_id'] = $this->userId;
             $requestData['role'] = 'SIGNEE';
-            if(Auth::user()->role == 'ORGANIZATION')
-            {
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['created_by'] = Auth::user()->id;
-            }else{
+            } else {
                 $requestData['parent_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
@@ -511,10 +509,9 @@ class UserController extends Controller
                 $requestData['password'] = Hash::make($request->post('password'));
             }
             $signee = User::findOrFail($requestData['id']);
-            if(Auth::user()->role == 'ORGANIZATION')
-            {
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $signee->updated_by = Auth::user()->id;
-            }else{
+            } else {
                 $signee->updated_by = Auth::user()->id;
             }
             //print_r($signee->parent_id);exit();
@@ -545,7 +542,7 @@ class UserController extends Controller
     {
         try {
             $user = User::find($id);
-            $deleteUser = User::where('id',$id)->delete();
+            $deleteUser = User::where('id', $id)->delete();
             $deleteSigneeOrg = SigneeOrganization::where(['user_id' => $id, 'organization_id' => $user['parent_id']])->delete();
             $deleteSigneeDetail = SigneesDetail::where(['user_id' => $id])->delete();
             $deleteSigneeSpec = SigneeSpecialitie::where(['user_id' => $id]);
@@ -696,7 +693,7 @@ class UserController extends Controller
             $objBooking = new Booking();
             //dd(Auth::user()->role);
             if ($requestData['status'] == 'CANCEL' || $requestData['status'] == 'DECLINE' || $requestData['status'] == 'PENDING') {
-               //echo Auth::user()->role;exit;
+                //echo Auth::user()->role;exit;
                 //$signee = $objBooking->getMetchByBookingId($requestData['booking_id']);
                 if (Auth::user()->role == 'SIGNEE') {
                     //dd(Auth::user()->role);
@@ -706,11 +703,16 @@ class UserController extends Controller
                     return $this->cancelShiftBYStaffOrOrg($requestData);
                 }
             } elseif ($requestData['status'] == 'ACCEPT') {
-                //echo "123";exit;
+                // $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
+                // if (count($res) > 0) {
+                //     return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
+                // }
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
-                //echo '123';exit;
-                // echo Auth::user()->role;exit;
+                $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
+                if (count($res) > 0) {
+                    return response()->json(['message' => 'Sorry, Shift already booked with same date for this candidate.', 'status' => false], 200);
+                }
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->signee_booking_status = $requestData['status'];
                 $objBookingMatch->save();
@@ -719,17 +721,15 @@ class UserController extends Controller
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
 
                 $objNotification = new Notification();
-                if(Auth::user()->role == "SIGNEE")
-                {
+                if (Auth::user()->role == "SIGNEE") {
                     $notification = $objNotification->addNotificationV2($matchSignee, 'candidate_accept');
                     if ($notification) {
                         return response()->json(['status' => true, 'message' => 'Candidate successfully accepted the shift'], $this->successStatus);
                     } else {
-                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
+                        return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 200);
                     }
-                } else if(Auth::user()->role == "ORGANIZATION" || Auth::user()->role == "STAFF"){
-                    if($matchSignee->signee_status == 'Interested')
-                    {
+                } else if (Auth::user()->role == "ORGANIZATION" || Auth::user()->role == "STAFF") {
+                    if ($matchSignee->signee_status == 'Interested') {
                         $notification = $objNotification->addNotificationV2($matchSignee, 'org_accept');
                         return response()->json(['status' => true, 'message' => 'Admin successfully accepted shift in which you applied'], $this->successStatus);
                     } else {
@@ -746,14 +746,12 @@ class UserController extends Controller
                 }
             } else if ($requestData['status'] == 'OFFER') {
                 return $this->offerToSignee($requestData);
-            }else if ($requestData['status'] == 'INVITE') {
+            } else if ($requestData['status'] == 'INVITE') {
                 return $this->offerToSignee($requestData);
-            }else if ($requestData['status'] == 'REJECTED') {
-                if(Auth::user()->role == "STAFF" || Auth::user()->role == "ORGANIZATION")
-                {
+            } else if ($requestData['status'] == 'REJECTED') {
+                if (Auth::user()->role == "STAFF" || Auth::user()->role == "ORGANIZATION") {
                     $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-                    if($matchSignee->signee_status == 'Interested')
-                    {
+                    if ($matchSignee->signee_status == 'Interested') {
                         return $this->rejectedToSignee($requestData);
                     } else {
                         return $this->rejectedToInvitedSignee($requestData);
@@ -763,6 +761,18 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
+    }
+
+    public function checkShiftBooking($booking_id, $signee_id)
+    {
+        $bookRes = Booking::find($booking_id);
+        $count = BookingMatch::where([
+            'signee_id' => $signee_id,
+            'signee_booking_status' => 'CONFIRMED', 'shift_id' => $bookRes['shift_id'],
+            // 'booking_id' => $requestData['booking_id'],
+            'booking_date' => $bookRes['date']
+        ])->get();
+        return $count;
     }
 
     public function acceptShiftBySignee($requestData)
@@ -870,8 +880,8 @@ class UserController extends Controller
                 $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
                     'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                 ]);
-            $signees = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-            //$objBooking->sendBookingCancelByStaffEmail($signees);
+                $signees = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
+                //$objBooking->sendBookingCancelByStaffEmail($signees);
                 // $booking['status'] = $requestData['status'];
                 // $booking->update();
             }
@@ -935,7 +945,7 @@ class UserController extends Controller
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
             if ($objBookingMatch) {
                 $objNotification = new Notification();
-                $notification = $objNotification->addNotificationV2($signeeMatch,'REJECTED');
+                $notification = $objNotification->addNotificationV2($signeeMatch, 'REJECTED');
                 return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 409);
@@ -956,11 +966,10 @@ class UserController extends Controller
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($postData['booking_id'], $postData['signee_id']);
             if ($objBookingMatch) {
                 $objNotification = new Notification();
-                if(Auth::user()->role == "ORGANIZATION")
-                {
-                    $notification = $objNotification->addNotificationV2($signeeMatch,'invited_signee_rejected_byAdmin');
+                if (Auth::user()->role == "ORGANIZATION") {
+                    $notification = $objNotification->addNotificationV2($signeeMatch, 'invited_signee_rejected_byAdmin');
                 } else {
-                    $notification = $objNotification->addNotificationV2($signeeMatch,'invited_signee_rejected_byStaff');
+                    $notification = $objNotification->addNotificationV2($signeeMatch, 'invited_signee_rejected_byStaff');
                 }
 
                 return response()->json(['status' => true, 'message' => 'Candidate successfully rejected from shift'], $this->successStatus);
@@ -993,11 +1002,11 @@ class UserController extends Controller
         try {
             // echo 'dddd';exit;
             $objNotification = new Notification();
-            $notification = $objNotification->addNotificationV2($requestData,'DOCS',$requestData['key']);
+            $notification = $objNotification->addNotificationV2($requestData, 'DOCS', $requestData['key']);
 
             $signeeDocs = SigneeDocument::where(['signee_id' => $requestData['signee_id'], 'organization_id' => $requestData['organization_id'], 'key' => $requestData['key']])->get()->toArray();
             $idArrray = array_column($signeeDocs, 'id');
-            $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status'], 'updated_by'=>Auth::user()->id));
+            $update = SigneeDocument::whereIn('id', $idArrray)->update(array('document_status' => $requestData['document_status'], 'updated_by' => Auth::user()->id));
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Document  status updated successfully'], $this->successStatus);
             } else {
@@ -1105,13 +1114,13 @@ class UserController extends Controller
                 ]);
                 $requestData['organization_id'] = (Auth::user()->role == "ORGANIZATION") ? Auth::user()->id : Auth::user()->parent_id;
                 $notificationObj = new Notification();
-                $notificationObj->addNotificationV2($requestData,'payment');
+                $notificationObj->addNotificationV2($requestData, 'payment');
                 if ($bookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Payment status changed successfully'], $this->successStatus);
                 } else {
                     return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
                 }
-            }else{
+            } else {
                 return response()->json(['message' => 'Sorry, something went wrong.', 'status' => false], 400);
             }
         } catch (\Exception $e) {
@@ -1124,40 +1133,38 @@ class UserController extends Controller
 
         $perPage = Config::get('constants.pagination.perPage');
         //print_r($showing);exit;
-        try{
+        try {
             $showing = $request->get('showing');
             $query = Notification::select('*');
 
-            if(Auth::user()->role == "SIGNEE")
-            {
+            if (Auth::user()->role == "SIGNEE") {
                 $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
-                $query->whereDate('created_at','>=', Carbon::now()->subDays(10));
+                $query->whereDate('created_at', '>=', Carbon::now()->subDays(10));
                 // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             } else {
                 $query->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
-                $query->whereDate('created_at', '>=',Carbon::now()->subDays(10));
+                $query->whereDate('created_at', '>=', Carbon::now()->subDays(10));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
             // $unread = $query->where('is_read',0)->count();
-            $notification = $query->orderBy('id','desc')->paginate($perPage);
+            $notification = $query->orderBy('id', 'desc')->paginate($perPage);
 
             $query2 = Notification::select('*');
-            if(Auth::user()->role == "SIGNEE")
-            {
+            if (Auth::user()->role == "SIGNEE") {
                 $query2->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => "SIGNEE"]);
-                $query2->whereDate('created_at','>=', Carbon::now()->subDays(10));
+                $query2->whereDate('created_at', '>=', Carbon::now()->subDays(10));
                 // $query->Where(['signee_id' => Auth::user()->id, 'organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             } else {
                 $query2->Where(['organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id), 'is_showing_for' => 'ORGANIZATION']);
-                $query2->whereDate('created_at', '>=',Carbon::now()->subDays(10));
+                $query2->whereDate('created_at', '>=', Carbon::now()->subDays(10));
                 // $query->Where(['organization_id' => Auth::user()->parent_id, 'is_showing_for' => $showing]);
             }
-            $unread = $query2->where('is_read',0)->count();
+            $unread = $query2->where('is_read', 0)->count();
             // echo $notification['count'];exit;
             if (!empty($notification)) {
-                return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification,'unread'=>$unread], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Notifications get Successfully', 'data' => $notification, 'unread' => $unread], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Notification not available!', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, Notification not available!', 'status' => false], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -1173,36 +1180,34 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        try{
+        try {
             $requestData = $request->all();
 
             $requestData['organization_id'] = $this->userId;
-            if($requestData['notification_id'] == 'All')
-            {
-                if(Auth::user()->role !== 'SIGNEE'){
-                    Notification::where(['organization_id' => Auth::user()->id, 'is_showing_for'=> 'ORGANIZATION'])->update([
-                        'is_sent'=>  1,
-                        'is_read'=>  1,
+            if ($requestData['notification_id'] == 'All') {
+                if (Auth::user()->role !== 'SIGNEE') {
+                    Notification::where(['organization_id' => Auth::user()->id, 'is_showing_for' => 'ORGANIZATION'])->update([
+                        'is_sent' =>  1,
+                        'is_read' =>  1,
                     ]);
-                }else{
+                } else {
                     Notification::where(['signee_id' => $this->userId, 'is_showing_for' => 'SIGNEE', 'organization_id' => (Auth::user()->parent_id == null ? Auth::user()->id : Auth::user()->parent_id)])->update([
-                        'is_sent'=>  1,
-                        'is_read'=>  1,
+                        'is_sent' =>  1,
+                        'is_read' =>  1,
                     ]);
                 }
 
                 return response()->json(['status' => true, 'message' => 'Notifications clear successfully'], $this->successStatus);
-            } else{
+            } else {
                 $notification = Notification::where('id', $requestData['notification_id'])->first();
                 // $res = Notification::find($notification['id']);
                 $notification->is_sent = 1;
                 $notification->is_read = 1;
                 $update = $notification->update();
-                if($update)
-                {
+                if ($update) {
                     return response()->json(['status' => true, 'message' => 'Notifications Update Successfully'], $this->successStatus);
-                }else {
-                    return response()->json(['message' => 'Sorry, Notification Not Updated!', 'status' => false], 404);
+                } else {
+                    return response()->json(['message' => 'Sorry, Notification Not Updated!', 'status' => false], 200);
                 }
             }
         } catch (\Exception $e) {
@@ -1212,34 +1217,30 @@ class UserController extends Controller
 
     public function getAppliedShift()
     {
-        try{
+        try {
             $booking = new Booking();
             $getAppliedShift = $booking->getAppliedShift();
-            if($getAppliedShift)
-            {
-                return response()->json(['status' => true, 'message' => 'Applied Shifts Get Successfully', 'data'=>$getAppliedShift], $this->successStatus);
-            } else{
-                return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
+            if ($getAppliedShift) {
+                return response()->json(['status' => true, 'message' => 'Applied Shifts Get Successfully', 'data' => $getAppliedShift], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 200);
             }
-        } catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
 
     public function getCompletedShift()
     {
-        try{
+        try {
             $booking = new Booking();
             $completedShifts = $booking->getCompletedShift();
-            if($completedShifts)
-            {
-                return response()->json(['status' => true, 'message' => 'Completed Shifts Get Successfully', 'data'=>$completedShifts], $this->successStatus);
-            } else{
+            if ($completedShifts) {
+                return response()->json(['status' => true, 'message' => 'Completed Shifts Get Successfully', 'data' => $completedShifts], $this->successStatus);
+            } else {
                 return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
             }
-        } catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }

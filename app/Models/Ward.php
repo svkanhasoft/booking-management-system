@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Booking;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
@@ -49,7 +51,21 @@ class Ward extends Model
         $wardidArray = array_column($postData['ward'], 'id');
 
         if (!empty($postData['ward'])) {
-            $objBookingMatchDelete = Ward::where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
+            /** Below code  is used for delete ward and check in booking table.
+             * if record are available and date id >= today then this record are not deleted.
+             * Before change anything on this cade discuss with me */
+            $wardArray = Ward::where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->get()->toArray();
+            $wards = array_map(function ($e) {
+                return is_object($e) ? $e->id : $e['id'];
+            }, $wardArray);
+            $bookingWard = Booking::whereIn('ward_id', $wards)->where('date', '>=', date('Y-m-d'))->get()->toArray();
+            $deleteWard = array_map(function ($e) {
+                return is_object($e) ? $e->ward_id : $e['ward_id'];
+            }, $bookingWard);
+            $diffArray =   array_diff($wards, $deleteWard);
+            $objBookingMatchDelete = Ward::where('hospital_id', '=', $hospitalId)->whereIn('id', $diffArray)->delete();
+
+            // $objBookingMatchDelete = Ward::where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
             foreach ($postData['ward'] as $keys => $values) {
                 if (isset($values['ward_name']) && !empty($values['ward_number'])) {
                     if (isset($values['id']) && $values['id'] > 0) {
@@ -71,8 +87,7 @@ class Ward extends Model
 
     public function hospital()
     {
-        return  $this->belongsToMany( Hospital::class , 'hospital_id');
+        return  $this->belongsToMany(Hospital::class, 'hospital_id');
         // return $this->hasMany(Ward::class , 'hospital_id');
     }
- 
 }

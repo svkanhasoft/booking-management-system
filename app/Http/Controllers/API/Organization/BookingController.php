@@ -228,12 +228,12 @@ class BookingController extends Controller
         $booking = Booking::find($id);
         $bookingMatch = $bookingObj->getMetchByBookingId($booking->id);
         if ($booking) {
-            $objNotification = new Notification();
-            foreach($bookingMatch as $key=>$val)
-            {
-                $objNotification->addNotificationV2($val, 'shift_delete');
-            }
-            $booking->delete();
+            // $objNotification = new Notification();
+            // foreach($bookingMatch as $key=>$val)
+            // {
+            //     $objNotification->addNotificationV2($val, 'shift_delete');
+            // }
+            // $booking->delete();
             return response()->json(['status' => true, 'message' => 'Booking deleted succssfully!'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 409);
@@ -255,10 +255,10 @@ class BookingController extends Controller
             if (count($booking) > 0) {
                 return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 200);
         }
     }
 
@@ -283,7 +283,7 @@ class BookingController extends Controller
             if ($bookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -308,7 +308,7 @@ class BookingController extends Controller
             if ($bookingMatch) {
                 return response()->json(['status' => true, 'message' => 'Booking Successfully get by status', 'data' => $booking], $this->successStatus);
             } else {
-                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
@@ -354,7 +354,7 @@ class BookingController extends Controller
         if ($booking) {
             return response()->json(['status' => true, 'message' => 'Booking get successfully', 'data' => $booking], $this->successStatus);
         } else {
-            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 404);
+            return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         }
 
     }
