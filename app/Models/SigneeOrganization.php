@@ -28,7 +28,7 @@ class SigneeOrganization extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'status','organization_id'];
+    protected $fillable = ['user_id', 'status','organization_id','profile_status'];
 
     function addOrganisation($postData, $userId, $isDelete = false)
     {

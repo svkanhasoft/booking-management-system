@@ -658,9 +658,15 @@ class UserController extends Controller
             // $statusChanged = User::where(['id' => $requestData['signee_id'], 'parent_id'=> Auth::user()->id])->update([
             //     'status' => $requestData['status']
             // ]);
+
             $data = User::findOrFail($requestData['signee_id']);
             $data->status = $requestData['status'];
             $res = $data->save();
+
+            SigneeOrganization::where(['user_id' => $requestData['signee_id'], 'organization_id' => (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id: Auth::user()->parent_id])->update([
+                'profile_status' =>  $requestData['status']
+            ]);
+
             // $objNotification = new Notification();
             // $notification = $objNotification->addNotificationV2($requestData,'profile_status');
             if (!empty($res)) {

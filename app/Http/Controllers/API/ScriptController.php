@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
 use PDF;
 use App;
 use App\Models\Booking;
-use App\Models\Notification;
+use App\Models\SigneeOrganization;
 
 class ScriptController extends Controller
 {
@@ -39,24 +39,33 @@ class ScriptController extends Controller
      */
     function statusCron()
     {
-        \Log::info(" Run Status Inactive cronjob ");
-        $userObj = User::select('id', 'email', 'first_name', 'last_login_date')->where('status', 'Active')->where('role', 'SIGNEE')->get()->toArray();
-        foreach ($userObj as $key => $value) {
-            if ($value['last_login_date'] != '' && $value['last_login_date'] != null) {
-                $date1 = new DateTime(date('Y-m-d H:i:s'));
-                $date2 = new DateTime($value['last_login_date']);
-                $interval = $date1->diff($date2);
-                if ($interval->y > 0) {
-                    $userUpdateObj = User::find($value['id']);
-                    $userUpdateObj->status = 'Dormant';
-                    $userUpdateObj->save();
-                } else if ($interval->m > 5) {
-                    $userUpdateObj = User::find($value['id']);
-                    $userUpdateObj->status = 'Inactive';
-                    $userUpdateObj->save();
-                }
-            }
+
+        $result = User::select('id', 'email', 'parent_id', 'first_name', 'status', 'last_login_date')->where('status', '!=', 'Active')->where('role', 'SIGNEE')->get()->toArray();
+        foreach ($result as $key => $value) {
+            SigneeOrganization::where(['user_id' => $value['id'], 'organization_id' => $value['parent_id']])->update([
+                'profile_status' =>  $value['status']
+            ]);
         }
+
+
+        // \Log::info(" Run Status Inactive cronjob ");
+        // $userObj = User::select('id', 'email', 'first_name', 'last_login_date')->where('status', 'Active')->where('role', 'SIGNEE')->get()->toArray();
+        // foreach ($userObj as $key => $value) {
+        //     if ($value['last_login_date'] != '' && $value['last_login_date'] != null) {
+        //         $date1 = new DateTime(date('Y-m-d H:i:s'));
+        //         $date2 = new DateTime($value['last_login_date']);
+        //         $interval = $date1->diff($date2);
+        //         if ($interval->y > 0) {
+        //             $userUpdateObj = User::find($value['id']);
+        //             $userUpdateObj->status = 'Dormant';
+        //             $userUpdateObj->save();
+        //         } else if ($interval->m > 5) {
+        //             $userUpdateObj = User::find($value['id']);
+        //             $userUpdateObj->status = 'Inactive';
+        //             $userUpdateObj->save();
+        //         }
+        //     }
+        // }
     }
 
     function getBooking()
