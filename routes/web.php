@@ -22,3 +22,4 @@ Route::get('/status-cron', [App\Http\Controllers\API\ScriptController::class, 's
 Route::get('/booking-notification-cron', [App\Http\Controllers\API\ScriptController::class, 'getBooking']);
 Route::get('/getData', [App\Http\Controllers\API\TestController::class, 'getData']);
 Route::get('/getOrg', [App\Http\Controllers\API\TestController::class, 'getOrg']);
+Route::get('/send-email', [App\Http\Controllers\API\TestController::class, 'sendEmail']);
