@@ -105,9 +105,9 @@ class TestController extends Controller
 
     public function sendEmail()
     {
-        echo "fsdfsd";
+        echo "test" . date('Y-m-d h:i:s');
 
-        $user = User::where('status', 'Active')->where('email', 'testshailesh1@gmail.com')->first();
+        $user = User::where('status', 'Active')->first();
         // print_r($user);exit;
         if (isset($user) && !empty($user)) {
             $details = [
@@ -117,7 +117,10 @@ class TestController extends Controller
                 'subject' => 'Booking Management System: Forgot Password',
                 'data' => $user,
             ];
-            $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
+            echo "<br> Send Email Code  ";
+            $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')->send(new \App\Mail\SendSmtpMail($details));
+            // $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
+            echo "<br> Result ";
             print_r($emailRes);
             return true;
         }
