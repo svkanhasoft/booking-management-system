@@ -1083,7 +1083,7 @@ class UserController extends Controller
         try {
             $objBooking = new Booking();
             $result = $objBooking->getSigneeForInvite($requestData);
-            //$res = $objBooking->sendBookingInvitationMail($result);
+            $res = $objBooking->sendBookingInvitationMail($result);
             if ($res) {
                 BookingMatch::where('booking_id', $requestData['booking_id'])->whereIn('signee_id', $requestData['signee_id'])->update(['signee_booking_status' => 'OFFER']);
                 return response()->json(['status' => true, 'message' => 'Candidate offer send successfully.'], $this->successStatus);
