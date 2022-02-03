@@ -67,16 +67,14 @@ class BookingController extends Controller
 
             $shift = OrganizationShift::where('id', $requestData['shift_id'])->first();
             //print_r($shift);exit();
-           // print_r($requestData);exit();
-            if($requestData['date'] < date('Y-m-d'))
-            {
+            // print_r($requestData);exit();
+            if ($requestData['date'] < date('Y-m-d')) {
                 return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             }
-            if(Auth::user()->role == 'ORGANIZATION')
-            {
+            if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['user_id'] = Auth::user()->id;
                 $requestData['created_by'] = Auth::user()->id;
-            } else{
+            } else {
                 $requestData['staff_id'] = Auth::user()->id;
                 $requestData['user_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
@@ -119,8 +117,9 @@ class BookingController extends Controller
     {
         $objBooking = new Booking();
         $booking = $objBooking->getBooking($id);
+        $orgId = (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id;
 
-        if($booking){
+        if ($booking && $orgId == $booking['user_id']) {
             if ($booking['date'] < date('Y-m-d')) {
                 $booking['is_past'] = true;
             } else {
@@ -128,16 +127,19 @@ class BookingController extends Controller
             }
             $obj = new BookingSpeciality();
             $booking['speciality'] = $obj->getBookingSpeciality($id);
-            $booking['matching'] = $objBooking->getMatchByBooking($id,'Matching',$booking['status']);
-            $booking['interested'] = $objBooking->getMatchByBooking($id,'Interested',$booking['status']);
-            $booking['confirmed'] = $objBooking->getMatchByBooking($id,'CONFIRMED',$booking['status']);
-        }
-        // $shift['speciality'] = BookingSpeciality::where('booking_id', $id)->get()->toArray();
-        if ($booking) {
-            return response()->json(['status' => true, 'message' => 'booking get Successfully', 'data' => $booking], $this->successStatus);
+            $booking['matching'] = $objBooking->getMatchByBooking($id, 'Matching', $booking['status']);
+            $booking['interested'] = $objBooking->getMatchByBooking($id, 'Interested', $booking['status']);
+            $booking['confirmed'] = $objBooking->getMatchByBooking($id, 'CONFIRMED', $booking['status']);
+            if ($booking) {
+                return response()->json(['status' => true, 'message' => 'booking get Successfully', 'data' => $booking], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, booking not available!', 'status' => false], 200);
+            }
         } else {
             return response()->json(['message' => 'Sorry, booking not available!', 'status' => false], 200);
         }
+        // $shift['speciality'] = BookingSpeciality::where('booking_id', $id)->get()->toArray();
+
     }
 
     /**
@@ -181,10 +183,9 @@ class BookingController extends Controller
                 //print_r($bookinghift);exit();
                 $requestData['start_time'] = $bookingShift['start_time'];
                 $requestData['end_time'] = $bookingShift['end_time'];
-                if(Auth::user()->role == 'ORGANIZATION')
-                {
+                if (Auth::user()->role == 'ORGANIZATION') {
                     $requestData['updated_by'] = $this->userId;
-                }else{
+                } else {
                     $requestData['updated_by'] = $this->userId;
                 }
                 $booking->update($requestData);
@@ -249,7 +250,7 @@ class BookingController extends Controller
      */
     public function bookingStatus(Request $request, $status = NULL)
     {
-        try{
+        try {
             $objBooking = new Booking();
             $booking = $objBooking->getBookingByFilter($request, $status);
             if (count($booking) > 0) {
@@ -356,7 +357,6 @@ class BookingController extends Controller
         } else {
             return response()->json(['message' => 'Sorry, Booking not available!', 'status' => false], 200);
         }
-
     }
 
     /**
