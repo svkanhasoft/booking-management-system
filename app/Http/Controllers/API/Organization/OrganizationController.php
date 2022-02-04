@@ -98,7 +98,7 @@ class OrganizationController extends Controller
             Organization::create($requestData);
 
             $userObj = new User();
-            //$mailRes =  $userObj->sendRegisterEmail($request);
+            $mailRes =  $userObj->sendRegisterEmail($request);
 
             $userRes['token'] =  $user->createToken('MyApp')->accessToken;
             return response()->json(['status' => true, 'message' => 'Register Successfully completed.', 'data' => $userRes], $this->successStatus);

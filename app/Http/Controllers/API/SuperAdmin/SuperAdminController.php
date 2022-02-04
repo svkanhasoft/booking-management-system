@@ -222,7 +222,7 @@ class SuperAdminController extends Controller
         $user = User::where('email', $request->all('email'))->count();
         if ($user >  0) {
             $userObj = new User();
-            //$mailRes =  $userObj->sendForgotEmail($request);
+            $mailRes =  $userObj->sendForgotEmail($request);
             return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Invalid Email address.', 'status' => false], 409);
