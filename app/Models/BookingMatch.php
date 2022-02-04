@@ -383,7 +383,7 @@ class BookingMatch extends Model
         $staffIdArray = array_column($staff, 'id');
         $staffIdArray[] = Auth::user()->parent_id;
 
-        $perPage = Config::get('constants.pagination.perPage');
+        $perPage = 100;
         $booking = Booking::select(
             'bookings.*',
             'hospitals.hospital_name',

@@ -888,6 +888,10 @@ class SigneesController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
+            $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
+            if (count($res) > 0) {
+                return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
+            }
             $res =  BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_status' =>  $requestData['signee_status'],
                 'signee_booking_status' =>  'APPLY',
@@ -909,6 +913,18 @@ class SigneesController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    public function checkShiftBooking($booking_id, $signee_id)
+    {
+        $bookRes = Booking::find($booking_id);
+        $count = BookingMatch::where([
+            'signee_id' => $signee_id,
+            'signee_booking_status' => 'CONFIRMED', 'shift_id' => $bookRes['shift_id'],
+            'booking_date' => $bookRes['date']
+        ])->get();
+        return $count;
+    }
+
 
     public function addsigneeMatch($id)
     {

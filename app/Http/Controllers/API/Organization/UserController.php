@@ -709,21 +709,12 @@ class UserController extends Controller
                     return $this->cancelShiftBYStaffOrOrg($requestData);
                 }
             } elseif ($requestData['status'] == 'ACCEPT') {
-                // $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
-                // if (count($res) > 0) {
-                //     return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
-                // }
+                $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
+                if (count($res) > 0) {
+                    return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
+                }
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
-<<<<<<< HEAD
-                //echo '123';exit;
-                // echo Auth::user()->role;exit;
-
-
-                $objBookingMatch1 = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
-                $objBookingMatch1->signee_booking_status = $requestData['status'];
-                $objBookingMatch1->save();
-=======
                 $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
                 if (count($res) > 0) {
                     return response()->json(['message' => 'Sorry, Shift already booked with same date for this candidate.', 'status' => false], 200);
@@ -731,7 +722,6 @@ class UserController extends Controller
                 $objBookingMatch = BookingMatch::firstOrNew(['signee_id' => $requestData['signee_id'], 'booking_id' => $requestData['booking_id']]);
                 $objBookingMatch->signee_booking_status = $requestData['status'];
                 $objBookingMatch->save();
->>>>>>> dc40fdcedb65e2fae150d2c23189fdfd3481748b
 
                 $objBooking = new Booking();
                 $matchSignee = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
@@ -755,7 +745,7 @@ class UserController extends Controller
                     $objBooking->sendBookingConfirmEmail($matchSignee);
                 }
 
-                if ($objBookingMatch1) {
+                if ($objBookingMatch) {
                     return response()->json(['status' => true, 'message' => 'Admin successfully assigned shift to you'], $this->successStatus);
                 } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
@@ -895,13 +885,8 @@ class UserController extends Controller
                 $update = BookingMatch::where(['booking_id' => $requestData['booking_id'], 'signee_id' => $requestData['signee_id']])->update([
                     'signee_booking_status' => $requestData['status'], 'booking_cancel_date' => Carbon::now(),
                 ]);
-<<<<<<< HEAD
-            $signees = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
-            $objBooking->sendBookingCancelByStaffEmail($signees);
-=======
                 $signees = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
                 //$objBooking->sendBookingCancelByStaffEmail($signees);
->>>>>>> dc40fdcedb65e2fae150d2c23189fdfd3481748b
                 // $booking['status'] = $requestData['status'];
                 // $booking->update();
             }
