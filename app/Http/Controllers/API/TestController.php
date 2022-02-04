@@ -102,4 +102,27 @@ class TestController extends Controller
         $response   = $objNotification->sendIOSNotification("Hello notification",$tokenIOS,7,'static');
         print_r($response);
     }
+
+    public function sendEmail()
+    {
+        echo "test" . date('Y-m-d h:i:s');
+
+        $user = User::where('status', 'Active')->first();
+        // print_r($user);exit;
+        if (isset($user) && !empty($user)) {
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'forgot',
+                'subject' => 'Booking Management System: Forgot Password',
+                'data' => $user,
+            ];
+            echo "<br> Send Email Code  ";
+            $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')->send(new \App\Mail\SendSmtpMail($details));
+            // $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
+            echo "<br> Result ";
+            print_r($emailRes);
+            return true;
+        }
+    }
 }

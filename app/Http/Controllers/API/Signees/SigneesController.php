@@ -133,9 +133,9 @@ class SigneesController extends Controller
         if (empty($checkRecord)) {
             return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
         }
-        if ($checkRecord->status != 'Active') {
-            return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
-        }
+        // if ($checkRecord->status != 'Active') {
+        //     return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
+        // }
         // dd($checkRecord->id, $request->organization_id);
         $checkRecordOrg = User::where('id', $request->organization_id)->first();
         if ($checkRecordOrg->status != 'Active') {
@@ -146,7 +146,9 @@ class SigneesController extends Controller
         if (empty($orgResult)) {
             return response()->json(['message' => 'Your account does not exist with a selected organization!', 'status' => false], 200);
         }
-
+        if ($orgResult->profile_status != 'Active') {
+            return response()->json(['message' => 'Sorry, Your account is Inactive, contact to organization admin', 'status' => false], 200);
+        }
         if (Auth::attempt(['email' => request('email'), 'password' => request('password'), 'role' => 'SIGNEE'])) {
             $checkRecord->parent_id =  request('organization_id');
             $checkRecord->last_login_date =  date('Y-m-d H:i:s');
@@ -651,13 +653,15 @@ class SigneesController extends Controller
                         $name = $file->getClientOriginalName();
                         $filename = pathinfo($name, PATHINFO_FILENAME);
                         $extension = pathinfo($name, PATHINFO_EXTENSION);
-                        $new_filename = $filename . '_' . time() . '.' . $extension;
+                        // $new_filename = $filename . '_' . time() . '.' . $extension;
+                        $new_filename = $filename . '_' . time() . '.' . strtolower($extension);
                         $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
                         $file->move(public_path() . '/uploads/signee_docs/', $new_name);
                         $image = new SigneeDocument();
                         $image->signee_id = $this->userId;
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
+                        $image->document_status = 'PENDING';
                         $image->organization_id = $user->parent_id;
                         $docUpload = $image->save();
                     }
@@ -955,7 +959,8 @@ class SigneesController extends Controller
                     $name = $file->getClientOriginalName();
                     $filename = pathinfo($name, PATHINFO_FILENAME);
                     $extension = pathinfo($name, PATHINFO_EXTENSION);
-                    $new_filename = $filename . '_' . time() . '.' . $extension;
+                    $new_filename = $filename . '_' . time() . '.' . strtolower($extension);
+                    // $new_filename = $filename . '_' . time() . '.' . $extension;
                     //print_r($new_filename);exit;
                     $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
                     $file->move(public_path() . '/uploads/signee_profile_pic/', $new_name);

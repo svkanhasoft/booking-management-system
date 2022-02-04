@@ -149,11 +149,7 @@ class BookingMatch extends Model
                 'subject' => 'Booking Management System: Review your match',
                 'data' => $result
             ];
-            $emailRes = \Mail::to($result['email'])
-                // $emailRes = \Mail::to('shaileshv.kanhasoft@gmail.com')
-                ->cc('maulik.kanhasoft@gmail.com')
-                ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
             return true;
         } else {
             return false;
@@ -186,7 +182,8 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
-            'users.status as profile_status',
+            // 'users.status as profile_status',
+            'signee_organization.profile_status',
             'signee_organization.status as compliance_status',
             'signee_organization.organization_id as signee_organization_organization_Id',
             'signee_organization.id as signee_organization_Id',
@@ -275,7 +272,8 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
-            'users.status as profile_status',
+            // 'users.status as profile_status',
+            'signee_organization.profile_status',
             'users.email',
             'booking_matches.signee_status',
             'booking_matches.signee_booking_status',
@@ -397,7 +395,8 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
-            'users.status as profile_status',
+            'signee_organization.profile_status',
+            // 'users.status as profile_status',
             'signee_organization.user_id as sid',
             "signee_organization.organization_id as orgid",
             'signee_organization.status as compliance_status',
