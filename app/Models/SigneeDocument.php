@@ -28,7 +28,7 @@ class SigneeDocument extends Model
      *
      * @var array
      */
-    protected $fillable = ['signee_id', 'key', 'file_name', 'organization_id', 'updated_by'];
+    protected $fillable = ['signee_id', 'key', 'file_name', 'document_status','organization_id', 'updated_by'];
 
     public function getDocument($signeeId, $key, $orgId)  //get all documents while upload
     {

@@ -641,10 +641,7 @@ class Booking extends Model
                 'subject' => 'Booking Management System: Booking Cancel By Candidate',
                 'data' => $res
             ];
-            //print_r($details);exit();
-
-            // $emailRes = \Mail::to($res['email'])->send(new \App\Mail\SendSmtpMail($details));
-
+            $emailRes = \Mail::to($res['email'])->send(new \App\Mail\SendSmtpMail($details));
             $objNotification = new Notification();
             $notification = $objNotification->addNotification($res);
             return true;

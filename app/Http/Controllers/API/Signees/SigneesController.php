@@ -99,7 +99,7 @@ class SigneesController extends Controller
                 $sing = SigneeOrganization::create($requestData);
                 if ($orgResult) {
                     $UserObj = new User();
-                    //$mailRes =  $UserObj->sendRegisterEmail($request);
+                    $mailRes =  $UserObj->sendRegisterEmail($request);
                     $this->addsigneeMatch($userCreated['id']);
                     return response()->json(['status' => true, 'message' => 'User added Successfully', 'data' => $userCreated], $this->successStatus);
                 }
@@ -270,7 +270,7 @@ class SigneesController extends Controller
     public function forgot(Request $request)
     {
         $userObj = new User();
-        //$mailRes =  $userObj->sendForgotEmail($request);
+        $mailRes =  $userObj->sendForgotEmail($request);
         if ($mailRes) {
             return response()->json(['message' => 'Please check your email and change your password', 'status' => true], $this->successStatus);
         } else {
@@ -653,13 +653,15 @@ class SigneesController extends Controller
                         $name = $file->getClientOriginalName();
                         $filename = pathinfo($name, PATHINFO_FILENAME);
                         $extension = pathinfo($name, PATHINFO_EXTENSION);
-                        $new_filename = $filename . '_' . time() . '.' . $extension;
+                        // $new_filename = $filename . '_' . time() . '.' . $extension;
+                        $new_filename = $filename . '_' . time() . '.' . strtolower($extension);
                         $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
                         $file->move(public_path() . '/uploads/signee_docs/', $new_name);
                         $image = new SigneeDocument();
                         $image->signee_id = $this->userId;
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
+                        $image->document_status = 'PENDING';
                         $image->organization_id = $user->parent_id;
                         $docUpload = $image->save();
                     }
@@ -892,12 +894,12 @@ class SigneesController extends Controller
             ]);
             $objBooking = new Booking();
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $this->userId);
-            // $mailSent = $objBooking->sendBookingApplyBySigneeEmail($signeeMatch);
+            $mailSent = $objBooking->sendBookingApplyBySigneeEmail($signeeMatch);
 
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
             //print_r($comArray);exit;
-            //$orgMailSent = $objBooking->sendBookingApplyBySigneeEmailToOrg($comArray);
+            $orgMailSent = $objBooking->sendBookingApplyBySigneeEmailToOrg($comArray);
             if ($signeeMatch) {
                 return response()->json(['status' => true, 'message' => 'You have successfully applied for this shift'], $this->successStatus);
             } else {
@@ -957,7 +959,8 @@ class SigneesController extends Controller
                     $name = $file->getClientOriginalName();
                     $filename = pathinfo($name, PATHINFO_FILENAME);
                     $extension = pathinfo($name, PATHINFO_EXTENSION);
-                    $new_filename = $filename . '_' . time() . '.' . $extension;
+                    $new_filename = $filename . '_' . time() . '.' . strtolower($extension);
+                    // $new_filename = $filename . '_' . time() . '.' . $extension;
                     //print_r($new_filename);exit;
                     $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
                     $file->move(public_path() . '/uploads/signee_profile_pic/', $new_name);

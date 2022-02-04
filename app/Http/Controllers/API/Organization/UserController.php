@@ -742,7 +742,7 @@ class UserController extends Controller
                         $notification = $objNotification->addNotificationV2($matchSignee, 'super_assign');
                     }
                 } else {
-                    //$objBooking->sendBookingConfirmEmail($matchSignee);
+                    $objBooking->sendBookingConfirmEmail($matchSignee);
                 }
 
                 if ($objBookingMatch) {
@@ -790,12 +790,12 @@ class UserController extends Controller
             ]);
             $signeeMatch = $objBooking->getMetchByBookingIdAndSigneeId($requestData['booking_id'], $requestData['signee_id']);
             //print_r($signeeMatch);exit;
-            //$mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
+            $mailSent = $objBooking->sendBookingAcceptBySigneeEmail($signeeMatch);
 
             //send mail to candidate organization
             $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
             $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
-            //$orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($comArray);
+            $orgMailSent = $objBooking->sendSigneeAccepBookingEmailToOrg($comArray);
 
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Offer accepted successfully'], $this->successStatus);
@@ -820,11 +820,10 @@ class UserController extends Controller
             // booking::where(['id' => $requestData['booking_id']])->update(['status' => 'CREATED']);
             //$mailSent = $objBooking->sendBookingCancelBySigneeEmail($signeeMatch);
 
-            //send mail to candidate organization
-            // $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
-            // $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
-            //print_r($comArray);exit;
-            //$orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($signeeMatch);
+            // send mail to candidate organization
+            $orgDetail = User::where('id', $signeeMatch['organization_id'])->first()->toArray();
+            $comArray = array_merge($signeeMatch->toArray(), $orgDetail);
+            $orgMailSent = $objBooking->sendSigneeCancelBookingEmailToOrg($signeeMatch);
             if ($update) {
                 return response()->json(['status' => true, 'message' => 'Shift rejected by candidate successfully'], $this->successStatus);
             } else {
