@@ -52,6 +52,7 @@ Route::prefix('organization')->group(function () {
     Route::post('/otp-verify', [OrganizationController::class, 'otpVerify']);
     //Route::post('/reset-password', [App\Http\Controllers\API\Signees\OrganizationController::class, 'resetPassword']);
     Route::middleware(['auth:api'])->group(function () {
+        Route::post('/purchase-subscription', [UserController::class, 'purchaseSubscription']);
         Route::get('/booking-notification-cron', [ScriptController::class, 'getBooking']);
         Route::get('/get-designation-list', [DesignationController::class, 'list']);
         Route::post('/update', [OrganizationController::class, 'update']);

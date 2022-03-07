@@ -15,6 +15,7 @@ use App\Models\OrganizationUserDetail;
 use App\Models\SigneesDetail;
 use App\Models\SigneeOrganization;
 use App\Models\Notification;
+use App\Models\PaymentHistory;
 use Hash;
 use App\Models\Role;
 use App\Models\SigneeSpecialitie;
@@ -663,7 +664,7 @@ class UserController extends Controller
             $data->status = $requestData['status'];
             $res = $data->save();
 
-            SigneeOrganization::where(['user_id' => $requestData['signee_id'], 'organization_id' => (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id: Auth::user()->parent_id])->update([
+            SigneeOrganization::where(['user_id' => $requestData['signee_id'], 'organization_id' => (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id])->update([
                 'profile_status' =>  $requestData['status']
             ]);
 
@@ -1219,7 +1220,7 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-
+    /** get applied shifr list */
     public function getAppliedShift()
     {
         try {
@@ -1235,6 +1236,7 @@ class UserController extends Controller
         }
     }
 
+    /** get completed shift for organization  */
     public function getCompletedShift()
     {
         try {
@@ -1242,6 +1244,41 @@ class UserController extends Controller
             $completedShifts = $booking->getCompletedShift();
             if ($completedShifts) {
                 return response()->json(['status' => true, 'message' => 'Completed Shifts Get Successfully', 'data' => $completedShifts], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+    /** purpose of this function is to subscribe plan from FE */
+    public function purchaseSubscription(Request $request)
+    {
+        try {
+            $expireDate = ($request->post('subscription_name') == "12MONTH") ? date("Y-m-d", strtotime("+12 month")) : date("Y-m-d", strtotime("+6 month"));
+            $response = User::where(['id' => $this->userId])->update([
+                'subscription_name' =>  $request->post('subscription_name'),
+                'subscription_expire_date' => ($request->post('subscription_name') == "FREE") ? date("Y-m-d", strtotime("+1 month")) : $expireDate,
+                'subscription_purchase_date' =>  date("Y-m-d"),
+            ]);
+            User::where(['parent_id' => $this->userId])->update([
+                'subscription_name' =>  $request->post('subscription_name'),
+                'subscription_expire_date' => ($request->post('subscription_name') == "FREE") ? date("Y-m-d", strtotime("+1 month")) : $expireDate,
+                'subscription_purchase_date' =>  date("Y-m-d"),
+            ]);
+            /** STORE PAYMENT HISTORY */
+            $paymentObject = new PaymentHistory();
+            $paymentObject->organization_id = $this->userId;
+            $paymentObject->subscription_name = $request->post('subscription_name');
+            $paymentObject->subscription_expire_date = ($request->post('subscription_name') == "FREE") ? date("Y-m-d", strtotime("+1 month")) : $expireDate;
+            $paymentObject->subscription_price = $request->post('subscription_price');
+            $paymentObject->subscription_purchase_date =  date("Y-m-d");
+            $paymentObject->payment_status = $request->post('payment_status');
+            $paymentObject->paypal_response = ($request->post('paypal_response')) ? json_encode($request->post('paypal_response')) : null;
+            $paymentObject->save();
+            if ($response) {
+                return response()->json(['status' => true, 'data' => Auth::user() , 'message' => strtolower($request->post('subscription_name')) . ' subscription successfully purchased'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
             }

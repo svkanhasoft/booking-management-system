@@ -33,10 +33,7 @@ class SuperAdminController extends Controller
         });
     }
 
-    public function index(Request $request)
-    {
-        echo "hiiii SuperAdminController";
-    }
+
     public function signin(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -69,6 +66,7 @@ class SuperAdminController extends Controller
 
     public function signinV2(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'password' => 'required',
@@ -98,10 +96,17 @@ class SuperAdminController extends Controller
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
+            // $user['subscription_expire'] = $this->checkSubscriptionExpire($user->subscriptsubscription_purchase_dateion_name,$user->subscription_name);
             $user['token'] =  $user->createToken('MyApp')->accessToken;
             if ($checkRecord->role == 'STAFF') {
                 // $user['staffdetails'] =  $checkRecord->stafdetails;
                 $user['staffdetails'] = $userDetais['designation_name'];
+            }
+
+            if ($user['subscription_expire_date'] >= date('Y-m-d')) {
+                $user['is_plan_expire'] = false;
+            } else {
+                $user['is_plan_expire'] = true;
             }
             User::where(['id' => $user->id])->update([
                 'last_login_date' => date('Y-m-d H:i:s'),
@@ -115,37 +120,16 @@ class SuperAdminController extends Controller
         }
     }
 
-    // public function signinV2(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'email' => 'required',
-    //         'password' => 'required',
-    //     ]);
-    //     if ($validator->fails()) {
-    //         $error = $validator->messages()->first();
-    //         return response()->json(['status' => false, 'message' => $error], 200);
-    //     }
-    //     $checkRecord = User::where('email', $request->all('email'))->whereIn('role', array('SUPERADMIN', 'ORGANIZATION', 'STAFF'))->first();
-    //     if (empty($checkRecord)) {
-    //         return response()->json(['message' => "Sorry, your account does't exists", 'status' => false], 200);
-    //     }
-    //     if ($checkRecord->status !== 'Active') {
-    //         return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
-    //     }
+    public function checkSubscriptionExpire($date,$planName)
+    {
+        $date = ($date == null) ? $date : date('Y-m-d');
+        if ($date < date('Y-m-d')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-    //     if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-    //         $user = Auth::user();
-    //         $user['token'] =  $user->createToken('MyApp')->accessToken;
-
-    //         User::where(['id' => $user->id])->update([
-    //             'last_login_date' => date('Y-m-d H:i:s'),
-    //             'password_change' => 1
-    //         ]);
-    //         return response()->json(['status' => true, 'message' => 'Login Successfully done', 'data' => $user], $this->successStatus);
-    //     } else {
-    //         return response()->json(['message' => 'Sorry, Email or password are not match', 'status' => false], 200);
-    //     }
-    // }
     /**
      * Register api
      *

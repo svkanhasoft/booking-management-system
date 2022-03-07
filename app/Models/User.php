@@ -30,7 +30,8 @@ class User extends Authenticatable
     protected $fillable = [
         'user_id', 'name', 'email', 'password', 'first_name', 'last_name', 'email_verified_at', 'password', 'remember_token',
         'created_at', 'updated_at', 'role', 'status', 'profile_pic', 'password_change', 'password_change', 'last_login_date', 'is_deleted',
-        'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number', 'device_id', 'platform', 'created_by', 'updated_by'
+        'parent_id', 'postcode', 'city', 'address_line_2', 'address_line_1', 'contact_number', 'device_id', 'platform', 'created_by', 'updated_by',
+        'subscription_name', 'subscription_purchase_date', 'subscription_expire_date'
     ];
 
     /**
@@ -670,7 +671,7 @@ class User extends Authenticatable
     }
 
 
-    public function getDashboard($dayName,$year = '')
+    public function getDashboard($dayName, $year = '')
     {
         $today = Carbon::now()->format('Y-m-d');
 
@@ -691,15 +692,15 @@ class User extends Authenticatable
             return  User::where('role', 'ORGANIZATION')->count();
         } else if ($dayName == 'monthly_details') {
             $users = User::select('id', 'created_at')->whereYear('created_at', $year)->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
-            // $users = User::select('id', 'created_at')->whereYear('created_at', date('Y'))->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
+                // $users = User::select('id', 'created_at')->whereYear('created_at', date('Y'))->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
                 return Carbon::parse($date->created_at)->format('m');
             });
-            $userArr[] = array("Element", "Monthly User Details", array( 'role' => "style"));
+            $userArr[] = array("Element", "Monthly User Details", array('role' => "style"));
             foreach ($users as $key => $value) {
                 $usermcount[(int)$key] = count($value);
             }
             for ($i = 1; $i <= 12; $i++) {
-                $userArr[] = array($month[$i - 1], (!empty($usermcount[$i])) ? $usermcount[$i] : 0,$this->bgcolor());
+                $userArr[] = array($month[$i - 1], (!empty($usermcount[$i])) ? $usermcount[$i] : 0, $this->bgcolor());
                 // $userArr[] = array('label' => $month[$i - 1], 'y' => (!empty($usermcount[$i])) ? $usermcount[$i] : 0);
             }
             return $userArr;
@@ -707,24 +708,24 @@ class User extends Authenticatable
             $users = User::select('id', 'created_at')->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
                 return Carbon::parse($date->created_at)->format('Y');
             });
-            $userArr[] = array("Element", "Yearly User Details", array( 'role' => "style"));
+            $userArr[] = array("Element", "Yearly User Details", array('role' => "style"));
             foreach ($users as $key => $value) {
                 $usermcount[(int)$key] = count($value);
             }
             foreach ($usermcount as $key => $value) {
-                $userArr[] = array("$key", $value,$this->bgcolor());
+                $userArr[] = array("$key", $value, $this->bgcolor());
                 // $userArr[] = array('label' => $key, 'y' => $value);
             }
             return $userArr;
         }
     }
 
-    public function bgcolor(){
+    public function bgcolor()
+    {
         // return "color: #" . dechex(rand(0,10000000));
-        $res= array("color: #bc8c99","color: #9261be","color: #55fbf8","color: #c54094","color: #6b3223","color: #2b0b95","color: #74952e","color: #1f5ada","color: #deadd0","color: #2a4453", "color: #e6d21a","color: #1d3151","color: #cdd53c", "color: #3da117","color: #adf9e9");
+        $res = array("color: #bc8c99", "color: #9261be", "color: #55fbf8", "color: #c54094", "color: #6b3223", "color: #2b0b95", "color: #74952e", "color: #1f5ada", "color: #deadd0", "color: #2a4453", "color: #e6d21a", "color: #1d3151", "color: #cdd53c", "color: #3da117", "color: #adf9e9");
         $key =  array_rand($res);
         return $res[$key];
         // return "color: #" . dechex(rand(0x000000, 0xFFFFFF));
     }
-
 }
