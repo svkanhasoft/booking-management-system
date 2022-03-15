@@ -1278,6 +1278,9 @@ class UserController extends Controller
             $paymentObject->paypal_response = ($request->post('paypal_response')) ? json_encode($request->post('paypal_response')) : null;
             $paymentObject->save();
             if ($response) {
+                Auth::user()->subscription_name = $request->post('subscription_name');
+                Auth::user()->subscription_purchase_date = $request->post('subscription_purchase_date');
+                Auth::user()->subscription_expire_date = $paymentObject->subscription_expire_date;
                 return response()->json(['status' => true, 'data' => Auth::user() , 'message' => strtolower($request->post('subscription_name')) . ' subscription successfully purchased'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
