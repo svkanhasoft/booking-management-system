@@ -662,6 +662,7 @@ class SigneesController extends Controller
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
                         $image->document_status = 'PENDING';
+                        $image->expire_date = isset($requestData['expire_date']) ? date("Y-m-d", strtotime($requestData['expire_date'])) : date("Y-m-d", strtotime("+1 month"));
                         $image->organization_id = $user->parent_id;
                         $docUpload = $image->save();
                     }
