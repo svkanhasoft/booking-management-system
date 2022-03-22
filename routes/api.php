@@ -168,6 +168,7 @@ Route::prefix('signee')->group(function () {
         Route::get('/show-all-hospital', [HospitalController::class, 'showAllHospital']);
         Route::post('/add-org', [SigneesController::class, 'addOrg']);
         Route::post('/upload-document', [SigneesController::class, 'documentUpload']);
+        Route::post('/set-expiredate', [SigneesController::class, 'setExpireData']);
         Route::put('/update-signee-speciality/{id}', [SigneesController::class, 'updateSpeciality']);
         Route::get('/get-signee-speciality', [SigneesController::class, 'getSigneeSpeciality']);
         Route::get('/get-signee-document/{key?}', [SigneesController::class, 'getSigneeDocument']);

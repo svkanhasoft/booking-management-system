@@ -662,7 +662,7 @@ class SigneesController extends Controller
                         $image->key = $requestData['key'];
                         $image->file_name = $new_name;
                         $image->document_status = 'PENDING';
-                        $image->expire_date = isset($requestData['expire_date']) ? date("Y-m-d", strtotime($requestData['expire_date'])) : date("Y-m-d", strtotime("+1 month"));
+                        $image->expire_date = isset($requestData['expire_date']) ? date("Y-m-d", strtotime($requestData['expire_date'])) : null;
                         $image->organization_id = $user->parent_id;
                         $docUpload = $image->save();
                     }
@@ -674,6 +674,33 @@ class SigneesController extends Controller
             } else {
                 return response()->json(['message' => 'No file selected', 'status' => false], 200);
             }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+ /**
+     * This function is for candidate to upload set document date.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function setExpireData(Request $request)
+    {
+        $requestData = $request->all();
+
+        $validator = Validator::make($request->all(), [
+            'expire_date' => 'required',
+            'id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try {
+            $result = SigneeDocument::where(['signee_id' => Auth::user()->id,'id' => $requestData['id']])->update([
+                "expire_date" => date("Y-m-d", strtotime($requestData['expire_date'])),
+            ]);
+            return response()->json(['status' => true, 'message' => 'Document Expire date changed Successfully', 'data' => $result], $this->successStatus);
+
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
@@ -794,6 +821,7 @@ class SigneesController extends Controller
                 "file_name",
                 "organization_id",
                 "document_status",
+                "expire_date",
                 DB::raw('date(created_at) as date_added'),
             );
             $signeeDocument->where(['signee_id' => $this->userId, 'organization_id' => Auth::user()->parent_id]);

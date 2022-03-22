@@ -452,6 +452,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query3->where('signee_id', $userId);
         $query3->where('key', '=', 'passport');
@@ -467,6 +468,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query4->where('signee_id', $userId);
         $query4->where('key', '=', 'immunisation_records');
@@ -483,6 +485,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query5->where('signee_id', $userId);
         $query5->where('key', '=', 'training_certificates');
@@ -499,6 +502,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query6->where('signee_id', $userId);
         $query6->where('key', '=', 'nursing_certificates');
@@ -515,6 +519,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query7->where('signee_id', $userId);
         $query7->where('key', '=', 'professional_indemnity_insurance');
@@ -531,6 +536,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query8->where('signee_id', $userId);
         $query8->where('key', '=', 'nmc_statement');
@@ -547,6 +553,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query9->where('signee_id', $userId);
         $query9->where('key', '=', 'dbs_disclosure_certificate');
@@ -563,6 +570,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query10->where('signee_id', $userId);
         $query10->where('key', '=', 'cv');
@@ -579,6 +587,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query11->where('signee_id', $userId);
         $query11->where('key', '=', 'employment');
@@ -595,6 +604,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query12->where('signee_id', $userId);
         $query12->where('key', '=', 'address_proof');
@@ -611,6 +621,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query13->where('signee_id', $userId);
         $query13->where('key', '=', 'passport_photo');
@@ -627,6 +638,7 @@ class User extends Authenticatable
             'file_name',
             'document_status',
             'expire_date',
+            'id',
         );
         $query14->where('signee_id', $userId);
         $query14->where('key', '=', 'proof_of_ni');
