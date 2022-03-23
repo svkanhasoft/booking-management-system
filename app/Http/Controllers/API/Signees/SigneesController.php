@@ -916,8 +916,9 @@ class SigneesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
+
         try {
-            $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
+            $res =  $this->checkShiftBooking($requestData['booking_id'], (isset($requestData['signee_id']) ? $requestData['signee_id'] : Auth::user()->id));
             if (count($res) > 0) {
                 return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
             }
