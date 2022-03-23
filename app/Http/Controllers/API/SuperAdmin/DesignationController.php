@@ -59,7 +59,6 @@ class DesignationController extends Controller
         try{
             $requestData = $request->all();
             $requestData['user_id'] = $this->userId;
-            $requestData['password_change'] = 0;
             $checkRecord =  Designation::create($requestData);
             if ($checkRecord) {
                 return response()->json(['status' => true, 'message' => 'Designation added Successfully', 'data' => $checkRecord], $this->successStatus);
