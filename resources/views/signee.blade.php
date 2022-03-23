@@ -3,8 +3,7 @@
 
 <head id="Head1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Offer Letter</title>
-    <!--<link id="linkStyleSheet" href="http://localhost/laravel_pdf/public/css/offer-letter.css" rel="stylesheet" type="text/css" media="screen" />-->
+    <title>Booking Details</title>
     <style>
         body {
             background: #666666;
