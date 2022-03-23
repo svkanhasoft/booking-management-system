@@ -532,11 +532,10 @@ class Booking extends Model
     //booking canceled by staff/org email
     public function sendBookingCancelByStaffEmail($result)
     {
-        //print_r($result);exit();
+
+        // print_r($result);exit();
         if (isset($result) && !empty($result)) {
 
-            //print_r($result[$key]['email']);exit();
-            //print_r($val);exit();
             $details = [
                 'title' => '',
                 'body' => 'Hello ',
@@ -549,7 +548,8 @@ class Booking extends Model
                 ->send(new \App\Mail\SendSmtpMail($details));
 
             $objNotification = new Notification();
-            $notification = $objNotification->addNotification($result);
+            // $notification = $objNotification->addNotification($result);
+            $notification = $objNotification->addNotificationV2($result,'shift_cancel','','');
             return true;
         } else {
             return false;
@@ -1139,4 +1139,60 @@ class Booking extends Model
         $booking->where('bookings.status', 'CONFIRMED');
         return $booking->get();
     }
+
+
+    public function getBookingCancelByAdminEmail($bookingId = null)
+    {
+        $subQuery = Booking::select(
+            'users.first_name',
+            'users.last_name',
+            'users.email',
+            'signee_preference.user_id as signeeId',
+            'bookings.id as booking_id',
+            'users.address_line_1',
+            'users.address_line_2',
+            'users.city',
+            'users.role',
+            'users.parent_id as signee_org_id',
+            'bookings.user_id as organization_id',
+            'bookings.*',
+            'booking_matches.signee_booking_status',
+            'booking_matches.signee_status',
+            'booking_matches.id as aaaa',
+            'shift_type.shift_type',
+            'hospitals.hospital_name',
+            'ward.ward_name',
+            'ward_type.ward_type',
+            'bookings.date as booking_date',
+            DB::raw('COUNT(booking_specialities.id)  as bookingCount'),
+            DB::raw('COUNT(signee_speciality.id)  as signeeBookingCount'),
+            DB::raw('GROUP_CONCAT(signee_speciality.id SEPARATOR ", ") AS signeeSpecialityId'),
+            DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
+        );
+        $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
+        $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
+        $subQuery->leftJoin('users',  'users.id', '=', 'signee_speciality.user_id');
+        $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
+        $subQuery->leftJoin('booking_matches', function ($join) {
+            $join->on('booking_matches.booking_id', '=', 'bookings.id');
+            $join->on('booking_matches.signee_id', '=', 'users.id');
+            // $join->whereIn('booking_matches.signee_status', array('APPLY','ACCEPT','CONFIRMED','OFFER','INVITE'));
+        });
+        $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
+        $subQuery->where('users.role', 'SIGNEE');
+        $subQuery->where('bookings.id', $bookingId);
+        $subQuery->whereNull('signee_speciality.deleted_at');
+        $subQuery->whereNull('booking_specialities.deleted_at');
+        $subQuery->whereNull('bookings.deleted_at');
+        $subQuery->groupBy('signee_preference.user_id');
+        $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $res = $subQuery->get()->toArray();
+        return $res;
+    }
+
 }

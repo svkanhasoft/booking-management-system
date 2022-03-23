@@ -606,7 +606,7 @@ class UserController extends Controller
     {
         //print_r(Auth::user()->role);exit();
         $requestData = $request->all();
-        //print_r($requestData);exit();
+        // print_r($requestData);exit();
         $validator = Validator::make($request->all(), [
             'status' => 'required',
             'booking_id' => 'required',
@@ -624,6 +624,13 @@ class UserController extends Controller
                 $booking = Booking::firstOrNew(['id' => $requestData['booking_id'], 'user_id' => Auth::user()->parent_id]);
                 $booking->status = $requestData['status'];
                 $booking->save();
+            }
+
+            $objBooking = new Booking();
+            $signees = $objBooking->getBookingCancelByAdminEmail($requestData['booking_id']);
+
+            foreach($signees as $val){
+                $objBooking->sendBookingCancelByStaffEmail($val);
             }
 
             // $objNotification = new Notification();
