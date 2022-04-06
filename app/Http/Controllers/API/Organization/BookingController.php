@@ -18,6 +18,7 @@ use App\Models\Hospital;
 use App\Models\Notification;
 use App\Models\OrganizationShift;
 use DB;
+//use App\Storage;
 
 class BookingController extends Controller
 {
@@ -437,6 +438,94 @@ class BookingController extends Controller
             return response()->json(['status' => true, 'message' => 'reference get successfully', 'data' => $time], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, reference not available!', 'status' => false], 404);
+        }
+    }
+
+    /**
+     * Used to show report list of bookings by status completed.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+    public function reportCompletedBooking(Request $request)
+    {
+        try {
+            $objBooking = new Booking();
+            $booking = $objBooking->getCompletedBookingByDate($request);
+            
+            if (count($booking) > 0) {
+                return response()->json(['status' => true, 'message' => 'Completed Booking Successfull. ', 'data' => $booking], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Completed Booking not available!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 200);
+        }
+    }
+
+    /**
+     * Used to show report list of bookings by status completed.
+     *
+     * @param  int  $id
+     *
+     * @return \Illuminate\View\View
+     */
+    
+    public function downloadReportCompletedBooking(Request $request)
+    {
+        //echo "innnnnn"; exit;
+        $user = Auth::user();
+        $path = storage_path('app/public/test');
+        // echo '<pre>';
+        // print_r($path); exit;
+        $fileName = date('Ymdhms').'completed_bookings.csv';
+        //$tasks = Task::all();
+
+        try {
+            $objBooking = new Booking();
+            $booking = $objBooking->getCompletedBookingByDate($request);
+            
+            
+            if (count($booking) > 0) {
+                $headers = array(
+                    "Content-type"        => "text/csv",
+                    "Content-Disposition" => "attachment; filename=$fileName",
+                    "Pragma"              => "no-cache",
+                    "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+                    "Expires"             => "0"
+                );
+    
+                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time');
+    
+                //$callback = function() use($booking, $columns) {
+                    $uploadFile = date('Ymdhms').'test.csv';
+                    $file = fopen($uploadFile, 'w');
+                    fputcsv($file, $columns);
+                    
+                    foreach ($booking as $task) {
+                        
+                        $row['Trust Name']  = $task->name;
+                        $row['Hospital Name']    = $task->hospital_name;
+                        $row['Ward Name']    = $task->ward_name;
+                        $row['Grade']  = $task->grade_name;
+                        $row['Date']  = $task->date;
+                        $row['Shift Time']  = $task->start_time.' '.$task->end_time;
+                        
+                        fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], $row['Date'], $row['Shift Time']));
+                    }
+                    fclose($file);
+                    $filePath = url('/'.$uploadFile);
+                //};
+    
+                //return response()->stream($callback, 200, $headers);
+
+                return response()->json(['status' => true, 'message' => 'Completed Booking Report Generated Successfully. ', 'data' => $filePath], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Report could not be Generated!', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 200);
         }
     }
 }

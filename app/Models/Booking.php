@@ -116,6 +116,8 @@ class Booking extends Model
         $perPage = Config::get('constants.pagination.perPage');
         $keyword = $request->get('search');
         $status = $request->get('status');
+        // echo '<pre>';
+        // print_r($status); exit;
         $query = Booking::select(
             'bookings.*',
             'ward.ward_name',
@@ -161,6 +163,7 @@ class Booking extends Model
             $query->where('bookings.status', 'CANCEL');
         }
 
+        
         // $query->where('bookings.user_id',Auth::user()->id);
 
         if (Auth::user()->role == 'ORGANIZATION') {
@@ -1193,6 +1196,93 @@ class Booking extends Model
         $subQuery->orderBy('signeeBookingCount', 'DESC');
         $res = $subQuery->get()->toArray();
         return $res;
+    }
+
+    //Report APIs
+
+    public function getCompletedBookingByDate(Request $request)
+    {
+        if($request->get('act')=='export_csv'){
+            $export =  "yes";
+        }else{
+            $export =  "no";
+        }
+        //echo $export; exit;
+        $perPage = Config::get('constants.pagination.perPage');
+        $date_range = !empty($request->get('date_between'))?$request->get('date_between'):"";
+        $trust_id = !empty($request->get('trust_id'))?$request->get('trust_id'):"";
+        $status = 'COMPLETED';
+        
+        $query = Booking::select(
+            'bookings.*',
+            'ward.ward_name',
+            'trusts.name',
+            'grade.grade_name',
+            'shift_type.shift_type',
+            'hospitals.hospital_name',
+            //'organization_shift.start_time',
+            //'organization_shift.end_time',
+            // 'booking_matches.id as bmid',
+            DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
+        );
+        $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
+        $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
+        $query->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
+        $query->leftJoin('organization_shift',  'organization_shift.id', '=', 'bookings.shift_id');
+        $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
+        $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
+        
+        //$query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+
+
+        //$query->where('bookings.status', $status);
+         if ($status == 'COMPLETED') {
+            $query->where('bookings.date', '<', date('Y-m-d'));
+            $query->where('bookings.status', 'CONFIRMED');
+        }
+        //print_r($query->toSql());exit;
+        if(!empty($date_range) && $export=="no"){
+            $date_range = explode("to", $request->get('date_between'));
+            $from_date = $date_range[0];
+            $to_date = $date_range[1];
+            $query->whereBetween('bookings.date', [$from_date, $to_date]);
+        }
+
+        if(!empty($trust_id) && $export=="no"){
+            $query->where('trusts.id', $trust_id);
+        }
+        
+        // $query->where('bookings.user_id',Auth::user()->id);
+
+        if (Auth::user()->role == 'ORGANIZATION') {
+            $staff = User::select('id')->where('parent_id', Auth::user()->id)->get()->toArray();
+            $staffIdArray = array_column($staff, 'id');
+            $staffIdArray[] = Auth::user()->id;
+            // echo '<pre>';
+            // print_r(implode(', ',$staffIdArray)); exit;
+            $query->whereIn('bookings.user_id', $staffIdArray);
+        } else {
+            // $query->where('bookings.user_id',Auth::user()->id);
+            $query->whereIn('bookings.user_id', array(Auth::user()->id, Auth::user()->parent_id));
+        }
+
+        $query->whereNull('bookings.deleted_at');
+        $query->orderBy('bookings.date', 'ASC');
+        $query->groupBy('bookings.id');
+       // print_r($query->toSql());exit;
+        
+        if($export=='yes'){
+            $bookingList = $query->get();
+        }else{
+            $bookingList = $query->latest()->paginate($perPage);
+        }
+
+        // $query = Booking::select();
+        //print_r($query->toSql());exit;
+        //print_r(count($bookingList));exit;
+       return $bookingList;
+
     }
 
 }
