@@ -1242,14 +1242,14 @@ class Booking extends Model
             $query->where('bookings.status', 'CONFIRMED');
         }
         //print_r($query->toSql());exit;
-        if(!empty($date_range) && $export=="no"){
+        if(!empty($date_range)){
             $date_range = explode("to", $request->get('date_between'));
             $from_date = $date_range[0];
             $to_date = $date_range[1];
             $query->whereBetween('bookings.date', [$from_date, $to_date]);
         }
 
-        if(!empty($trust_id) && $export=="no"){
+        if(!empty($trust_id)){
             $query->where('trusts.id', $trust_id);
         }
         

@@ -485,7 +485,7 @@ class BookingController extends Controller
         try {
             $objBooking = new Booking();
             $booking = $objBooking->getCompletedBookingByDate($request);
-            
+            //echo storage_path(); exit;
             
             if (count($booking) > 0) {
                 $headers = array(
@@ -499,7 +499,7 @@ class BookingController extends Controller
                 $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time');
     
                 //$callback = function() use($booking, $columns) {
-                    $uploadFile = date('Ymdhms').'test.csv';
+                    $uploadFile = date('Ymdhms').'completed_booking.csv';
                     $file = fopen($uploadFile, 'w');
                     fputcsv($file, $columns);
                     
