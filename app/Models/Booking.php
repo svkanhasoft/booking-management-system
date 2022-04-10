@@ -1243,6 +1243,7 @@ class Booking extends Model
             $query->where('bookings.status', 'CONFIRMED');
         }
         //print_r($query->toSql());exit;
+        
         if(!empty($request->get('start_date')) && !empty($request->get('end_date'))){
             // $date_range = explode("to", $request->get('date_between'));
             // $from_date = $date_range[0];

@@ -110,8 +110,8 @@ Route::prefix('organization')->group(function () {
         Route::put('/change-signee-payment-status', [UserController::class, 'changeSigneePaymentStatus']);
         Route::post('/confirm-booking', [UserController::class, 'bookingStatus']);
         Route::get('/get-spec-shift-create', [SpecialitiesController::class, 'getSpecialtyWithoutPagination']);
-        Route::get('/report-completed-booking/{date_between?}/{trust_id?}', [BookingController::class, 'reportCompletedBooking']);
-        Route::get('/download-report-completed-booking/{date_between?}/{trust_id?}', [BookingController::class, 'downloadReportCompletedBooking']);
+        Route::get('/report-completed-booking/{start_date?}{end_date?}/{trust_id?}', [BookingController::class, 'reportCompletedBooking']);
+        Route::get('/download-report-completed-booking/{start_date?}{end_date?}/{trust_id?}', [BookingController::class, 'downloadReportCompletedBooking']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
         Route::prefix('user')->group(function () {

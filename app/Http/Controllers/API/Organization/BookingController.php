@@ -486,7 +486,7 @@ class BookingController extends Controller
             $objBooking = new Booking();
             $booking = $objBooking->getCompletedBookingByDate($request);
             //echo storage_path(); exit;
-            
+       
             if (count($booking) > 0) {
                 $headers = array(
                     "Content-type"        => "text/csv",
@@ -518,6 +518,7 @@ class BookingController extends Controller
                     $filePath = url('/'.$uploadFile);
                     rename(public_path() .'/'. $uploadFile, public_path() .'/uploads/org_csv/'. $uploadFile);
                     $filePath = public_path() .'/uploads/org_csv/'. $uploadFile;
+                    $filePath =  url('/').'/uploads/org_csv/'. $uploadFile;
                 //};
     
                 //return response()->stream($callback, 200, $headers);
