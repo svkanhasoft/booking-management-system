@@ -455,7 +455,7 @@ class BookingController extends Controller
             $booking = $objBooking->getCompletedBookingByDate($request);
             
             if (count($booking) > 0) {
-                return response()->json(['status' => true, 'message' => 'Completed Booking Successfull. ', 'data' => $booking], $this->successStatus);
+                return response()->json(['status' => true, 'message' => 'Completed Booking Successfully. ', 'data' => $booking], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Completed Booking not available!', 'status' => false], 200);
             }
@@ -516,6 +516,8 @@ class BookingController extends Controller
                     }
                     fclose($file);
                     $filePath = url('/'.$uploadFile);
+                    rename(public_path() .'/'. $uploadFile, public_path() .'/uploads/org_csv/'. $uploadFile);
+                    $filePath = public_path() .'/uploads/org_csv/'. $uploadFile;
                 //};
     
                 //return response()->stream($callback, 200, $headers);

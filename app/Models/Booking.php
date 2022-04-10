@@ -1207,6 +1207,7 @@ class Booking extends Model
         }else{
             $export =  "no";
         }
+       
         //echo $export; exit;
         $perPage = Config::get('constants.pagination.perPage');
         $date_range = !empty($request->get('date_between'))?$request->get('date_between'):"";
@@ -1242,10 +1243,15 @@ class Booking extends Model
             $query->where('bookings.status', 'CONFIRMED');
         }
         //print_r($query->toSql());exit;
-        if(!empty($date_range)){
+        if(!empty($request->get('start_date')) && !empty($request->get('end_date'))){
+            // $date_range = explode("to", $request->get('date_between'));
+            // $from_date = $date_range[0];
+            // $to_date = $date_range[1];
+
             $date_range = explode("to", $request->get('date_between'));
-            $from_date = $date_range[0];
-            $to_date = $date_range[1];
+            $from_date = $request->get('start_date');
+            $to_date = $request->get('end_date');
+
             $query->whereBetween('bookings.date', [$from_date, $to_date]);
         }
 
