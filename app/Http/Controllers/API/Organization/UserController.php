@@ -413,8 +413,8 @@ class UserController extends Controller
             "email" => 'required|unique:users',
             "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
             "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-            "city" => 'regex:/^[a-zA-Z]+$/u|max:255',
-            "nationality" => 'regex:/^[a-zA-Z]+$/u|max:255',
+            "city" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
+            "nationality" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
             "postcode" => 'numeric|regex:/^\d{6}$/',
             "contact_number" => 'numeric|regex:/^\d{10}$/',
         ]);
@@ -496,8 +496,8 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
             "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-            "city" => 'regex:/^[a-zA-Z]+$/u|max:255',
-            "nationality" => 'regex:/^[a-zA-Z]+$/u|max:255',
+            "city" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
+            "nationality" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
             "postcode" => 'numeric',
         ]);
         if ($validator->fails()) {
@@ -738,7 +738,7 @@ class UserController extends Controller
                 if (Auth::user()->role == "SIGNEE") {
                     $notification = $objNotification->addNotificationV2($matchSignee, 'candidate_accept');
                     if ($notification) {
-                        return response()->json(['status' => true, 'message' => 'Candidate successfully accepted the shift'], $this->successStatus);
+                        return response()->json(['status' => true, 'message' => 'You have successfully accepted the shift'], $this->successStatus);
                     } else {
                         return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 200);
                     }
@@ -754,7 +754,7 @@ class UserController extends Controller
                 }
 
                 if ($objBookingMatch) {
-                    return response()->json(['status' => true, 'message' => 'Admin successfully assigned shift to you'], $this->successStatus);
+                    return response()->json(['status' => true, 'message' => 'Admin successfully assigned shift to candidate'], $this->successStatus);
                 } else {
                     return response()->json(['message' => 'Sorry, something is wrong.', 'status' => false], 404);
                 }
