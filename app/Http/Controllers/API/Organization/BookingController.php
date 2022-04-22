@@ -18,6 +18,9 @@ use App\Models\Hospital;
 use App\Models\Notification;
 use App\Models\OrganizationShift;
 use DB;
+
+use function PHPUnit\Framework\isNull;
+
 //use App\Storage;
 
 class BookingController extends Controller
@@ -57,6 +60,8 @@ class BookingController extends Controller
             'hospital_id' => 'required',
             'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
+            'rate' => 'required',
+            'commission' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -166,6 +171,8 @@ class BookingController extends Controller
             'shift_type_id' => 'required',
             'shift_id' => 'required',
             'speciality' => 'required:speciality,[]',
+            'rate' => 'required',
+            'commission' => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
@@ -225,17 +232,21 @@ class BookingController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function destroy($id)
-    {
+    {   
         $bookingObj = new Booking();
         $booking = Booking::find($id);
+        
         $bookingMatch = $bookingObj->getMetchByBookingId($booking->id);
         if ($booking) {
-            // $objNotification = new Notification();
-            // foreach($bookingMatch as $key=>$val)
-            // {
-            //     $objNotification->addNotificationV2($val, 'shift_delete');
-            // }
-            // $booking->delete();
+            if(!empty($bookingMatch)){
+                $objNotification = new Notification();
+                foreach($bookingMatch as $key=>$val)
+                {
+                    $objNotification->addNotificationV2($val, 'shift_delete');
+                }
+            }
+            // Booking::where('id', $id)->delete();
+            $booking->delete();
             return response()->json(['status' => true, 'message' => 'Booking deleted succssfully!'], $this->successStatus);
         } else {
             return response()->json(['message' => 'Sorry, Booking not deleted!', 'status' => false], 409);
