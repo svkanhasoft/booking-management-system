@@ -714,6 +714,16 @@ class SigneesController extends Controller
     public function updateSpeciality(Request $request, $userId)
     {
         //dd(Auth::user()->parent_id);
+        $requestData = $request->all();
+
+        $validator = Validator::make($request->all(), [
+            'speciality_id' => 'required:speciality_id,[]',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => "Please select at least one speciality"], 200);
+        }
+ 
         try {
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
@@ -750,7 +760,7 @@ class SigneesController extends Controller
         $query->join('specialities', 'specialities.id', '=', 'signee_speciality.speciality_id');
         $query->where('signee_speciality.user_id', Auth::user()->id);
         $query->where('signee_speciality.organization_id', Auth::user()->parent_id);
-        $query->where('specialities.user_id', Auth::user()->parent_id);
+        // $query->where('specialities.user_id', Auth::user()->parent_id);
         $query->whereNull('signee_speciality.deleted_at');
         $query->groupBy('signee_speciality.speciality_id');
         $res = $query->get()->toArray();

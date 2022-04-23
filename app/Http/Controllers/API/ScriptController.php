@@ -139,8 +139,6 @@ class ScriptController extends Controller
                     } else if ($val['device_id'] != '' && $val['platform'] == 'Iphone') {
                         $objNotification->sendIOSNotification($msg, $val['device_id'], "", 'docs_expire_notification', $val['organization_id']);
                     }
-                    // $objNotification = new Notification();
-                    // $sendNotification = $objNotification->addNotificationV2($candidate, 'shift_start_noti', '',$interval);
                 // return response()->json(['status' => true, 'message' => 'Your shift '.$candidate['hospital_name'].' hospital ('.$candidate['ward_name'].' ward) starts after '.$interval->h.' hour(s)'], $this->successStatus);
             } else {
                 // echo "errors";
