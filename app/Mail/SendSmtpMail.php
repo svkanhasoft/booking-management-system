@@ -64,8 +64,9 @@ class SendSmtpMail extends Mailable
             return $this->subject($this->details['subject'])->view('emails.shift-create-mail-to-org');
         }else if ($this->details['mailTitle'] == 'bookingConfirmMailToOrg') {
             return $this->subject($this->details['subject'])->view('emails.shift-confirm-mail-to-org');
+        }else if ($this->details['mailTitle'] == 'document_expire') {
+            return $this->subject($this->details['subject'])->view('emails.document-expire-signee-mail');
         }
-
 
     }
 }
