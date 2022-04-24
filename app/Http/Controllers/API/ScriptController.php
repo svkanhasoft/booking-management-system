@@ -73,11 +73,13 @@ class ScriptController extends Controller
 
     function documentCron()
     {
+
+       
         echo  date('Y-m-d H:i:s');
         if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1' || $_SERVER['REMOTE_ADDR'] == 'localhost') {
             date_default_timezone_set('Asia/Kolkata');
         }
-        \Log::info("Conjob run for documentCron with current time " . date('Y-m-d H:i:s'));
+        \Log::info("cronJobs run for documentCron with current time " . date('Y-m-d H:i:s'));
         $documentArray = array(
             'passport' => 'Copy of Passport in Colour including front cover. (Right to work)',
             'immunisation_records' => 'Immunisation records - Proof of immunity for (Varicella, Tuberculosis, Rubella, Measles, Hep B Level 100). Blood results needs to be traceable to exact Clinic/ source. For EPP clearance ( HIV 1 & 2) Hep C and Hep B surface antigen ( IVS)',

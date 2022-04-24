@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         // $schedule->command('deletefile:cron')->everyMinute();
         $schedule->command('deletefile:cron')->dailyAt('13:00');   /**  format    0 0 1 * * ?       */
+        $schedule->command('documentExpire:cron')->dailyAt('13:00');   /**  format    0 0 1 * * ?       */
     }
 
     /**
