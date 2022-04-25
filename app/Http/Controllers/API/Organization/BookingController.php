@@ -507,7 +507,7 @@ class BookingController extends Controller
                     "Expires"             => "0"
                 );
     
-                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time');
+                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time', 'Candidate Name');
     
                 //$callback = function() use($booking, $columns) {
                     $uploadFile = date('Ymdhms').'completed_booking.csv';
@@ -522,8 +522,8 @@ class BookingController extends Controller
                         $row['Grade']  = $task->grade_name;
                         $row['Date']  = $task->date;
                         $row['Shift Time']  = $task->start_time.' '.$task->end_time;
-                        
-                        fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], $row['Date'], $row['Shift Time']));
+                        $row['candidate']  = $task->candidate;
+                        fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], $row['Date'], $row['Shift Time'], $row['candidate']));
                     }
                     fclose($file);
                     $filePath = url('/'.$uploadFile);

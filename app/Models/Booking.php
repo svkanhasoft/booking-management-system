@@ -1224,6 +1224,7 @@ class Booking extends Model
             //'organization_shift.start_time',
             //'organization_shift.end_time',
             // 'booking_matches.id as bmid',
+            DB::raw('GROUP_CONCAT(CONCAT(u.first_name," ", u.last_name) SEPARATOR ", ") AS candidate'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -1233,8 +1234,8 @@ class Booking extends Model
         $query->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $query->leftJoin('grade',  'grade.id', '=', 'bookings.grade_id');
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
-        
-        //$query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $query->leftJoin('users as u',  'u.id', '=', 'booking_matches.signee_id');
 
 
         //$query->where('bookings.status', $status);
@@ -1287,7 +1288,7 @@ class Booking extends Model
 
         // $query = Booking::select();
         //print_r($query->toSql());exit;
-        //print_r(count($bookingList));exit;
+        //print_r($bookingList);exit;
        return $bookingList;
 
     }

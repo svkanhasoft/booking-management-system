@@ -413,23 +413,23 @@ class UserController extends Controller
             "email" => 'required|unique:users',
             "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
             "last_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-            "city" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
-            "nationality" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
-            "postcode" => 'numeric|regex:/^\d{6}$/',
-            "contact_number" => 'numeric|regex:/^\d{10}$/',
+            // "city" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
+            // "nationality" => 'regex:/^[a-zA-Z\\s]+$/u|max:255',
+            // "postcode" => 'numeric|regex:/^\d{6}$/',
+            // "contact_number" => 'numeric|regex:/^\d{10}$/',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
 
-        $requestData = $request->all();
-        $a = new DateTime($requestData['date_of_birth']);
-        $b = new Datetime(date('Y-m-d'));
-        $interval = $b->diff($a);
-        if ($interval->y < 18) {
-            return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
-        }
+        // $requestData = $request->all();
+        // $a = new DateTime($requestData['date_of_birth']);
+        // $b = new Datetime(date('Y-m-d'));
+        // $interval = $b->diff($a);
+        // if ($interval->y < 18) {
+        //     return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
+        // }
 
         try {
             $requestData['password'] = Hash::make($request->post('password'));
