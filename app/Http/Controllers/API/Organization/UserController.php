@@ -726,7 +726,7 @@ class UserController extends Controller
             } elseif ($requestData['status'] == 'ACCEPT') {
                 $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
                 if (count($res) > 0) {
-                    return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
+                    return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 200);
                 }
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {

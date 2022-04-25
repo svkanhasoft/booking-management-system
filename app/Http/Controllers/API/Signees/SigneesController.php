@@ -930,7 +930,7 @@ class SigneesController extends Controller
         try {
             $res =  $this->checkShiftBooking($requestData['booking_id'], (isset($requestData['signee_id']) ? $requestData['signee_id'] : Auth::user()->id));
             if (count($res) > 0) {
-                return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 404);
+                return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 200);
             }
             $res =  BookingMatch::where(['signee_id' => $this->userId, 'booking_id' => $requestData['booking_id']])->update([
                 'signee_status' =>  $requestData['signee_status'],
