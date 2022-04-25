@@ -409,6 +409,7 @@ class UserController extends Controller
      */
     public function addSignee(Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
             "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
@@ -422,7 +423,7 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-
+        
         // $requestData = $request->all();
         // $a = new DateTime($requestData['date_of_birth']);
         // $b = new Datetime(date('Y-m-d'));
@@ -433,6 +434,9 @@ class UserController extends Controller
 
         try {
             $requestData['password'] = Hash::make($request->post('password'));
+            $requestData['email'] = $request->post('email');
+            $requestData['last_name'] = $request->post('last_name');
+            $requestData['first_name'] = $request->post('first_name');
             $requestData['parent_id'] = $this->userId;
             $requestData['role'] = 'SIGNEE';
             if (Auth::user()->role == 'ORGANIZATION') {
@@ -441,14 +445,17 @@ class UserController extends Controller
                 $requestData['parent_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
+            // print_r($requestData);
+            // exit;
             $userCreated = User::create($requestData);
             if ($userCreated) {
                 $requestData['user_id'] = $userCreated['id'];
                 $orgResult = SigneesDetail::create($requestData);
-
-                $objSpeciality = new SigneeSpecialitie();
-                $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $this->userId, false);
-
+                if(!empty($requestData['speciality'])){
+                    $objSpeciality = new SigneeSpecialitie();
+                    $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $this->userId, false);
+                }
+    
                 //$requestData['organization_id'] = $request->post('organization_id');
                 $requestData['organization_id'] = $this->userId;
                 $requestData['user_id'] = $userCreated['id'];
