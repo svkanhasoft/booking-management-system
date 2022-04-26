@@ -439,14 +439,20 @@ class UserController extends Controller
             $requestData['first_name'] = $request->post('first_name');
             $requestData['parent_id'] = $this->userId;
             $requestData['role'] = 'SIGNEE';
+            $requestData['postcode'] = $request->post('postcode');
+            $requestData['city'] = $request->post('city');
+            $requestData['contact_number'] = $request->post('contact_number');
+            $requestData['address_line_1'] = $request->post('address_line_1');
+            $requestData['address_line_2'] = $request->post('address_line_2');
+
             if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['created_by'] = Auth::user()->id;
             } else {
                 $requestData['parent_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
-            // print_r($requestData);
-            // exit;
+            print_r($requestData);
+            exit;
             $userCreated = User::create($requestData);
             if ($userCreated) {
                 $requestData['user_id'] = $userCreated['id'];
