@@ -444,6 +444,10 @@ class UserController extends Controller
             $requestData['contact_number'] = $request->post('contact_number');
             $requestData['address_line_1'] = $request->post('address_line_1');
             $requestData['address_line_2'] = $request->post('address_line_2');
+            $requestData['date_of_birth'] = $request->post('date_of_birth');
+            $requestData['nationality'] = $request->post('nationality');
+            $requestData['nmc_dmc_pin'] = $request->post('nmc_dmc_pin');
+            // $requestData['date_of_birth'] = $request->post('date_of_birth');
 
             if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['created_by'] = Auth::user()->id;
@@ -457,6 +461,8 @@ class UserController extends Controller
             if ($userCreated) {
                 $requestData['user_id'] = $userCreated['id'];
                 $orgResult = SigneesDetail::create($requestData);
+                //echo '<pre>';
+                //print_r($orgResult); exit;
                 if(!empty($requestData['speciality'])){
                     $objSpeciality = new SigneeSpecialitie();
                     $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $this->userId, false);
