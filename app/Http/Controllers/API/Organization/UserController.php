@@ -424,14 +424,17 @@ class UserController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         
-        // $requestData = $request->all();
-        // $a = new DateTime($requestData['date_of_birth']);
-        // $b = new Datetime(date('Y-m-d'));
-        // $interval = $b->diff($a);
-        // if ($interval->y < 18) {
-        //     return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
-        // }
-
+        $requestData = $request->all();
+        // echo '<pre>';
+        // print_r($requestData['date_of_birth']); exit;
+        if($requestData['date_of_birth']!=""){
+            $a = new DateTime($requestData['date_of_birth']);
+            $b = new Datetime(date('Y-m-d'));
+            $interval = $b->diff($a);
+            if ($interval->y < 18) {
+                return response()->json(['status' => false, 'message' => 'Age must be greater than 18 years']);
+            }
+        }
         try {
             $requestData['password'] = Hash::make($request->post('password'));
             $requestData['email'] = $request->post('email');
@@ -447,7 +450,7 @@ class UserController extends Controller
             $requestData['date_of_birth'] = $request->post('date_of_birth');
             $requestData['nationality'] = $request->post('nationality');
             $requestData['nmc_dmc_pin'] = $request->post('nmc_dmc_pin');
-            // $requestData['date_of_birth'] = $request->post('date_of_birth');
+            $requestData['candidate_id'] = $request->post('candidate_id');
 
             if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['created_by'] = Auth::user()->id;
