@@ -451,8 +451,8 @@ class UserController extends Controller
                 $requestData['parent_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
-            print_r($requestData);
-            exit;
+            // print_r($requestData);
+            // exit;
             $userCreated = User::create($requestData);
             if ($userCreated) {
                 $requestData['user_id'] = $userCreated['id'];
