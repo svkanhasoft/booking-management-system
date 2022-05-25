@@ -114,7 +114,7 @@ class TestController extends Controller
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'forgot',
-                'subject' => 'Booking Management System: Forgot Password',
+                'subject' => 'Pluto: Forgot Password',
                 'data' => $user,
             ];
             echo "<br> Send Email Code  ";

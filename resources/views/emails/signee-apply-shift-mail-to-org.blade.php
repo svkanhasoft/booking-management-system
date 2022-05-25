@@ -148,8 +148,7 @@
 
                                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#;">
                                                 <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Dear
-                                                        {{ $details['data']['first_name']}} {{$details['data']['last_name'] }} <br>
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Hi <br>
                                                     </span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%; margin:7px 0px 7px 0px !important"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">

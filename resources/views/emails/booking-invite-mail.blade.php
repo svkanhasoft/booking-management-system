@@ -147,8 +147,7 @@
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 15px; padding-left: 20px;">
                                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#;">
                                                 {{-- <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Dear
-                                                        {{ $details['data']['user_name'] }} <br>
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Hi<br>
                                                     </span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
@@ -157,7 +156,7 @@
                                                 </p> --}}
                                                 <p class="MsoNormal" style="line-height:145%; padding:7px 0px 7px 0px !important">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
-                                                        Hello Dear,
+                                                        Hi,
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Booking Name:

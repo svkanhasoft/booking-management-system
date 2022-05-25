@@ -239,7 +239,7 @@ class User extends Authenticatable
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'forgot',
-                'subject' => 'Booking Management System: Forgot Password',
+                'subject' => 'Pluto: Forgot Password',
                 'data' => $user,
             ];
             $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
@@ -261,7 +261,7 @@ class User extends Authenticatable
 
             $details = [
                 'mailTitle' => 'register',
-                'subject' => 'Booking Management System: Registration Done!',
+                'subject' => 'Pluto: Registration Done!',
                 'data' => $user,
             ];
             $emailRes = \Mail::to($user['email'])->send(new \App\Mail\SendSmtpMail($details));
@@ -747,7 +747,8 @@ class User extends Authenticatable
     public function bgcolor()
     {
         // return "color: #" . dechex(rand(0,10000000));
-        $res = array("color: #bc8c99", "color: #9261be", "color: #55fbf8", "color: #c54094", "color: #6b3223", "color: #2b0b95", "color: #74952e", "color: #1f5ada", "color: #deadd0", "color: #2a4453", "color: #e6d21a", "color: #1d3151", "color: #cdd53c", "color: #3da117", "color: #adf9e9");
+        $res = array("color: #184a7b");
+        // $res = array("color: #bc8c99", "color: #9261be", "color: #55fbf8", "color: #c54094", "color: #6b3223", "color: #2b0b95", "color: #74952e", "color: #1f5ada", "color: #deadd0", "color: #2a4453", "color: #e6d21a", "color: #1d3151", "color: #cdd53c", "color: #3da117", "color: #adf9e9");
         $key =  array_rand($res);
         return $res[$key];
         // return "color: #" . dechex(rand(0x000000, 0xFFFFFF));

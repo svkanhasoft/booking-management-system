@@ -485,7 +485,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'bookingConfirm',
-                'subject' => 'Booking Management System: Your booking is confirm',
+                'subject' => 'Pluto: Your booking is confirm',
                 'data' => $result
             ];
             $emailRes = \Mail::to($result['email'])
@@ -511,7 +511,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'bookingConfirmMailToOrg',
-                'subject' => 'Booking Management System: booking confirm',
+                'subject' => 'Pluto: booking confirm',
                 'data' => $result
             ];
             $emailRes = \Mail::to($result['org_email'])
@@ -543,7 +543,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'bookingCancelByStaff',
-                'subject' => 'Booking Management System: Your booking is cancelled by admin',
+                'subject' => 'Pluto: Your booking is cancelled by admin',
                 'data' => $result
             ];
             // print_r($details['data']);exit();
@@ -569,7 +569,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'sendShiftOfferToSignee',
-                'subject' => 'Booking Management System: Offer For Shift',
+                'subject' => 'Pluto: Offer For Shift',
                 'data' => $result
             ];
 
@@ -593,7 +593,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'signeeAccepBookingEmailToOrg',
-                'subject' => 'Booking Management System: Booking Accepted By Candidate',
+                'subject' => 'Pluto: Booking Accepted By Candidate',
                 'data' => $res
             ];
 
@@ -617,7 +617,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'sendBookingCreatedEmailToOrg',
-                'subject' => 'Booking Management System: Booking Created',
+                'subject' => 'Pluto: Booking Created',
                 'data' => $res
             ];
             //print_r($details);exit();
@@ -641,7 +641,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'signeeCancelBookingEmailToOrg',
-                'subject' => 'Booking Management System: Booking Cancel By Candidate',
+                'subject' => 'Pluto: Booking Cancel By Candidate',
                 'data' => $res
             ];
             $emailRes = \Mail::to($res['email'])->send(new \App\Mail\SendSmtpMail($details));
@@ -666,7 +666,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'bookingAcceptBySignee',
-                'subject' => 'Booking Management System: Booking Accepted',
+                'subject' => 'Pluto: Booking Accepted',
                 'data' => $result
             ];
             // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
@@ -691,7 +691,7 @@ class Booking extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'bookingCancelBySignee',
-                'subject' => 'Booking Management System: Your booking is cancelled',
+                'subject' => 'Pluto: Your booking is cancelled',
                 'data' => $result
             ];
 
@@ -716,7 +716,7 @@ class Booking extends Model
                     'title' => '',
                     'body' => 'Hello ',
                     'mailTitle' => 'signeeApplyShift',
-                    'subject' => 'Booking Management System: You applied for the shift',
+                    'subject' => 'Pluto: You applied for the shift',
                     'data' => $result
                 ];
                 //print_r($details);exit();
@@ -741,7 +741,7 @@ class Booking extends Model
                     'title' => '',
                     'body' => 'Hello ',
                     'mailTitle' => 'signeeApplyShiftMailToOrg',
-                    'subject' => 'Booking Management System: Shift Apply',
+                    'subject' => 'Pluto: Shift Apply',
                     'data' => $result
                 ];
                 //print_r($details);exit();
@@ -766,7 +766,7 @@ class Booking extends Model
                     'title' => '',
                     'body' => 'Hello ',
                     'mailTitle' => 'bookingInvite',
-                    'subject' => 'Booking Management System: Offer Mail',
+                    'subject' => 'Pluto: Offer Mail',
                     'data' => $val
                 ];
                 $emailRes = \Mail::to($result)

@@ -48,7 +48,8 @@ class TrustsController extends Controller
             "email_address" => 'required|email',
             "address_line_1" => 'required',
             "city" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
-            "post_code" => 'required|numeric|regex:/^\d{6}$/',
+            "post_code" => 'required',
+            // "post_code" => 'required|numeric|regex:/^\d{6}$/',
             "trust_portal_url" => 'required|url',
             "portal_email" => 'required|email',
             "portal_password" => 'required',
@@ -66,8 +67,8 @@ class TrustsController extends Controller
             'hospital.*.ward' => 'required',
             'hospital.*.ward.*.ward_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             'hospital.*.ward.*.ward_type_id' => 'required',
-            'hospital.*.ward.*.ward_number' => 'required|numeric',
-            'training.*.training_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
+            // 'hospital.*.ward.*.ward_number' => 'required|numeric',
+            // 'training.*.training_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
@@ -139,7 +140,8 @@ class TrustsController extends Controller
             "email_address" => 'required|email',
             "address_line_1" => 'required',
             "city" => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
-            "post_code" => 'required|numeric|regex:/^\d{6}$/',
+            "post_code" => 'required',
+            // "post_code" => 'required|numeric|regex:/^\d{6}$/',
             "trust_portal_url" => 'required|url',
             "portal_email" => 'required|email',
             "portal_password" => 'required',
@@ -157,8 +159,8 @@ class TrustsController extends Controller
             'hospital.*.ward' => 'required',
             'hospital.*.ward.*.ward_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
             'hospital.*.ward.*.ward_type_id' => 'required',
-            'hospital.*.ward.*.ward_number' => 'required|numeric',
-            'training.*.training_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
+            // 'hospital.*.ward.*.ward_number' => 'required|numeric',
+            // 'training.*.training_name' => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();

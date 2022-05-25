@@ -146,7 +146,7 @@ class BookingMatch extends Model
                 'title' => '',
                 'body' => 'Hello ',
                 'mailTitle' => 'addMatch',
-                'subject' => 'Booking Management System: Review your match',
+                'subject' => 'Pluto: Review your match',
                 'data' => $result
             ];
             // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));

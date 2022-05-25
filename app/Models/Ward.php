@@ -36,7 +36,8 @@ class Ward extends Model
     function addWard($postData, $trustId, $hospital_id, $isDelete = false)
     {
         foreach ($postData as $key => $val) {
-            if (isset($val['ward_name']) && !empty($val['ward_number'])) {
+            if (isset($val['ward_name'])) { // remove by shailesh on 25 May feedback
+            // if (isset($val['ward_name']) && !empty($val['ward_number'])) {
                 $val['hospital_id'] = $hospital_id;
                 //$val['trust_id'] = $trustId;
                 Ward::create($val);
@@ -67,7 +68,8 @@ class Ward extends Model
 
             // $objBookingMatchDelete = Ward::where('hospital_id', '=', $hospitalId)->whereNotIn('id', $wardidArray)->delete();
             foreach ($postData['ward'] as $keys => $values) {
-                if (isset($values['ward_name']) && !empty($values['ward_number'])) {
+                if (isset($values['ward_name'])) {
+                // if (isset($values['ward_name']) && !empty($values['ward_number'])) {  // remove by shailesh on 25 May feedback
                     if (isset($values['id']) && $values['id'] > 0) {
                         $objWards = Ward::where(['id' => $values['id']])->firstOrNew();
                     } else {

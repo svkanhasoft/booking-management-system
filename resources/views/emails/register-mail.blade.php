@@ -43,8 +43,7 @@
                                     <div style="width:100% !important;">
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 15px; padding-left: 20px;">
                                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#;">
-                                                <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Dear
-                                                        {{ $details['data']['first_name'] }}, <br></span></p>
+                                                <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Hi<br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Email:
                                                         {{ $details['data']['email'] }} <br></span></p>
                                                 <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Password:
@@ -60,8 +59,12 @@
                                                         @endif
                                                     </span>
                                                 </p>
-                                                <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
-                                                        you for being a part of the booking management system family.</span></p>
+                                                <p class="MsoNormal" style="line-height:145%;padding-bottom: 10px;padding-top: 15px;"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                Thank you, <br/>The Pluto Team!</span></p>
+                                                <p class="MsoNormal" style="line-height:145%;padding-bottom: 10px;"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                Copyright © 2022 Pluto, All rights reserved.</span></p>
+                                                <p class="MsoNormal" style="line-height:145%;padding-bottom: 10px;"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                Our mailing address is: <br/>1st Floor, Spectra House, Unit 10 Spring Villa Park, Edgware, HA8 7EB</span></p>
                                             </div>
                                         </div>
                                     </div>

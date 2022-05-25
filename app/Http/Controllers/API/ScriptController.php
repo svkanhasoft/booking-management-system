@@ -167,7 +167,7 @@ class ScriptController extends Controller
                         'title' => '',
                         'body' => 'Hello ',
                         'mailTitle' => 'document_expire',
-                        'subject' => 'Booking Management System: Document Expire Notification',
+                        'subject' => 'Pluto: Document Expire Notification',
                         'data' => $val,
                     ];
                     $emailRes = \Mail::to($val['email'])->send(new \App\Mail\SendSmtpMail($details));

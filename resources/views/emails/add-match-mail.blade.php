@@ -148,8 +148,7 @@
 
                                             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#;">
                                                 <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Dear
-                                                        {{ $details['data']['user_name'] }} <br>
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Hi<br>
                                                     </span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
@@ -168,8 +167,12 @@
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Booking date:
                                                         {{ $details['data']['date'] }} <br></span>
                                                 </p>
-                                                <p class="MsoNormal" style="line-height:145%"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Thank
-                                                        you for being a part of the booking management system family.</span></p>
+                                                <p class="MsoNormal" style="line-height:145%;padding-bottom: 10px;padding-top: 15px;"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                Thank you, <br/>The Pluto Team!</span></p>
+                                                <p class="MsoNormal" style="line-height:145%;padding-bottom: 10px;"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                Copyright © 2022 Pluto, All rights reserved.</span></p>
+                                                <p class="MsoNormal" style="line-height:145%;padding-bottom: 10px;"><span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">
+                                                Our mailing address is: <br/>1st Floor, Spectra House, Unit 10 Spring Villa Park, Edgware, HA8 7EB</span></p>
                                             </div>
                                         </div>
                                     </div>
