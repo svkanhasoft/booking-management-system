@@ -24,3 +24,5 @@ Route::get('/document-cron', [App\Http\Controllers\API\ScriptController::class, 
 Route::get('/getData', [App\Http\Controllers\API\TestController::class, 'getData']);
 Route::get('/getOrg', [App\Http\Controllers\API\TestController::class, 'getOrg']);
 Route::get('/send-email', [App\Http\Controllers\API\TestController::class, 'sendEmail']);
+
+// Route::resource('superadmin/plan', 'SuperAdmin\PlanController');

@@ -42,6 +42,9 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/signup', [OrganizationController::class, 'signup']);
         Route::get('/organization-list/{search?}/{status?}', [OrganizationController::class, 'organizationlist']);
         Route::put('/change-org-activity-status', [SuperAdminController::class, 'ChangeOrgActivityStatus']);
+        Route::get('/get-plan', [SuperAdminController::class, 'getAllPlan']);
+        Route::put('/update-plan/{id?}', [SuperAdminController::class, 'updatePlan']);
+        Route::get('/get-plan/{id?}', [SuperAdminController::class, 'getPlan']);
     });
 });
 

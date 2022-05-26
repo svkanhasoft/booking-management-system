@@ -524,12 +524,12 @@ class BookingController extends Controller
                         $row['Date']  = $task->date;
                         $row['Shift Time']  = $task->start_time.' '.$task->end_time;
                         $row['Amount Payable']  = $task->payableAmont;
-                        $row['Amount Charge']  = $task->payableAmont1;
+                        $row['Amount Charge']  = $task->rate;
                         $row['Trust Code']  = $task->code;
                         // $row['candidate']  = $task->candidate;
                         $explodeResult = explode(',',$task->candidate);
                         foreach($explodeResult as $key => $val){
-                            $row['candidate'.$key]  = $task->organization_name ." / ".trim($val);
+                            $row['candidate'.$key]  = $task->created_shift_org_name ." / ".trim($val);
                         }
                         fputcsv($file, $row);
                         // fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], 

@@ -1230,6 +1230,7 @@ class Booking extends Model
             // 'booking_matches.id as bmid',
             DB::raw('GROUP_CONCAT(CONCAT(u.first_name," ", u.last_name) SEPARATOR ", ") AS candidate'),
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
+            DB::raw('CONCAT(sc.first_name," ", sc.last_name) AS created_shift_org_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
         $query->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
@@ -1240,6 +1241,7 @@ class Booking extends Model
         $query->leftJoin('users',  'users.id', '=', 'trusts.user_id');
         $query->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $query->leftJoin('users as u',  'u.id', '=', 'booking_matches.signee_id');
+        $query->leftJoin('users as sc',  'sc.id', '=', 'bookings.created_by');
 
 
         //$query->where('bookings.status', $status);

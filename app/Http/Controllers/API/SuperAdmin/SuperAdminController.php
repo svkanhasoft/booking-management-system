@@ -11,6 +11,7 @@ use Session;
 use App\Models\User;
 use App\Models\Organization;
 use App\Models\Designation;
+use App\Models\Plan;
 use App\Models\OrganizationUserDetail;
 use Hash;
 
@@ -120,7 +121,7 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function checkSubscriptionExpire($date,$planName)
+    public function checkSubscriptionExpire($date, $planName)
     {
         $date = ($date == null) ? $date : date('Y-m-d');
         if ($date < date('Y-m-d')) {
@@ -372,7 +373,7 @@ class SuperAdminController extends Controller
             return response()->json(['status' => false, 'message' => $error], 200);
         }
         try {
-            $userList = User::where(['parent_id'=> $requestData['id'], 'role'=>'STAFF'])->get()->toArray();
+            $userList = User::where(['parent_id' => $requestData['id'], 'role' => 'STAFF'])->get()->toArray();
             $userArray = array_column($userList, 'id');
             $userArray[] = $requestData['id'];
             $userUpdate = User::whereIn('id', $userArray)->update([
@@ -388,4 +389,68 @@ class SuperAdminController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    /**
+     * Get All plans
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllPlan(Request $request)
+    {
+        try {
+            $planList = Plan::all();
+            return response()->json([
+                'status' => true, 'message' => 'Plan get Successfully',
+                'data' => $planList
+            ], $this->successStatus);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+    /**
+     * @param  int  $id
+     * Update plan by id
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePlan(Request $request,$id)
+    {
+        try {
+            $requestData = $request->all();
+            $planObj = Plan::findOrFail($id);
+            $requestData['updated_by'] = $this->userId;
+            $resonse =  $planObj->update($requestData);
+            if($resonse){
+                return response()->json(['status' => true, 'message' => 'Plan update Successfully.', 'data' => $planObj], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Plan update failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+
+
+    /**
+     * [getPlan description]
+     *
+     * @param   Request  $request  [$request description]
+     * @param   [int]   $id       [$id description]
+     *
+     * @return  [array]             [return description]
+     */
+    public function getPlan(Request $request,$id)
+    {
+        try {
+            $requestData = $request->all();
+            $planObj = Plan::findOrFail($id);
+            if($planObj){
+                return response()->json(['status' => true, 'message' => 'Plan get Successfully.', 'data' => $planObj], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Plan update failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+
 }
