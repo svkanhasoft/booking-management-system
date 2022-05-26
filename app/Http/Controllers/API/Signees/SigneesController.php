@@ -24,6 +24,7 @@ use Config;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 class SigneesController extends Controller
 {
@@ -1024,8 +1025,11 @@ class SigneesController extends Controller
                     $signeeUser->profile_pic = $new_name;
                     $docUpload = $signeeUser->save();
                     $data['profile_pic'] = $new_name;
+                    if (File::exists(public_path() . '/uploads/signee_profile_pic/'.Auth::user()->profile_pic)) {
+                        unlink(public_path() . '/uploads/signee_profile_pic/'.Auth::user()->profile_pic);
+                    }
                     if (!empty($docUpload)) {
-                        return response()->json(['status' => true, 'data' => $data, 'message' => 'Profile picture uploaded successfully'], $this->successStatus);
+                        return response()->json(['status' => true, 'data' => $data, 'message' => 'Picture uploaded successfully'], $this->successStatus);
                     }
                 }
             } else {

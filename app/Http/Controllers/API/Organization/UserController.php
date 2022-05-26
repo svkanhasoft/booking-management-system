@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use Config;
 use DB;
 use DateTime;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -1089,7 +1090,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
-        unlink($file);
+        // unlink($file);
         // return response()->json(['status' => true, 'message' => $file], 200);
     }
 
@@ -1318,4 +1319,47 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+    public function uploadLogo(Request $request)
+    {
+        
+        $requestData = $request->all();
+        $validator = Validator::make($request->all(), [
+            'profile_pic' => 'mimes:jpg,png,jpeg',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try {
+            if ($request->hasfile('profile_pic')) {
+                if ($request->file('profile_pic')) {
+                    $file = $request->file('profile_pic');
+                    $name = $file->getClientOriginalName();
+                    $filename = pathinfo($name, PATHINFO_FILENAME);
+                    $extension = pathinfo($name, PATHINFO_EXTENSION);
+                    $new_filename = $filename . '_' . time() . '.' . strtolower($extension);
+                    // $new_filename = $filename . '_' . time() . '.' . $extension;
+                    //print_r($new_filename);exit;
+                    $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
+                    $file->move(public_path() . '/uploads/org_logo/', $new_name);
+                    $orgUser = User::findOrFail($this->userId);
+                    $orgUser->profile_pic = $new_name;
+                    $docUpload = $orgUser->save();
+                    $data['profile_pic'] = $new_name;
+                    if (File::exists(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic)) {
+                        unlink(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic);
+                    }
+                    if (!empty($docUpload)) {
+                        return response()->json(['status' => true, 'data' => $data, 'message' => 'Logo uploaded successfully'], $this->successStatus);
+                    }
+                }
+            } else {
+                return response()->json(['message' => 'No file selected', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
 }
