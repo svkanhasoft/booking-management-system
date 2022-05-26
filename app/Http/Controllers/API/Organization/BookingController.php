@@ -490,12 +490,14 @@ class BookingController extends Controller
         $path = storage_path('app/public/test');
         // echo '<pre>';
         // print_r($path); exit;
-        $fileName = date('Ymdhms').'completed_bookings.csv';
+        $fileName = date('Ymdhms').'-bookings.csv';
         //$tasks = Task::all();
 
         try {
             $objBooking = new Booking();
             $booking = $objBooking->getCompletedBookingByDate($request);
+            // print_r($booking);
+            // exit;
             //echo storage_path(); exit;
        
             if (count($booking) > 0) {
@@ -507,23 +509,31 @@ class BookingController extends Controller
                     "Expires"             => "0"
                 );
     
-                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time', 'Candidate Name');
+                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time','Amount Payable','Amount Charge','Trust Code', 'Candidate Name');
     
                 //$callback = function() use($booking, $columns) {
-                    $uploadFile = date('Ymdhms').'completed_booking.csv';
+                    $uploadFile = $fileName;
                     $file = fopen($uploadFile, 'w');
                     fputcsv($file, $columns);
                     
                     foreach ($booking as $task) {
-                        
                         $row['Trust Name']  = $task->name;
                         $row['Hospital Name']    = $task->hospital_name;
                         $row['Ward Name']    = $task->ward_name;
                         $row['Grade']  = $task->grade_name;
                         $row['Date']  = $task->date;
                         $row['Shift Time']  = $task->start_time.' '.$task->end_time;
-                        $row['candidate']  = $task->candidate;
-                        fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], $row['Date'], $row['Shift Time'], $row['candidate']));
+                        $row['Amount Payable']  = $task->payableAmont;
+                        $row['Amount Charge']  = $task->payableAmont1;
+                        $row['Trust Code']  = $task->code;
+                        // $row['candidate']  = $task->candidate;
+                        $explodeResult = explode(',',$task->candidate);
+                        foreach($explodeResult as $key => $val){
+                            $row['candidate'.$key]  = $task->organization_name ." / ".trim($val);
+                        }
+                        fputcsv($file, $row);
+                        // fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], 
+                        // $row['Date'], $row['Shift Time'], $row['Amount Payable'],$row['Amount Charge'],$row['Trust Code'], $row['candidate']));
                     }
                     fclose($file);
                     $filePath = url('/'.$uploadFile);

@@ -1218,9 +1218,13 @@ class Booking extends Model
             'bookings.*',
             'ward.ward_name',
             'trusts.name',
+            'trusts.code',
             'grade.grade_name',
             'shift_type.shift_type',
             'hospitals.hospital_name',
+            'booking_matches.signee_booking_status',
+            DB::raw('SUM(bookings.rate - bookings.commission) as payableAmont'),
+            DB::raw('bookings.rate - bookings.commission as payableAmont1'),
             //'organization_shift.start_time',
             //'organization_shift.end_time',
             // 'booking_matches.id as bmid',
@@ -1239,21 +1243,20 @@ class Booking extends Model
 
 
         //$query->where('bookings.status', $status);
-         if ($status == 'COMPLETED') {
+        //  if ($status == 'COMPLETED') {
             $query->where('bookings.date', '<', date('Y-m-d'));
             $query->where('bookings.status', 'CONFIRMED');
-        }
+            $query->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        // }
         //print_r($query->toSql());exit;
         
         if(!empty($request->get('start_date')) && !empty($request->get('end_date'))){
             // $date_range = explode("to", $request->get('date_between'));
             // $from_date = $date_range[0];
             // $to_date = $date_range[1];
-
             $date_range = explode("to", $request->get('date_between'));
             $from_date = $request->get('start_date');
             $to_date = $request->get('end_date');
-
             $query->whereBetween('bookings.date', [$from_date, $to_date]);
         }
 
@@ -1261,8 +1264,6 @@ class Booking extends Model
             $query->where('trusts.id', $trust_id);
         }
         
-        // $query->where('bookings.user_id',Auth::user()->id);
-
         if (Auth::user()->role == 'ORGANIZATION') {
             $staff = User::select('id')->where('parent_id', Auth::user()->id)->get()->toArray();
             $staffIdArray = array_column($staff, 'id');
