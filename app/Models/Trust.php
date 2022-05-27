@@ -27,7 +27,7 @@ class Trust extends Model
      *
      * @var array, .
      */
-    protected $fillable = ['user_id', 'trust_id', 'name', 'code', 'preference_invoice_method', 'email_address', 'address_line_1', 'address_line_2', 'address_line_3', 'city', 'post_code', 'trust_portal_url', 'portal_email', 'portal_password', 'first_name', 'first_name', 'last_name', 'email_address', 'phone_number', 'client', 'department', 'contact_email_address', 'created_by', 'updated_by'];
+    protected $fillable = ['user_id', 'trust_id', 'name', 'code', 'preference_invoice_method', 'email_address', 'address_line_1', 'address_line_2', 'address_line_3', 'city', 'post_code', 'trust_portal_url', 'portal_email', 'portal_password', 'first_name', 'first_name', 'last_name', 'email_address', 'phone_number', 'client', 'department', 'contact_email_address', 'created_by', 'updated_by','payable_day_rate','payable_night_rate','payable_saturday_rate','payable_holiday_rate','chargeable_day_rate','chargeable_night_rate','chargeable_saturday_rate','chargeable_holiday_rate'];
     protected $hidden = ['pseudo', 'deleted_at', 'updated_at', 'created_at'];
 
     public function hospital()
