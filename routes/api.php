@@ -116,6 +116,7 @@ Route::prefix('organization')->group(function () {
         Route::get('/report-completed-booking/{start_date?}{end_date?}/{trust_id?}', [BookingController::class, 'reportCompletedBooking']);
         Route::get('/download-report-completed-booking/{start_date?}{end_date?}/{trust_id?}', [BookingController::class, 'downloadReportCompletedBooking']);
         Route::post('/upload-logo', [UserController::class, 'uploadLogo']);
+        Route::post('/get-rate', [BookingController::class, 'rateCalculation']);
 
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 

@@ -18,7 +18,7 @@ use App\Models\Hospital;
 use App\Models\Notification;
 use App\Models\OrganizationShift;
 use DB;
-
+use DateTime;
 use function PHPUnit\Framework\isNull;
 
 //use App\Storage;
@@ -552,4 +552,28 @@ class BookingController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 200);
         }
     }
+
+
+     /**
+     * [make calculation for shift rate]
+     *
+     * @param   Request  $request  [$request description]
+     *
+     * @return  [array]             [return description]
+     */
+    function rateCalculation(Request $request)
+    {
+        $objBooking = new Booking();
+        $reponse = $objBooking->makeCalculation($request->all());
+        // print_r($reponse);
+        // exit;
+        try {
+            return response()->json(['status' => true, 'message' => 'Calculatoin get successfully', 'data' => $reponse], $this->successStatus);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 200);
+        }
+
+    }
+  
+
 }

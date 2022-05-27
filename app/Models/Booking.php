@@ -153,7 +153,7 @@ class Booking extends Model
         if ($status == 'CREATED') {
             $query->where('bookings.date', '>=', date('y-m-d'));
             $query->where('bookings.status', 'CREATED');
-        }else if ($status == 'CONFIRMED') {
+        } else if ($status == 'CONFIRMED') {
             $query->where('bookings.date', '>=', date('Y-m-d'));
             $query->where('bookings.status', 'CONFIRMED');
         } else if ($status == 'COMPLETED') {
@@ -163,7 +163,7 @@ class Booking extends Model
             $query->where('bookings.status', 'CANCEL');
         }
 
-        
+
         // $query->where('bookings.user_id',Auth::user()->id);
 
         if (Auth::user()->role == 'ORGANIZATION') {
@@ -183,7 +183,6 @@ class Booking extends Model
         $bookingList = $query->latest()->paginate($perPage);
         //print_r($bookingList);exit;
         return $bookingList;
-
     }
     public function getStaffBooking(Request $request, $status = null)
     {
@@ -552,7 +551,7 @@ class Booking extends Model
 
             $objNotification = new Notification();
             // $notification = $objNotification->addNotification($result);
-            $notification = $objNotification->addNotificationV2($result,'shift_cancel','','');
+            $notification = $objNotification->addNotificationV2($result, 'shift_cancel', '', '');
             return true;
         } else {
             return false;
@@ -711,20 +710,20 @@ class Booking extends Model
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
             //print_r($val);exit();
-                //print_r($val);exit();
-                $details = [
-                    'title' => '',
-                    'body' => 'Hello ',
-                    'mailTitle' => 'signeeApplyShift',
-                    'subject' => 'Pluto: You applied for the shift',
-                    'data' => $result
-                ];
-                //print_r($details);exit();
-                // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
+            //print_r($val);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'signeeApplyShift',
+                'subject' => 'Pluto: You applied for the shift',
+                'data' => $result
+            ];
+            //print_r($details);exit();
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
-                $objNotification = new Notification();
-                $notification = $objNotification->addNotification($result);
-                return true;
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
+            return true;
         } else {
             return false;
         }
@@ -736,20 +735,20 @@ class Booking extends Model
         //print_r($result);exit();
         if (isset($result) && !empty($result)) {
             //print_r($val);exit();
-                //print_r($val);exit();
-                $details = [
-                    'title' => '',
-                    'body' => 'Hello ',
-                    'mailTitle' => 'signeeApplyShiftMailToOrg',
-                    'subject' => 'Pluto: Shift Apply',
-                    'data' => $result
-                ];
-                //print_r($details);exit();
-                // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
+            //print_r($val);exit();
+            $details = [
+                'title' => '',
+                'body' => 'Hello ',
+                'mailTitle' => 'signeeApplyShiftMailToOrg',
+                'subject' => 'Pluto: Shift Apply',
+                'data' => $result
+            ];
+            //print_r($details);exit();
+            // $emailRes = \Mail::to($result['email'])->send(new \App\Mail\SendSmtpMail($details));
 
-                $objNotification = new Notification();
-                $notification = $objNotification->addNotification($result);
-                return true;
+            $objNotification = new Notification();
+            $notification = $objNotification->addNotification($result);
+            return true;
         } else {
             return false;
         }
@@ -772,16 +771,14 @@ class Booking extends Model
                 $emailRes = \Mail::to($result)
                     // ->cc('maulik.kanhasoft@gmail.com')
                     // ->bcc('suresh.kanhasoft@gmail.com')
-                ->send(new \App\Mail\SendSmtpMail($details));
+                    ->send(new \App\Mail\SendSmtpMail($details));
                 $objNotification = new Notification();
 
-                if(Auth::user()->role == "ORGANIZATION")
-                {
+                if (Auth::user()->role == "ORGANIZATION") {
                     $notification = $objNotification->addNotificationV2($val, 'org_invite_candidate');
                 } else {
                     $notification = $objNotification->addNotificationV2($val, 'staff_invite_candidate');
                 }
-
             }
             return true;
         } else {
@@ -942,7 +939,7 @@ class Booking extends Model
         return $subArray;
     }
 
-    public function getMatchByBooking($bookingId, $status,$bookingStatus)
+    public function getMatchByBooking($bookingId, $status, $bookingStatus)
     {
         //print_r($status);
         // print_r($bookingStatus);exit;
@@ -989,15 +986,15 @@ class Booking extends Model
         //     $subQuery->where('booking_matches.signee_status', $status);
         //     $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
         // }
-        if($bookingStatus == 'CONFIRMED' && $status == 'Matching'){
+        if ($bookingStatus == 'CONFIRMED' && $status == 'Matching') {
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
             $subQuery->where('booking_matches.signee_status', 'Matching');
-        } else if($bookingStatus == 'CONFIRMED' && $status == 'CONFIRMED'){
+        } else if ($bookingStatus == 'CONFIRMED' && $status == 'CONFIRMED') {
             $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
         } else {
             $subQuery->where('booking_matches.signee_status', $status);
             $subQuery->whereNull('signee_organization.deleted_at');
-            $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED','PENDING','CANCEL','INVITE','APPLY','REJECTED','OFFER','DECLINE','ACCEPT'));
+            $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED', 'PENDING', 'CANCEL', 'INVITE', 'APPLY', 'REJECTED', 'OFFER', 'DECLINE', 'ACCEPT'));
         }
         $subQuery->where('booking_matches.deleted_at');
 
@@ -1202,18 +1199,18 @@ class Booking extends Model
 
     public function getCompletedBookingByDate(Request $request)
     {
-        if($request->get('act')=='export_csv'){
+        if ($request->get('act') == 'export_csv') {
             $export =  "yes";
-        }else{
+        } else {
             $export =  "no";
         }
-       
+
         //echo $export; exit;
         $perPage = Config::get('constants.pagination.perPage');
-        $date_range = !empty($request->get('date_between'))?$request->get('date_between'):"";
-        $trust_id = !empty($request->get('trust_id'))?$request->get('trust_id'):"";
+        $date_range = !empty($request->get('date_between')) ? $request->get('date_between') : "";
+        $trust_id = !empty($request->get('trust_id')) ? $request->get('trust_id') : "";
         $status = 'COMPLETED';
-        
+
         $query = Booking::select(
             'bookings.*',
             'ward.ward_name',
@@ -1246,13 +1243,13 @@ class Booking extends Model
 
         //$query->where('bookings.status', $status);
         //  if ($status == 'COMPLETED') {
-            $query->where('bookings.date', '<', date('Y-m-d'));
-            $query->where('bookings.status', 'CONFIRMED');
-            $query->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        $query->where('bookings.date', '<', date('Y-m-d'));
+        $query->where('bookings.status', 'CONFIRMED');
+        $query->where('booking_matches.signee_booking_status', 'CONFIRMED');
         // }
         //print_r($query->toSql());exit;
-        
-        if(!empty($request->get('start_date')) && !empty($request->get('end_date'))){
+
+        if (!empty($request->get('start_date')) && !empty($request->get('end_date'))) {
             // $date_range = explode("to", $request->get('date_between'));
             // $from_date = $date_range[0];
             // $to_date = $date_range[1];
@@ -1262,10 +1259,10 @@ class Booking extends Model
             $query->whereBetween('bookings.date', [$from_date, $to_date]);
         }
 
-        if(!empty($trust_id)){
+        if (!empty($trust_id)) {
             $query->where('trusts.id', $trust_id);
         }
-        
+
         if (Auth::user()->role == 'ORGANIZATION') {
             $staff = User::select('id')->where('parent_id', Auth::user()->id)->get()->toArray();
             $staffIdArray = array_column($staff, 'id');
@@ -1281,19 +1278,165 @@ class Booking extends Model
         $query->whereNull('bookings.deleted_at');
         $query->orderBy('bookings.date', 'ASC');
         $query->groupBy('bookings.id');
-       // print_r($query->toSql());exit;
-        
-        if($export=='yes'){
+        // print_r($query->toSql());exit;
+
+        if ($export == 'yes') {
             $bookingList = $query->get();
-        }else{
+        } else {
             $bookingList = $query->latest()->paginate($perPage);
         }
 
         // $query = Booking::select();
         //print_r($query->toSql());exit;
         //print_r($bookingList);exit;
-       return $bookingList;
-
+        return $bookingList;
     }
 
+
+    public function makeCalculation($postData)
+    {
+        $payable_day_rate = 10;
+        $payable_night_rate = 11;
+        $payable_saturday_rate = 13;
+        $payable_holiday_rate = 15;
+
+        $chargeable_day_rate = 15;
+        $chargeable_night_rate = 18;
+        $chargeable_saturday_rate = 22;
+        $chargeable_holiday_rate = 25;
+
+        $convertStartTime =  date('H:i:s', strtotime($postData['start_time']));
+        $convertEndTime =  date('H:i:s', strtotime($postData['end_time']));
+
+        $payableAmount = 0;
+        $chargebleAmount = 0;
+        $returnResult = [];
+        $dayName = date('l', strtotime($postData['date']));
+        if ($dayName == 'Sunday') {
+            if ($convertStartTime > "13:00:00") {
+                if ($convertStartTime >= "19:30:00") {
+                    $dayTime = $this->getTimeDiff($convertStartTime, "23:60:00");
+
+                    $payableAmount += $dayTime * $payable_holiday_rate;
+                    $chargebleAmount += $dayTime * $chargeable_holiday_rate;
+
+                    if ($convertEndTime > "06:00:00") {
+                        $upto6 = $this->getTimeDiff("00:00:00", "06:00:00");
+                        $above6 = $this->getTimeDiff("06:00:00", $convertEndTime);
+                        $payableAmount += $above6 * $payable_day_rate;
+                        $payableAmount += $upto6 * $payable_night_rate;
+                        $chargebleAmount += $above6 * $chargeable_day_rate;
+                        $chargebleAmount += $upto6 * $chargeable_night_rate;
+                    } else {
+                        $nightTime = $this->getTimeDiff("00:00:00", $convertEndTime);
+                        $payableAmount += $nightTime * $payable_night_rate;
+                        $chargebleAmount += $nightTime * $chargeable_night_rate;
+                    }
+                } else {
+                    $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                    $payableAmount += $dayTime * $payable_saturday_rate;
+                    $chargebleAmount += $dayTime * $chargeable_saturday_rate;
+                }
+            } else {
+                $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                $payableAmount += $dayTime * $payable_holiday_rate;
+                $chargebleAmount += $dayTime * $chargeable_holiday_rate;
+            }
+            // echo "=> $payableAmount payableAmount";
+            // echo "=> $chargebleAmount chargebleAmount";
+        } else if ($dayName == 'Saturday') {
+            if ($convertStartTime > "13:00") {
+                if ($convertStartTime >= "19:30") {
+                    $dayTime = $this->getTimeDiff($convertStartTime, "23:60:00");
+                    $nightTime = $this->getTimeDiff("00:00:00", $convertEndTime);
+                    $payableAmount += $dayTime * $payable_saturday_rate;
+                    $payableAmount += $nightTime * $payable_holiday_rate;
+                    $chargebleAmount += $dayTime * $chargeable_saturday_rate;
+                    $chargebleAmount += $nightTime * $chargeable_holiday_rate;
+                } else {
+                    $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                    $payableAmount += $dayTime * $payable_saturday_rate;
+                    $chargebleAmount += $dayTime * $chargeable_saturday_rate;
+                }
+            } else {
+                $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                $payableAmount += $dayTime * $payable_saturday_rate;
+                $chargebleAmount += $dayTime * $chargeable_saturday_rate;
+                //     echo "=> $payableAmount payableAmount";
+                //     echo "=> $chargebleAmount chargebleAmount";
+            }
+        } else {
+            // } else if ($dayName == 'Monday') {
+            if ($convertStartTime > 13) {
+                if ($convertStartTime <= "20:00") {
+                    $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+                    $nightTime = $this->getTimeDiff("20:00:00", "23:60:00");
+                    $payableAmount += $dayTime * $payable_day_rate;
+                    $payableAmount += $nightTime * $payable_night_rate;
+                    $chargebleAmount += $dayTime * $chargeable_day_rate;
+                    $chargebleAmount += $nightTime * $chargeable_night_rate;
+                    // echo "$dayTime == $nightTime";
+                    // exit;
+                } else {
+                    $timeDay = $this->getTimeDiff($convertStartTime, "23:60:00");
+                    $payableAmount += $timeDay * $payable_day_rate;
+                    $chargebleAmount += $timeDay * $chargeable_day_rate;
+                }
+
+                if ($convertEndTime > 6) {
+                    $upto6 = $this->getTimeDiff("00:00:00", "06:00:00");
+                    $above6 = $this->getTimeDiff("06:00:00", $convertEndTime);
+                    $payableAmount += $above6 * $payable_day_rate;
+                    $payableAmount += $upto6 * $payable_night_rate;
+                    $chargebleAmount += $above6 * $chargeable_day_rate;
+                    $chargebleAmount += $upto6 * $chargeable_night_rate;
+                    // echo "$upto6 == $above6";
+                } else {
+                    $endTime = $this->getTimeDiff("00:00:00", $convertEndTime);
+                }
+            } else {
+                $dayShift = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                $payableAmount += $dayShift * $payable_day_rate;
+                $chargebleAmount += $dayShift * $chargeable_day_rate;
+            }
+            // echo "=> $chargebleAmount chargebleAmount";
+            // echo "=> $payableAmount payableAmount";exit;
+        }
+        $returnResult['payableAmount'] = $payableAmount;
+        $returnResult['chargebleAmount'] = $chargebleAmount;
+        return $returnResult;
+    }
+
+    /**
+     * [getTimeDiff description]
+     *
+     * @param   [time]  $dtime  [$dtime start time]
+     * @param   [time]  $atime  [$atime end time]
+     *
+     * @return  [array]          [return calculation array]
+     */
+    function getTimeDiff($dtime, $atime)
+    {
+        $nextDay = $dtime > $atime ? 1 : 0;
+        $dep = explode(':', $dtime);
+        $arr = explode(':', $atime);
+        $diff = abs(mktime($dep[0], $dep[1], 0, date('n'), date('j'), date('y')) - mktime($arr[0], $arr[1], 0, date('n'), date('j') + $nextDay, date('y')));
+        $hours = floor($diff / (60 * 60));
+        $mins = floor(($diff - ($hours * 60 * 60)) / (60));
+        $secs = floor(($diff - (($hours * 60 * 60) + ($mins * 60))));
+        if (strlen($hours) < 2) {
+            $hours = "0" . $hours;
+        }
+        if (strlen($mins) < 2) {
+            $mins = "0" . $mins;
+        }
+        if (strlen($secs) < 2) {
+            $secs = "0" . $secs;
+        }
+        if ($mins == 30) {
+            $mins = 5;
+        }
+        return $hours . '.' . $mins;
+        // return $hours.':'.$mins.':'.$secs;
+    }
 }
