@@ -1347,7 +1347,7 @@ class UserController extends Controller
                     $orgUser->profile_pic = $new_name;
                     $docUpload = $orgUser->save();
                     $data['profile_pic'] = $new_name;
-                    if (File::exists(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic)) {
+                    if (!empty(Auth::user()->profile_pic) && File::exists(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic)) {
                         unlink(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic);
                     }
                     if (!empty($docUpload)) {

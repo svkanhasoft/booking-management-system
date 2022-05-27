@@ -1025,7 +1025,7 @@ class SigneesController extends Controller
                     $signeeUser->profile_pic = $new_name;
                     $docUpload = $signeeUser->save();
                     $data['profile_pic'] = $new_name;
-                    if (File::exists(public_path() . '/uploads/signee_profile_pic/'.Auth::user()->profile_pic)) {
+                    if (!empty(Auth::user()->profile_pic) && File::exists(public_path() . '/uploads/signee_profile_pic/'.Auth::user()->profile_pic)) {
                         unlink(public_path() . '/uploads/signee_profile_pic/'.Auth::user()->profile_pic);
                     }
                     if (!empty($docUpload)) {
