@@ -19,6 +19,8 @@ use App\Models\Notification;
 use App\Models\OrganizationShift;
 use DB;
 use DateTime;
+use DatePeriod;
+use DateInterval;
 use function PHPUnit\Framework\isNull;
 
 //use App\Storage;
@@ -56,9 +58,11 @@ class BookingController extends Controller
             'ward_id' => 'required',
             'grade_id' => 'required',
             'date' => 'required',
-            'shift_id' => 'required',
+            // 'shift_id' => 'required',
             'hospital_id' => 'required',
-            'shift_type_id' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            // 'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
             'rate' => 'required',
             'commission' => 'required'
@@ -71,7 +75,7 @@ class BookingController extends Controller
         try {
             $requestData = $request->all();
 
-            $shift = OrganizationShift::where('id', $requestData['shift_id'])->first();
+            // $shift = OrganizationShift::where('id', $requestData['shift_id'])->first();
             //print_r($shift);exit();
             // print_r($requestData);exit();
             if ($requestData['date'] < date('Y-m-d')) {
@@ -85,9 +89,12 @@ class BookingController extends Controller
                 $requestData['user_id'] = Auth::user()->parent_id;
                 $requestData['created_by'] = Auth::user()->id;
             }
-            $requestData['start_time'] = $shift['start_time'];
-            $requestData['end_time'] = $shift['end_time'];
+            // $requestData['start_time'] = $shift['start_time'];
+            // $requestData['end_time'] = $shift['end_time'];
             $bookingCreated = Booking::create($requestData);
+         
+            // $bookingCreated['id'] = 916;
+            // $bookingCreated = Booking::create($requestData);
             if ($bookingCreated) {
                 $objBookingSpeciality = new BookingSpeciality();
                 $objBookingSpeciality->addSpeciality($requestData['speciality'], $bookingCreated['id'], false);
@@ -169,7 +176,7 @@ class BookingController extends Controller
             'date' => 'required',
             'hospital_id' => 'required',
             'shift_type_id' => 'required',
-            'shift_id' => 'required',
+            // 'shift_id' => 'required',
             'speciality' => 'required:speciality,[]',
             'rate' => 'required',
             'commission' => 'required'
@@ -189,8 +196,8 @@ class BookingController extends Controller
             if ($booking) {
                 $bookingShift = OrganizationShift::findOrFail($requestData['shift_id']);
                 //print_r($bookinghift);exit();
-                $requestData['start_time'] = $bookingShift['start_time'];
-                $requestData['end_time'] = $bookingShift['end_time'];
+                // $requestData['start_time'] = $bookingShift['start_time'];
+                // $requestData['end_time'] = $bookingShift['end_time'];
                 if (Auth::user()->role == 'ORGANIZATION') {
                     $requestData['updated_by'] = $this->userId;
                 } else {
@@ -574,6 +581,32 @@ class BookingController extends Controller
         }
 
     }
-  
+
+      /**
+     * [make calculation for shift rate]
+     *
+     * @param   Request  $request  [$request description]
+     *
+     * @return  [array]             [return description]
+     */
+    function getHours(Request $request)
+    {
+        $minutes = 30;
+        $start = "00:00";
+        $end = "23:45";
+        $startDate = DateTime::createFromFormat("H:i", $start);
+        $endDate = DateTime::createFromFormat("H:i", $end);
+        $interval = new DateInterval("PT".$minutes."M");
+        $dateRange = new DatePeriod($startDate, $interval, $endDate);
+        $hoursArray = [];
+        foreach ($dateRange as $key => $date) {
+            $hoursArray[$key] = $date->format("H:i:s");
+        }
+        try {
+            return response()->json(['status' => true, 'message' => 'Hours get successfully', 'data' => $hoursArray], $this->successStatus);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 200);
+        }
+    }
 
 }

@@ -958,11 +958,27 @@ class SigneesController extends Controller
     public function checkShiftBooking($booking_id, $signee_id)
     {
         $bookRes = Booking::find($booking_id);
-        $count = BookingMatch::where([
-            'signee_id' => $signee_id,
-            'signee_booking_status' => 'CONFIRMED', 'shift_id' => $bookRes['shift_id'],
-            'booking_date' => $bookRes['date']
-        ])->get();
+        // $count = BookingMatch::where([
+        //     'signee_id' => $signee_id,
+        //     'signee_booking_status' => 'CONFIRMED', 'shift_id' => $bookRes['shift_id'],
+        //     'booking_date' => $bookRes['date']
+        // ])->get();
+        $start_time = $bookRes['start_time'];
+        $end_time = $bookRes['end_time'];
+        $subQuery = Booking::select('bookings.*', 'booking_matches.signee_booking_status');
+        $subQuery->join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        $subQuery->where('bookings.date', $bookRes['date']);
+        $subQuery->where('booking_matches.signee_id', $signee_id);
+
+        $subQuery->where(function($query)  
+            use($start_time,$end_time){      
+                $query->whereBetween('bookings.start_time', [$start_time, $end_time])
+                ->OrWhereBetween('bookings.end_time', [$start_time, $end_time]);
+        });
+        $subQuery->whereNull('bookings.deleted_at');
+        $count = $subQuery->get()->toArray();
+
         return $count;
     }
 

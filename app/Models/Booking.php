@@ -8,7 +8,7 @@ use DB;
 use Illuminate\Http\Request;
 use Config;
 use Auth;
-
+use App\Models\Trust;
 class Booking extends Model
 {
     use SoftDeletes;
@@ -78,8 +78,8 @@ class Booking extends Model
             'grade.grade_name',
             'hospitals.hospital_name',
             'shift_type.shift_type',
-            'organization_shift.start_time',
-            'organization_shift.end_time',
+            // 'organization_shift.start_time',
+            // 'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -99,8 +99,8 @@ class Booking extends Model
             'bookings.*',
             'ward.ward_name',
             'trusts.name',
-            'organization_shift.start_time',
-            'organization_shift.end_time',
+            // 'organization_shift.start_time',
+            // 'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -196,8 +196,8 @@ class Booking extends Model
             'trusts.name',
             'grade.grade_name',
             'shift_type.shift_type',
-            'organization_shift.start_time',
-            'organization_shift.end_time',
+            // 'organization_shift.start_time',
+            // 'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -236,8 +236,8 @@ class Booking extends Model
             'trusts.name',
             'grade.grade_name',
             'shift_type.shift_type',
-            'organization_shift.start_time',
-            'organization_shift.end_time',
+            // 'organization_shift.start_time',
+            // 'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -303,6 +303,7 @@ class Booking extends Model
 
     public function getMetchByBookingId($matchiId = null)
     {
+       
         $subQuery = Booking::select(
             'users.email',
             'signee_preference.user_id as signeeId',
@@ -316,7 +317,7 @@ class Booking extends Model
             'users.deleted_at as userDelete',
             'bookings.user_id as organization_id',
             'bookings.*',
-            'shift_type.shift_type',
+            // 'shift_type.shift_type',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
@@ -330,7 +331,7 @@ class Booking extends Model
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS user_name'),
         );
         // $subQuery->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
-        $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        // $subQuery->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id'); // Shailesh
         $subQuery->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
         $subQuery->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $subQuery->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
@@ -340,6 +341,7 @@ class Booking extends Model
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
+ 
 
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $matchiId);
@@ -349,6 +351,7 @@ class Booking extends Model
         $subQuery->whereNull('users.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
+        
 
         // $subQuery->whereRaw("(
         //     IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
@@ -368,7 +371,7 @@ class Booking extends Model
 
         $res = $subQuery->get()->toArray();
 
-        //print_r($res);exit();
+        // print_r($res);exit();
         return $res;
     }
 
@@ -887,8 +890,8 @@ class Booking extends Model
             'bookings.*',
             'ward.ward_name',
             'trusts.name',
-            'organization_shift.start_time',
-            'organization_shift.end_time',
+            // 'organization_shift.start_time',
+            // 'organization_shift.end_time',
             DB::raw('CONCAT(users.first_name," ", users.last_name) AS organization_name'),
         );
         $query->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
@@ -1295,15 +1298,18 @@ class Booking extends Model
 
     public function makeCalculation($postData)
     {
-        $payable_day_rate = 10;
-        $payable_night_rate = 11;
-        $payable_saturday_rate = 13;
-        $payable_holiday_rate = 15;
+        $trustResult = Trust::find($postData['trust_id']);
+        // print_r($trustResult->user_id);
+        // exit;
+        $payable_day_rate = (isset($trustResult->payable_day_rate)) ? $trustResult->payable_day_rate : 0;
+        $payable_night_rate = (isset($trustResult->payable_night_rate)) ? $trustResult->payable_night_rate : 0;
+        $payable_saturday_rate = (isset($trustResult->payable_saturday_rate)) ? $trustResult->payable_saturday_rate : 0;
+        $payable_holiday_rate = (isset($trustResult->payable_holiday_rate)) ? $trustResult->payable_holiday_rate : 0;
 
-        $chargeable_day_rate = 15;
-        $chargeable_night_rate = 18;
-        $chargeable_saturday_rate = 22;
-        $chargeable_holiday_rate = 25;
+        $chargeable_day_rate = (isset($trustResult->chargeable_day_rate)) ? $trustResult->chargeable_day_rate : 0;
+        $chargeable_night_rate = (isset($trustResult->chargeable_night_rate)) ? $trustResult->chargeable_night_rate : 0;
+        $chargeable_saturday_rate = (isset($trustResult->chargeable_saturday_rate)) ? $trustResult->chargeable_saturday_rate : 0;
+        $chargeable_holiday_rate = (isset($trustResult->chargeable_holiday_rate)) ? $trustResult->chargeable_holiday_rate : 0;
 
         $convertStartTime =  date('H:i:s', strtotime($postData['start_time']));
         $convertEndTime =  date('H:i:s', strtotime($postData['end_time']));
@@ -1402,8 +1408,8 @@ class Booking extends Model
             // echo "=> $chargebleAmount chargebleAmount";
             // echo "=> $payableAmount payableAmount";exit;
         }
-        $returnResult['payableAmount'] = $payableAmount;
-        $returnResult['chargebleAmount'] = $chargebleAmount;
+        $returnResult['payableAmount'] = number_format($payableAmount,2);
+        $returnResult['chargebleAmount'] = number_format($chargebleAmount,2);
         return $returnResult;
     }
 

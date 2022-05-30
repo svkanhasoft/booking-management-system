@@ -410,7 +410,7 @@ class UserController extends Controller
      */
     public function addSignee(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             "email" => 'required|unique:users',
             "first_name" => 'required|regex:/^[a-zA-Z]+$/u|max:255',
@@ -424,11 +424,11 @@ class UserController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => $error], 200);
         }
-        
+
         $requestData = $request->all();
         // echo '<pre>';
         // print_r($requestData['date_of_birth']); exit;
-        if($requestData['date_of_birth']!=""){
+        if ($requestData['date_of_birth'] != "") {
             $a = new DateTime($requestData['date_of_birth']);
             $b = new Datetime(date('Y-m-d'));
             $interval = $b->diff($a);
@@ -467,11 +467,11 @@ class UserController extends Controller
                 $orgResult = SigneesDetail::create($requestData);
                 //echo '<pre>';
                 //print_r($orgResult); exit;
-                if(!empty($requestData['speciality'])){
+                if (!empty($requestData['speciality'])) {
                     $objSpeciality = new SigneeSpecialitie();
                     $objSpeciality->updateSpeciality($requestData['speciality'], $userCreated['id'], $this->userId, false);
                 }
-    
+
                 //$requestData['organization_id'] = $request->post('organization_id');
                 $requestData['organization_id'] = $this->userId;
                 $requestData['user_id'] = $userCreated['id'];
@@ -652,7 +652,7 @@ class UserController extends Controller
             $objBooking = new Booking();
             $signees = $objBooking->getBookingCancelByAdminEmail($requestData['booking_id']);
 
-            foreach($signees as $val){
+            foreach ($signees as $val) {
                 $objBooking->sendBookingCancelByStaffEmail($val);
             }
 
@@ -803,12 +803,31 @@ class UserController extends Controller
     public function checkShiftBooking($booking_id, $signee_id)
     {
         $bookRes = Booking::find($booking_id);
-        $count = BookingMatch::where([
-            'signee_id' => $signee_id,
-            'signee_booking_status' => 'CONFIRMED', 'shift_id' => $bookRes['shift_id'],
-            // 'booking_id' => $requestData['booking_id'],
-            'booking_date' => $bookRes['date']
-        ])->get();
+        $start_time = $bookRes['start_time'];
+        $end_time = $bookRes['end_time'];
+ 
+        // $count = BookingMatch::where([
+        //     'signee_id' => $signee_id,
+        //     'signee_booking_status' => 'CONFIRMED', 'shift_id' => $bookRes['shift_id'],
+        //     // 'booking_id' => $requestData['booking_id'],
+        //     'booking_date' => $bookRes['date']
+        // ])->get();
+
+        $subQuery = Booking::select('bookings.*', 'booking_matches.signee_booking_status');
+        $subQuery->join('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
+        // $subQuery->where('bookings.id', $matchiId);
+        $subQuery->where('booking_matches.signee_booking_status', 'CONFIRMED');
+        $subQuery->where('bookings.date', $bookRes['date']);
+        $subQuery->where('booking_matches.signee_id', $signee_id);
+
+        $subQuery->where(function($query)  
+            use($start_time,$end_time){      
+                $query->whereBetween('bookings.start_time', [$start_time, $end_time])
+                ->OrWhereBetween('bookings.end_time', [$start_time, $end_time]);
+        });
+        $subQuery->whereNull('bookings.deleted_at');
+        $count = $subQuery->get()->toArray();
+     
         return $count;
     }
 
@@ -1311,7 +1330,7 @@ class UserController extends Controller
                 Auth::user()->subscription_name = $request->post('subscription_name');
                 Auth::user()->subscription_purchase_date = $request->post('subscription_purchase_date');
                 Auth::user()->subscription_expire_date = $paymentObject->subscription_expire_date;
-                return response()->json(['status' => true, 'data' => Auth::user() , 'message' => strtolower($request->post('subscription_name')) . ' subscription successfully purchased'], $this->successStatus);
+                return response()->json(['status' => true, 'data' => Auth::user(), 'message' => strtolower($request->post('subscription_name')) . ' subscription successfully purchased'], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Something Went Wrong!', 'status' => false], 404);
             }
@@ -1322,7 +1341,7 @@ class UserController extends Controller
 
     public function uploadLogo(Request $request)
     {
-        
+
         $requestData = $request->all();
         $validator = Validator::make($request->all(), [
             'profile_pic' => 'mimes:jpg,png,jpeg',
@@ -1347,8 +1366,8 @@ class UserController extends Controller
                     $orgUser->profile_pic = $new_name;
                     $docUpload = $orgUser->save();
                     $data['profile_pic'] = $new_name;
-                    if (!empty(Auth::user()->profile_pic) && File::exists(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic)) {
-                        unlink(public_path() . '/uploads/org_logo/'.Auth::user()->profile_pic);
+                    if (!empty(Auth::user()->profile_pic) && File::exists(public_path() . '/uploads/org_logo/' . Auth::user()->profile_pic)) {
+                        unlink(public_path() . '/uploads/org_logo/' . Auth::user()->profile_pic);
                     }
                     if (!empty($docUpload)) {
                         return response()->json(['status' => true, 'data' => $data, 'message' => 'Logo uploaded successfully'], $this->successStatus);
@@ -1361,5 +1380,4 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
-
 }
