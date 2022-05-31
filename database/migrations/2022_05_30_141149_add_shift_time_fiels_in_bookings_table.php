@@ -15,6 +15,7 @@ class AddShiftTimeFielsInBookingsTable extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             $table->unsignedInteger('shift_id')->change()->nullable();
+            $table->decimal('commission',10,2)->change();
         });
         Schema::table('booking_matches', function (Blueprint $table) {
             $table->unsignedInteger('shift_id')->change()->nullable();

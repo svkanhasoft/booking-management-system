@@ -74,13 +74,16 @@ class BookingController extends Controller
         }
         try {
             $requestData = $request->all();
-
+ 
             // $shift = OrganizationShift::where('id', $requestData['shift_id'])->first();
             //print_r($shift);exit();
             // print_r($requestData);exit();
             if ($requestData['date'] < date('Y-m-d')) {
                 return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
+            }elseif ($requestData['date'] == date('Y-m-d') && $requestData['start_time'] < date('H:i:s')) {
+                return response()->json(['message' => 'The start time must be greater than the current time!', 'status' => false], 200);
             }
+            
             if (Auth::user()->role == 'ORGANIZATION') {
                 $requestData['user_id'] = Auth::user()->id;
                 $requestData['created_by'] = Auth::user()->id;
@@ -175,7 +178,7 @@ class BookingController extends Controller
             'grade_id' => 'required',
             'date' => 'required',
             'hospital_id' => 'required',
-            'shift_type_id' => 'required',
+            // 'shift_type_id' => 'required',
             // 'shift_id' => 'required',
             'speciality' => 'required:speciality,[]',
             'rate' => 'required',
@@ -192,9 +195,11 @@ class BookingController extends Controller
             // {
             //     return response()->json(['message' => 'booking date must be greater then or equal to today\'s date', 'status' => false], 200);
             // }
-
+            if ($requestData['date'] == date('Y-m-d') && $requestData['start_time'] < date('H:i:s')) {
+                return response()->json(['message' => 'The start time must be greater than the current time!', 'status' => false], 200);
+            }
             if ($booking) {
-                $bookingShift = OrganizationShift::findOrFail($requestData['shift_id']);
+                // $bookingShift = OrganizationShift::findOrFail($requestData['shift_id']);
                 //print_r($bookinghift);exit();
                 // $requestData['start_time'] = $bookingShift['start_time'];
                 // $requestData['end_time'] = $bookingShift['end_time'];

@@ -295,7 +295,7 @@ class BookingMatch extends Model
         $booking->Join('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $booking->Join('ward',  'ward.id', '=', 'bookings.ward_id');
         $booking->Join('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
-        $booking->Join('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
+        $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('booking_matches', function($join)
         {
             $join->on('booking_matches.booking_id', '=', 'bookings.id');
