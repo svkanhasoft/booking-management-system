@@ -31,7 +31,7 @@ class Booking extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'staff_id', 'hospital_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'rate', 'commission', 'start_time', 'end_time', 'created_by', 'updated_by'];
+    protected $fillable = ['user_id', 'staff_id', 'hospital_id', 'reference_id', 'trust_id', 'ward_id', 'shift_id', 'shift_type_id', 'date', 'grade_id', 'status', 'payable', 'chargeable', 'start_time', 'end_time', 'created_by', 'updated_by'];
     protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
 
     // public function getBooking($bookingId = null)
@@ -1223,9 +1223,9 @@ class Booking extends Model
             'shift_type.shift_type',
             'hospitals.hospital_name',
             'booking_matches.signee_booking_status',
-            DB::raw('SUM(bookings.rate) as payableAmont'),
-            DB::raw('bookings.rate - bookings.commission as payableAmont1'),
-            DB::raw('SUM(bookings.commission) as chargeAble'),
+            DB::raw('SUM(bookings.payable) as payableAmount'),
+            DB::raw('bookings.payable - bookings.chargeable as payableAmount1'),
+            DB::raw('SUM(bookings.chargeable) as totalChargeable'),
             //'organization_shift.start_time',
             //'organization_shift.end_time',
             // 'booking_matches.id as bmid',

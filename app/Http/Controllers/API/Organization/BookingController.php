@@ -64,8 +64,8 @@ class BookingController extends Controller
             'end_time' => 'required',
             // 'shift_type_id' => 'required',
             'speciality' => 'required:speciality,[]',
-            'rate' => 'required',
-            'commission' => 'required'
+            'payable' => 'required',
+            'chargeable' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -181,8 +181,8 @@ class BookingController extends Controller
             // 'shift_type_id' => 'required',
             // 'shift_id' => 'required',
             'speciality' => 'required:speciality,[]',
-            'rate' => 'required',
-            'commission' => 'required'
+            'payable' => 'required',
+            'chargeable' => 'required'
         ]);
         if ($validator->fails()) {
             $error = $validator->messages();
@@ -535,8 +535,8 @@ class BookingController extends Controller
                         $row['Grade']  = $task->grade_name;
                         $row['Date']  = $task->date;
                         $row['Shift Time']  = $task->start_time.' '.$task->end_time;
-                        $row['Amount Payable']  = $task->payableAmont;
-                        $row['Amount Charge']  = $task->chargeAble;
+                        $row['Amount Payable']  = $task->payableAmount;
+                        $row['Amount Charge']  = $task->totalChargeable;
                         $row['Trust Code']  = $task->code;
                         // $row['candidate']  = $task->candidate;
                         $explodeResult = explode(',',$task->candidate);

@@ -171,7 +171,7 @@ class BookingMatch extends Model
             // 'bookings.date',
             // 'bookings.start_time',
             // 'bookings.end_time',
-            // 'bookings.rate',
+            // 'bookings.payable',
             //'specialities.speciality_name',
             'hospitals.hospital_name',
             'ward.ward_name',
@@ -284,7 +284,7 @@ class BookingMatch extends Model
             'booking_matches.id as booking_matched_id',
             DB::raw('GROUP_CONCAT( DISTINCT specialities.id SEPARATOR ", ") AS speciality_id'),
             DB::raw('GROUP_CONCAT( DISTINCT specialities.speciality_name SEPARATOR ", ") AS speciality_name'),
-            'bookings.rate',
+            'bookings.payable',
         );
 
         $booking->Join('signee_organization',  'signee_organization.organization_id', '=', 'bookings.user_id');

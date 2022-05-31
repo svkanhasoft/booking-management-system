@@ -342,10 +342,10 @@
             </tr>
             <tr>
                 <td class="blue-text">
-                    Rate
+                    Payable
                 </td>
                 <td>
-                    <span id="lblAccName">{{ $data['booking']['rate'] }}</span>
+                    <span id="lblAccName">{{ $data['booking']['payable'] }}</span>
                 </td>
             </tr>
             <tr>
@@ -428,10 +428,10 @@
                         </tr>
                         {{-- <tr>
                             <td class="blue-text">
-                                Rate
+                            payable
                             </td>
                             <td>
-                                <span id="lblSwift">{{ $val['rate'] }}</span>
+                                <span id="lblSwift">{{ $val['payable'] }}</span>
                             </td>
                         </tr> --}}
                         <tr>

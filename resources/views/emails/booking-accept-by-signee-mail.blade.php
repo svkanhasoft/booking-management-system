@@ -174,8 +174,8 @@
                                                         {{ $details['data']['ward_type'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Rate:
-                                                        {{ $details['data']['rate'] }} <br></span>
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Payable:
+                                                        {{ $details['data']['payable'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
                                                     <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Start time:
