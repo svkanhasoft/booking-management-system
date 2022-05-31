@@ -862,7 +862,10 @@ class SigneesController extends Controller
     {
         try {
             $document = SigneeDocument::find($id);
-            unlink(public_path() . "/uploads/signee_docs/" . $document->file_name);
+            
+            if (!empty(!$document->file_name) && File::exists(public_path() . '/uploads/signee_docs/'.$document->file_name)) {
+                unlink(public_path() . "/uploads/signee_docs/" . $document->file_name);
+            }
             $document = SigneeDocument::where("id", $document->id)->delete();
             if ($document) {
                 return response()->json(['status' => true, 'message' => 'Image deleted successfully'], $this->successStatus);
