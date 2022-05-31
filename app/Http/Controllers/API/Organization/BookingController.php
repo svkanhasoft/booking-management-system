@@ -536,7 +536,7 @@ class BookingController extends Controller
                         $row['Date']  = $task->date;
                         $row['Shift Time']  = $task->start_time.' '.$task->end_time;
                         $row['Amount Payable']  = $task->payableAmont;
-                        $row['Amount Charge']  = $task->rate;
+                        $row['Amount Charge']  = $task->chargeAble;
                         $row['Trust Code']  = $task->code;
                         // $row['candidate']  = $task->candidate;
                         $explodeResult = explode(',',$task->candidate);
