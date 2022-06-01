@@ -9,6 +9,7 @@ use Config;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+use App\Models\SigneePreferences;
 
 class BookingMatch extends Model
 {
@@ -32,17 +33,21 @@ class BookingMatch extends Model
      *
      * @var array
      */
-    protected $fillable = ['organization_id', 'signee_id', 'booking_id', 'trust_id', 'match_count', 'booking_date', 'signee_booking_status', 'shift_id', 'signee_status'];
+    protected $fillable = ['organization_id', 'signee_id', 'booking_id', 'trust_id', 'match_count', 'booking_date', 'signee_booking_status', 'shift_id', 'signee_status','preference_match'];
 
     public function addBookingMatch($bookingArray, $bookingId)
-    {
-        //print_r($bookingArray);exit();
+    { 
         $signeeidArray = array_column($bookingArray, 'signeeId');
         //print_r($signeeidArray);exit;
+        // preference_match
+
         $objBookingMatchDelete = BookingMatch::where('booking_id', '=', $bookingId)->whereNotIn('signee_id', $signeeidArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             //print_r($values); exit;
+
             $this->sendMatchEmail($values);
+            $preference = $this->checkPreferenceMatch($values);
+
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'],
                 'signee_id' =>  $values['signeeId'],
@@ -63,6 +68,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
+            $objBookingMatch->preference_match = $preference;
             // $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             //print_r($objBookingMatch);exit;
@@ -325,7 +331,6 @@ class BookingMatch extends Model
         }
     }
 
-
     public function getFilterBookings($request, $userId)
     {
         $requestData = $request->all();
@@ -493,5 +498,22 @@ class BookingMatch extends Model
             $booking_record_perm_for_signees['cancel_shifts'] = false;
         }
         return $booking_record_perm_for_signees;
+    }
+
+    public function checkPreferenceMatch($postData)
+    {
+        $ismatch = 0;
+        $dayName = strtolower(date('l', strtotime($postData['date'])));
+        $day = $dayName."_day as day_name";
+        $night = $dayName."_night as night_name";
+        $preferencesObject = SigneePreferences::select($day,$night)
+        ->where('user_id',$postData['signeeId'])->first();
+        // ->where('user_id',593)->first();
+        if( !empty($preferencesObject) && $postData['start_time'] >= "17:00:00" && $preferencesObject->day_name == 1){
+            $ismatch = 1;
+        }else if(!empty($preferencesObject) && $postData['start_time'] < "17:00:00" && $preferencesObject->night_name == 1){
+            $ismatch = 1;
+        }
+        return $ismatch;
     }
 }
