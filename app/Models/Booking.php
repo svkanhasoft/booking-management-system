@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Config;
 use Auth;
 use App\Models\Trust;
+
 class Booking extends Model
 {
     use SoftDeletes;
@@ -303,7 +304,7 @@ class Booking extends Model
 
     public function getMetchByBookingId($matchiId = null)
     {
-       
+
         $subQuery = Booking::select(
             'users.email',
             'signee_preference.user_id as signeeId',
@@ -341,7 +342,7 @@ class Booking extends Model
         $subQuery->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $subQuery->leftJoin('booking_matches',  'booking_matches.booking_id', '=', 'bookings.id');
         $subQuery->Join('signee_preference',  'signee_preference.user_id', '=', 'users.id');
- 
+
 
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('bookings.id', $matchiId);
@@ -351,23 +352,23 @@ class Booking extends Model
         $subQuery->whereNull('users.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
-        
 
-        // $subQuery->whereRaw("(
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
-        // )");
+
+        $subQuery->whereRaw("(
+            IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
+        )");
 
         $res = $subQuery->get()->toArray();
 
@@ -458,21 +459,21 @@ class Booking extends Model
         $subQuery->whereNull('bookings.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
-        // $subQuery->whereRaw("(
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
-        // )");
+        $subQuery->whereRaw("(
+            IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
+            or
+            IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
+        )");
         $res = $subQuery->first();
         //print_r($res);exit();
         return $res;
@@ -1373,44 +1374,100 @@ class Booking extends Model
                 //     echo "=> $chargebleAmount chargebleAmount";
             }
         } else {
-            // } else if ($dayName == 'Monday') {
-            if ($convertStartTime > 13) {
-                if ($convertStartTime <= "20:00") {
-                    $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
-                    $nightTime = $this->getTimeDiff("20:00:00", "23:60:00");
+            if ($convertStartTime >= "00:00:00" && $convertEndTime <= "20:00:00") {
+                if ($convertStartTime < "06:00:00") {
+                    $nightTime = $this->getTimeDiff($convertStartTime, "06:00:00");
+                    $dayTime = $this->getTimeDiff("06:00:00", $convertEndTime);
                     $payableAmount += $dayTime * $payable_day_rate;
                     $payableAmount += $nightTime * $payable_night_rate;
                     $chargebleAmount += $dayTime * $chargeable_day_rate;
                     $chargebleAmount += $nightTime * $chargeable_night_rate;
-                    // echo "$dayTime == $nightTime";
-                    // exit;
-                } else {
-                    $timeDay = $this->getTimeDiff($convertStartTime, "23:60:00");
-                    $payableAmount += $timeDay * $payable_day_rate;
-                    $chargebleAmount += $timeDay * $chargeable_day_rate;
+                } else if ($convertStartTime >= "06:00:00" && $convertEndTime > "08:00:00") {
+                    if ($convertEndTime < $convertStartTime) {
+                        $nightTime1 = 0;
+                        $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+                        $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
+                        if ($nightTime <= 4) {
+                            $nightTime += $this->getTimeDiff("20:00:00", $convertEndTime);
+                        }
+                        if ($nightTime > 4) {
+                            $nightTime = $this->getTimeDiff("20:00:00", "24:00:00");
+                            $nightTime += $this->getTimeDiff("00:00:00", "06:00:00");
+                            $dayTime += $this->getTimeDiff("06:00:00", $convertEndTime);
+                        }
+                        $payableAmount += ($dayTime * $payable_day_rate);
+                        $payableAmount += ($nightTime) * $payable_night_rate;
+                        $chargebleAmount += ($dayTime * $chargeable_day_rate);
+                        $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+                    } else {
+                        $timeDay = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                        $payableAmount += $timeDay * $payable_day_rate;
+                        $chargebleAmount += $timeDay * $chargeable_day_rate;
+                    }
+                }elseif($convertEndTime == "00:00:00"){
+                    $nightTime1 = 0;
+                    $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+                    $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
+                    $payableAmount += ($dayTime * $payable_day_rate);
+                    $payableAmount += ($nightTime) * $payable_night_rate;
+                    $chargebleAmount += ($dayTime * $chargeable_day_rate);
+                    $chargebleAmount += ($nightTime )  * $chargeable_night_rate;
                 }
+            } elseif ($convertStartTime >= "12:00:00" && $convertEndTime >= "20:00:00") {
+                $dayTime1 = $this->getTimeDiff($convertStartTime, "20:00:00");
+                $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
+                $payableAmount += ($dayTime1 * $payable_day_rate);
+                $payableAmount += $nightTime  * $payable_night_rate;
+                $chargebleAmount += ($dayTime1 * $chargeable_day_rate);
+                $chargebleAmount += $nightTime * $chargeable_night_rate;
+            } elseif ($convertStartTime >= "00:00:00" && $convertEndTime <= "23:30:00") {
+                $nightTime1 = $this->getTimeDiff($convertStartTime, "06:00:00");
+                $checkTime = $this->getTimeDiff("06:00:00", $convertEndTime);
+                $nightTime = ($checkTime - 14);
+                $dayTime1 =  ($checkTime - $nightTime);
+                $payableAmount += ($dayTime1 * $payable_day_rate);
+                $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
+                $chargebleAmount += ($dayTime1 * $chargeable_day_rate);
+                $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+            } 
+            // // } else if ($dayName == 'Monday') {
+            // if ($convertStartTime > 13) {
+            //     if ($convertStartTime <= "20:00") {
+            //         $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+            //         $nightTime = $this->getTimeDiff("20:00:00", "23:60:00");
+            //         $payableAmount += $dayTime * $payable_day_rate;
+            //         $payableAmount += $nightTime * $payable_night_rate;
+            //         $chargebleAmount += $dayTime * $chargeable_day_rate;
+            //         $chargebleAmount += $nightTime * $chargeable_night_rate;
+            //         // echo "$dayTime == $nightTime";
+            //         // exit;
+            //     } else {
+            //         $timeDay = $this->getTimeDiff($convertStartTime, "23:60:00");
+            //         $payableAmount += $timeDay * $payable_day_rate;
+            //         $chargebleAmount += $timeDay * $chargeable_day_rate;
+            //     }
 
-                if ($convertEndTime > 6) {
-                    $upto6 = $this->getTimeDiff("00:00:00", "06:00:00");
-                    $above6 = $this->getTimeDiff("06:00:00", $convertEndTime);
-                    $payableAmount += $above6 * $payable_day_rate;
-                    $payableAmount += $upto6 * $payable_night_rate;
-                    $chargebleAmount += $above6 * $chargeable_day_rate;
-                    $chargebleAmount += $upto6 * $chargeable_night_rate;
-                    // echo "$upto6 == $above6";
-                } else {
-                    $endTime = $this->getTimeDiff("00:00:00", $convertEndTime);
-                }
-            } else {
-                $dayShift = $this->getTimeDiff($convertStartTime, $convertEndTime);
-                $payableAmount += $dayShift * $payable_day_rate;
-                $chargebleAmount += $dayShift * $chargeable_day_rate;
-            }
-            // echo "=> $chargebleAmount chargebleAmount";
-            // echo "=> $payableAmount payableAmount";exit;
+            //     if ($convertEndTime > 6) {
+            //         $upto6 = $this->getTimeDiff("00:00:00", "06:00:00");
+            //         $above6 = $this->getTimeDiff("06:00:00", $convertEndTime);
+            //         $payableAmount += $above6 * $payable_day_rate;
+            //         $payableAmount += $upto6 * $payable_night_rate;
+            //         $chargebleAmount += $above6 * $chargeable_day_rate;
+            //         $chargebleAmount += $upto6 * $chargeable_night_rate;
+            //         // echo "$upto6 == $above6";
+            //     } else {
+            //         $endTime = $this->getTimeDiff("00:00:00", $convertEndTime);
+            //     }
+            // } else {
+            //     $dayShift = $this->getTimeDiff($convertStartTime, $convertEndTime);
+            //     $payableAmount += $dayShift * $payable_day_rate;
+            //     $chargebleAmount += $dayShift * $chargeable_day_rate;
+            // }
+            // // echo "=> $chargebleAmount chargebleAmount";
+            // // echo "=> $payableAmount payableAmount";exit;
         }
-        $returnResult['payableAmount'] = number_format($payableAmount,2);
-        $returnResult['chargebleAmount'] = number_format($chargebleAmount,2);
+        $returnResult['payableAmount'] = number_format($payableAmount, 2);
+        $returnResult['chargebleAmount'] = number_format($chargebleAmount, 2);
         return $returnResult;
     }
 
