@@ -920,7 +920,9 @@ class SigneesController extends Controller
     {
         //print_r(Auth::user()->id);exit;
         $requestData = $request->all();
-
+        // print_r($requestData);
+        // exit;
+        $objBooking = new Booking();
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required',
             'signee_status' => 'required',
@@ -932,6 +934,11 @@ class SigneesController extends Controller
         }
 
         try {
+            $response =  $objBooking->checkSigneeShiftLimit((isset($requestData['signee_id']) ? $requestData['signee_id'] : Auth::user()->id));
+        
+            if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
+                return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
+            }
             $res =  $this->checkShiftBooking($requestData['booking_id'], (isset($requestData['signee_id']) ? $requestData['signee_id'] : Auth::user()->id));
             if (count($res) > 0) {
                 return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 200);

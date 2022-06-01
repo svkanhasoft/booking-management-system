@@ -740,12 +740,23 @@ class UserController extends Controller
                     return $this->cancelShiftBYStaffOrOrg($requestData);
                 }
             } elseif ($requestData['status'] == 'ACCEPT') {
+                $response =  $objBooking->checkSigneeShiftLimit($requestData['signee_id']);
+                if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
+                    return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
+                }
+                if($response['bookingCount'] >= $response['no_of_shift']){
+                    return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
+                }
                 $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
                 if (count($res) > 0) {
                     return response()->json(['message' => 'Sorry, You have already booked shift with same date.', 'status' => false], 200);
                 }
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
+                $response =  $objBooking->checkSigneeShiftLimit($requestData['signee_id']);
+                if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
+                    return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
+                }
                 $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
                 if (count($res) > 0) {
                     return response()->json(['message' => 'Sorry, Shift already booked with same date for this candidate.', 'status' => false], 200);
@@ -830,6 +841,8 @@ class UserController extends Controller
      
         return $count;
     }
+
+   
 
     public function acceptShiftBySignee($requestData)
     {
