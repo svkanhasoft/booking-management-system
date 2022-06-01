@@ -744,6 +744,52 @@ class User extends Authenticatable
         }
     }
 
+    public function getDashboardCSVData($dayName, $year = '')
+    {
+
+        
+        $today = Carbon::now()->format('Y-m-d');
+
+        $month = ['January','February','March','April','May','June','July ','August','September','October','November','December'];
+        $usermcount =   $userArr =  [];
+
+        if ($dayName == 'today') {
+            return  User::where('role', 'ORGANIZATION')->where('created_at', '=', $today)->count();
+        } else if ($dayName == 'week') {
+            return  User::where('role', 'ORGANIZATION')->where('created_at', '>=', Carbon::now()->subDays(7)->format('Y-m-d'))->count();
+        } else if ($dayName == 'month') {
+            return  User::where('role', 'ORGANIZATION')->where('created_at', '>=', Carbon::now()->subMonth(1)->format('Y-m-d'))->count();
+        } else if ($dayName == 'year') {
+            return  User::where('role', 'ORGANIZATION')->whereYear('created_at', date('Y'))->count();
+        } else if ($dayName == 'block_user') {
+            return  User::where('role', 'ORGANIZATION')->where('status', 'Inactive')->count();
+        } else if ($dayName == 'total_user') {
+            return  User::where('role', 'ORGANIZATION')->count();
+        } else if ($dayName == 'monthly_details') {
+            $users = User::select('id', 'created_at')->whereYear('created_at', $year)->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
+                return Carbon::parse($date->created_at)->format('m');
+            });
+            foreach ($users as $key => $value) {
+                $usermcount[(int)$key] = count($value);
+            }
+            for ($i = 1; $i <= 12; $i++) {
+                $userArr[] = array($month[$i - 1], (!empty($usermcount[$i])) ? $usermcount[$i] : 0);
+            }
+            return $userArr;
+        } else if ($dayName == 'yearly_details') {
+            $users = User::select('id', 'created_at')->where('role', 'ORGANIZATION')->get()->groupBy(function ($date) {
+                return Carbon::parse($date->created_at)->format('Y');
+            });
+            foreach ($users as $key => $value) {
+                $usermcount[(int)$key] = count($value);
+            }
+            foreach ($usermcount as $key => $value) {
+                $userArr[] = array("$key", $value);
+            }
+            return $userArr;
+        }
+    }
+
     public function bgcolor()
     {
         // return "color: #" . dechex(rand(0,10000000));
