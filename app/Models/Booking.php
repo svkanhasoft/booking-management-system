@@ -1002,6 +1002,7 @@ class Booking extends Model
             $subQuery->whereIn('booking_matches.signee_booking_status', array('CONFIRMED', 'PENDING', 'CANCEL', 'INVITE', 'APPLY', 'REJECTED', 'OFFER', 'DECLINE', 'ACCEPT'));
         }
         $subQuery->where('booking_matches.deleted_at');
+        $subQuery->orderBy('booking_matches.preference_match','ASC');
 
         // $res = $subQuery->toSql();
         // print_r($res);exit;
@@ -1195,6 +1196,7 @@ class Booking extends Model
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
+        $subQuery->orderBy('booking_matches.preference_match','ASC');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
         $res = $subQuery->get()->toArray();
         return $res;
@@ -1282,6 +1284,7 @@ class Booking extends Model
         }
 
         $query->whereNull('bookings.deleted_at');
+        $query->orderBy('booking_matches.preference_match','ASC');
         $query->orderBy('bookings.date', 'ASC');
         $query->groupBy('bookings.id');
         // print_r($query->toSql());exit;
@@ -1346,7 +1349,7 @@ class Booking extends Model
                     $payableAmount += $dayTime * $payable_saturday_rate;
                     $chargebleAmount += $dayTime * $chargeable_saturday_rate;
                 }
-            } else {
+            } else {              
                 $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
                 $payableAmount += $dayTime * $payable_holiday_rate;
                 $chargebleAmount += $dayTime * $chargeable_holiday_rate;
@@ -1356,12 +1359,18 @@ class Booking extends Model
         } else if ($dayName == 'Saturday') {
             if ($convertStartTime > "13:00") {
                 if ($convertStartTime >= "19:30") {
-                    $dayTime = $this->getTimeDiff($convertStartTime, "23:60:00");
-                    $nightTime = $this->getTimeDiff("00:00:00", $convertEndTime);
-                    $payableAmount += $dayTime * $payable_saturday_rate;
-                    $payableAmount += $nightTime * $payable_holiday_rate;
-                    $chargebleAmount += $dayTime * $chargeable_saturday_rate;
-                    $chargebleAmount += $nightTime * $chargeable_holiday_rate;
+                    if ($convertEndTime > $convertStartTime) {
+                        $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                        $payableAmount += $dayTime * $payable_saturday_rate;
+                        $chargebleAmount += $dayTime * $chargeable_saturday_rate;
+                    }else{
+                        $dayTime = $this->getTimeDiff($convertStartTime, "23:60:00");
+                        $nightTime = $this->getTimeDiff("00:00:00", $convertEndTime);
+                        $payableAmount += $dayTime * $payable_saturday_rate;
+                        $payableAmount += $nightTime * $payable_holiday_rate;
+                        $chargebleAmount += $dayTime * $chargeable_saturday_rate;
+                        $chargebleAmount += $nightTime * $chargeable_holiday_rate;
+                    }
                 } else {
                     $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
                     $payableAmount += $dayTime * $payable_saturday_rate;

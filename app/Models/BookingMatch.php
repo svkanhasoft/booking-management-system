@@ -255,10 +255,11 @@ class BookingMatch extends Model
         // $booking->whereNull('signee_speciality.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
+        $booking->orderBy('booking_matches.preference_match','DESC');
         $booking->orderBy('bookings.date');
         // $res = $booking->toSql();
         // print_r($res);exit;
-        $res = $booking->latest('bookings.created_at')->paginate($perPage);
+        $res = $booking->paginate($perPage);
         foreach ($res as $keys => $values) {
             $res[$keys]['booking_record_perm_for_signees'] = $this->managePermission($values['compliance_status'],$values['profile_status']);
         }
@@ -509,9 +510,9 @@ class BookingMatch extends Model
         $preferencesObject = SigneePreferences::select($day,$night)
         ->where('user_id',$postData['signeeId'])->first();
         // ->where('user_id',593)->first();
-        if( !empty($preferencesObject) && $postData['start_time'] >= "17:00:00" && $preferencesObject->day_name == 1){
+        if( !empty($preferencesObject) && $postData['start_time'] >= "20:00:00" && $preferencesObject->night_name == 1){
             $ismatch = 1;
-        }else if(!empty($preferencesObject) && $postData['start_time'] < "17:00:00" && $preferencesObject->night_name == 1){
+        }else if(!empty($preferencesObject) && $postData['start_time'] < "20:00:00" && $preferencesObject->day_name == 1){
             $ismatch = 1;
         }
         return $ismatch;
