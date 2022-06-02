@@ -742,10 +742,7 @@ class UserController extends Controller
             } elseif ($requestData['status'] == 'ACCEPT') {
                 $response =  $objBooking->checkSigneeShiftLimit($requestData['signee_id']);
                 if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
-                    return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
-                }
-                if($response['bookingCount'] >= $response['no_of_shift']){
-                    return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
+                    return response()->json(['message' => "Oops! The weekly shift preference is full for this candidate!", 'status' => false], 200);
                 }
                 $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
                 if (count($res) > 0) {
@@ -755,7 +752,7 @@ class UserController extends Controller
             } else if ($requestData['status'] == 'CONFIRMED') {
                 $response =  $objBooking->checkSigneeShiftLimit($requestData['signee_id']);
                 if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
-                    return response()->json(['message' => "Candidate not working more than $response->no_of_shift shifts per week!", 'status' => false], 200);
+                    return response()->json(['message' => "Oops! The weekly shift preference is full for this candidate!", 'status' => false], 200);
                 }
                 $res =  $this->checkShiftBooking($requestData['booking_id'], $requestData['signee_id']);
                 if (count($res) > 0) {
