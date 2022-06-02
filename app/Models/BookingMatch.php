@@ -255,8 +255,8 @@ class BookingMatch extends Model
         // $booking->whereNull('signee_speciality.deleted_at');
         $booking->whereNull('booking_specialities.deleted_at');
         $booking->groupBy('bookings.id');
-        $booking->orderBy('booking_matches.preference_match','DESC');
         $booking->orderBy('bookings.date');
+        $booking->orderBy('booking_matches.preference_match','DESC');
         // $res = $booking->toSql();
         // print_r($res);exit;
         $res = $booking->paginate($perPage);

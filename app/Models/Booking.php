@@ -1196,8 +1196,8 @@ class Booking extends Model
         $subQuery->whereNull('booking_specialities.deleted_at');
         $subQuery->whereNull('bookings.deleted_at');
         $subQuery->groupBy('signee_preference.user_id');
-        $subQuery->orderBy('booking_matches.preference_match','ASC');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
+        $subQuery->orderBy('booking_matches.preference_match','DESC');
         $res = $subQuery->get()->toArray();
         return $res;
     }
@@ -1284,8 +1284,8 @@ class Booking extends Model
         }
 
         $query->whereNull('bookings.deleted_at');
-        $query->orderBy('booking_matches.preference_match','ASC');
         $query->orderBy('bookings.date', 'ASC');
+        $query->orderBy('booking_matches.preference_match','DESC');
         $query->groupBy('bookings.id');
         // print_r($query->toSql());exit;
 
