@@ -1392,12 +1392,18 @@ class Booking extends Model
         } else {
             if ($convertStartTime >= "00:00:00" && $convertEndTime <= "20:00:00") {
                 if ($convertStartTime < "06:00:00") {
+                  if($convertEndTime <= "06:00:00"){
+                    $nightTime = $this->getTimeDiff($convertStartTime,$convertEndTime);
+                    $payableAmount += $nightTime * $payable_night_rate;
+                    $chargebleAmount += $nightTime * $chargeable_night_rate;
+                  }else{
                     $nightTime = $this->getTimeDiff($convertStartTime, "06:00:00");
                     $dayTime = $this->getTimeDiff("06:00:00", $convertEndTime);
                     $payableAmount += $dayTime * $payable_day_rate;
                     $payableAmount += $nightTime * $payable_night_rate;
                     $chargebleAmount += $dayTime * $chargeable_day_rate;
                     $chargebleAmount += $nightTime * $chargeable_night_rate;
+                  }
                 } else if ($convertStartTime >= "06:00:00" && $convertEndTime > "08:00:00") {
                     if ($convertEndTime < $convertStartTime) {
                         $nightTime1 = 0;
