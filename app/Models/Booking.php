@@ -1399,12 +1399,10 @@ class Booking extends Model
         } else {
             if ($convertEndTime1 < $convertStartTime && $convertEndTime1 != "24:00") {
                 $mainTimeDiff = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
-                echo $mainTimeDiff . "Iffffff  Diff \n";
-
                 $checkStartTime = $this->checkDayNight($convertStartTime1, $convertStartTime1);
                 $checkEndTime = $this->checkDayNight($convertEndTime1, $convertEndTime1);
 
-                echo $checkStartTime . " => " . $checkEndTime . "\n";
+                // echo $checkStartTime . " => " . $checkEndTime . "\n";
                 // exit;
                 if ($checkStartTime == 'Night' && $checkEndTime == 'Night') {
                     if ($convertStartTime1 < "20:00") {
@@ -1449,7 +1447,7 @@ class Booking extends Model
                     $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
                 }
             } else {
-                echo "Ells   ";
+                // echo "Ells   ";
                 if ($convertStartTime1 <= "06:00" && $convertEndTime1 <= "06:00") {
                     $nightTime = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
                     // echo " ==1111== " .$nightTime;
@@ -1461,7 +1459,7 @@ class Booking extends Model
                     // echo $convertEndTime1. " -------- ";
                     // exit;
                     $mainTimeDiff = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
-                    echo $mainTimeDiff . " Diff \n";
+                    // echo $mainTimeDiff . " Diff \n";
                     if ($convertStartTime1 < "06:00") {
                         $nightTime += $this->getTimeDiff($convertStartTime1, "06:00");
                     }
