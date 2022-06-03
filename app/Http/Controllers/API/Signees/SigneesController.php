@@ -934,7 +934,7 @@ class SigneesController extends Controller
         }
 
         try {
-            // $response =  $objBooking->checkSigneeShiftLimit((isset($requestData['signee_id']) ? $requestData['signee_id'] : Auth::user()->id));
+            // $response =  $objBooking->checkSigneeShiftLimit($requestData['booking_id'], (isset($requestData['signee_id']) ? $requestData['signee_id'] : Auth::user()->id));
             // if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
             //     return response()->json(['message' => "Oops! The weekly shift preference is full. Please change shift preference to apply in new shift!", 'status' => false], 200);
             // }

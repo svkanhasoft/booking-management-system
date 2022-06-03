@@ -740,7 +740,7 @@ class UserController extends Controller
                     return $this->cancelShiftBYStaffOrOrg($requestData);
                 }
             } elseif ($requestData['status'] == 'ACCEPT') {
-                $response =  $objBooking->checkSigneeShiftLimit($requestData['signee_id']);
+                $response =  $objBooking->checkSigneeShiftLimit($requestData['booking_id'],$requestData['signee_id']);
                 if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
                     return response()->json(['message' => "Oops! The weekly shift preference is full for this candidate!", 'status' => false], 200);
                 }
@@ -750,7 +750,7 @@ class UserController extends Controller
                 }
                 return $this->acceptShiftBySignee($requestData);
             } else if ($requestData['status'] == 'CONFIRMED') {
-                $response =  $objBooking->checkSigneeShiftLimit($requestData['signee_id']);
+                $response =  $objBooking->checkSigneeShiftLimit($requestData['booking_id'],$requestData['signee_id']);
                 if(!empty($response) && $response->bookingCount >= $response->no_of_shift){
                     return response()->json(['message' => "Oops! The weekly shift preference is full for this candidate!", 'status' => false], 200);
                 }
