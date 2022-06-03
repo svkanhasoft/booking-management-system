@@ -1320,9 +1320,16 @@ class Booking extends Model
         $convertStartTime =  date('H:i:s', strtotime($postData['start_time']));
         $convertEndTime =  date('H:i:s', strtotime($postData['end_time']));
 
+        $convertStartTime1 =  date('H:i', strtotime($postData['start_time']));
+        $convertEndTime1 =  date('H:i', strtotime($postData['end_time']));
+        $convertEndTime1 = ($convertEndTime1 == "00:00") ? "24:00" : $convertEndTime1;
         $payableAmount = 0;
         $chargebleAmount = 0;
         $returnResult = [];
+        $nightTime = 0;
+        $nightTime1 = 0;
+        $dayTime = 0;
+        $dayTime1 = 0;
         $dayName = date('l', strtotime($postData['date']));
         if ($dayName == 'Sunday') {
             if ($convertStartTime > "13:00:00") {
@@ -1390,88 +1397,181 @@ class Booking extends Model
                 //     echo "=> $chargebleAmount chargebleAmount";
             }
         } else {
-            if ($convertStartTime >= "00:00:00" && $convertEndTime <= "20:00:00") {
-                if ($convertStartTime < "06:00:00") {
-                    if ($convertEndTime <= "06:00:00") {
-                        $nightTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
-                        $payableAmount += $nightTime * $payable_night_rate;
-                        $chargebleAmount += $nightTime * $chargeable_night_rate;
+            if ($convertEndTime1 < $convertStartTime && $convertEndTime1 != "24:00") {
+                $mainTimeDiff = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
+                echo $mainTimeDiff . "Iffffff  Diff \n";
+
+                $checkStartTime = $this->checkDayNight($convertStartTime1, $convertStartTime1);
+                $checkEndTime = $this->checkDayNight($convertEndTime1, $convertEndTime1);
+
+                echo $checkStartTime . " => " . $checkEndTime . "\n";
+                // exit;
+                if ($checkStartTime == 'Night' && $checkEndTime == 'Night') {
+                    if ($convertStartTime1 < "20:00") {
+                        $nightTime = $this->getTimeDiff($convertStartTime1,  "06:00");
+                        $dayTime = $this->getTimeDiff("06:00",  "20:00");
+                        $nightTime1 = $this->getTimeDiff("20:00",  "24:00");
+                        $dayTime1 = $this->getTimeDiff("00:00",  $convertEndTime1);
                     } else {
-                        $nightTime = $this->getTimeDiff($convertStartTime, "06:00:00");
-                        $dayTime = $this->getTimeDiff("06:00:00", $convertEndTime);
-                        $payableAmount += $dayTime * $payable_day_rate;
-                        $payableAmount += $nightTime * $payable_night_rate;
-                        $chargebleAmount += $dayTime * $chargeable_day_rate;
-                        $chargebleAmount += $nightTime * $chargeable_night_rate;
+                        $nightTime = $this->getTimeDiff($convertStartTime1,  "24:00");
+                        $nightTime1 = $this->getTimeDiff("00:00",  $convertEndTime1);
                     }
-                } else if ($convertStartTime >= "06:00:00" && $convertEndTime > "08:00:00") {
-                    if ($convertEndTime < $convertStartTime) {
-                        $nightTime1 = 0;
-                        $dayTime = 0;
-                        if ($convertStartTime < "20:00:00") {
-                            $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
-                        }
-                        $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
-                        if ($nightTime <= 4) {
-                            $nightTime += $this->getTimeDiff("20:00:00", $convertEndTime);
-                        }
-                        if ($nightTime > 4) {
-                            $nightTime = $this->getTimeDiff("20:00:00", "24:00:00");
-                            $nightTime += $this->getTimeDiff("00:00:00", "06:00:00");
-                            $dayTime += $this->getTimeDiff("06:00:00", $convertEndTime);
-                        }
-                        $payableAmount += ($dayTime * $payable_day_rate);
-                        $payableAmount += ($nightTime) * $payable_night_rate;
-                        $chargebleAmount += ($dayTime * $chargeable_day_rate);
-                        $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
-                    } else {
-                        $timeDay = $this->getTimeDiff($convertStartTime, $convertEndTime);
-                        $payableAmount += $timeDay * $payable_day_rate;
-                        $chargebleAmount += $timeDay * $chargeable_day_rate;
-                    }
-                } elseif ($convertEndTime == "00:00:00") {
-                    $nightTime1 = 0;
-                    $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
-                    $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
-                    $payableAmount += ($dayTime * $payable_day_rate);
-                    $payableAmount += ($nightTime) * $payable_night_rate;
-                    $chargebleAmount += ($dayTime * $chargeable_day_rate);
-                    $chargebleAmount += ($nightTime)  * $chargeable_night_rate;
-                } elseif ($convertEndTime < $convertStartTime && $convertStartTime >= "06:00:00") {
-                    if ($convertEndTime > "00:00:00") {
-                        $dayTime = $this->getTimeDiff($convertStartTime, ($convertStartTime  > "20:00:00") ? "24:00:00" : "20:00:00");
-                        $nightTime = $this->getTimeDiff($convertStartTime > "20:00:00" ? $convertStartTime : "20:00:00", "24:00:00");
-                        $nightTime1 = $this->getTimeDiff("00:00:00", $convertEndTime);
-                    }
-                    $payableAmount += ($dayTime * $payable_day_rate);
+                } else if ($checkStartTime == 'Day' && $checkEndTime == 'Day') {
+                    $dayTime = $this->getTimeDiff($convertStartTime1,  "20:00");
+                    $nightTime = $this->getTimeDiff("20:00",  "24:00");
+                    $nightTime1 = $this->getTimeDiff("00:00",  "06:00");
+                    $dayTime1 = $this->getTimeDiff("06:00",  $convertEndTime1);
+                } else if ($checkStartTime == 'Day' && $checkEndTime == 'Night') {
+                    // echo "ssssssss";exit;
+                    $dayTime = $this->getTimeDiff($convertStartTime1,  "20:00");
+                    $nightTime = $this->getTimeDiff("20:00",  "24:00");
+                    $nightTime1 = $this->getTimeDiff("00:00",  $convertEndTime1);
+                } else if ($checkStartTime == 'Night' && $checkEndTime == 'Day') {
+                    // echo "ssssssss";exit;
+                    $nightTime = $this->getTimeDiff($convertStartTime1,  "24:00");
+                    $nightTime1 = $this->getTimeDiff("00:00",  "06:00");
+                    $dayTime1 = $this->getTimeDiff("06:00",  $convertEndTime1);
+                }
+
+                // echo  $nightTime . " Night \n" . $dayTime . " day1 \n ".$nightTime1. " Night2 \n" . $dayTime1. " Day2 \n";
+                // echo "    END";
+                // exit;
+
+                $payableAmount += ($dayTime + $dayTime1) * $payable_day_rate;
+                $chargebleAmount += ($dayTime + $dayTime1) * $chargeable_day_rate;
+                if($dayName == "Friday"){
+                    $payableAmount += $nightTime * $payable_night_rate;
+                    $payableAmount += $nightTime1 * $payable_saturday_rate;
+                    $chargebleAmount += $nightTime * $chargeable_night_rate;
+                    $chargebleAmount += $nightTime1  * $chargeable_saturday_rate;
+                }else{
                     $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
-                    $chargebleAmount += ($dayTime * $chargeable_day_rate);
                     $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
                 }
-            } elseif ($convertStartTime >= "12:00:00" && $convertEndTime >= "20:00:00" && $convertEndTime <= "23:30:00") {
-                $dayTime1 = ($convertStartTime > "20:00:00") ? 0 : $this->getTimeDiff($convertStartTime, "20:00:00");
-                $nightTime = $this->getTimeDiff(($convertStartTime > "20:00:00") ? $convertStartTime : "20:00:00", $convertEndTime);
-                $payableAmount += ($dayTime1 * $payable_day_rate);
-                $payableAmount += $nightTime  * $payable_night_rate;
-                $chargebleAmount += ($dayTime1 * $chargeable_day_rate);
-                $chargebleAmount += $nightTime * $chargeable_night_rate;
-            } elseif ($convertStartTime >= "00:00:00" && $convertEndTime <= "23:30:00") {
-                $dayTime = 0;
-                $nightTime1 = 0;
-                if ($convertEndTime > "08:00:00") {
-                    $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
-                    $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
-                } else {
-                    $checkTime = $this->getTimeDiff("06:00:00", $convertEndTime);
-                    $nightTime = ($checkTime - 14);
-                    $dayTime =  ($checkTime - $nightTime);
-                    $nightTime1 = $this->getTimeDiff($convertStartTime, "06:00:00");
+            } else {
+                echo "Ells   ";
+                if ($convertStartTime1 <= "06:00" && $convertEndTime1 <= "06:00") {
+                    $nightTime = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
+                    // echo " ==1111== " .$nightTime;
+                } elseif ($convertStartTime1 >= "06:00" && $convertEndTime1 <= "20:00") {
+                    $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+                    // echo " ==2222== " .$dayTime;
+                } else if ($convertStartTime1 >= "00:00" && $convertEndTime1 <= "24:00") {
+                    // echo $convertStartTime1. " -------- ";
+                    // echo $convertEndTime1. " -------- ";
+                    // exit;
+                    $mainTimeDiff = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
+                    echo $mainTimeDiff . " Diff \n";
+                    if ($convertStartTime1 < "06:00") {
+                        $nightTime += $this->getTimeDiff($convertStartTime1, "06:00");
+                    }
+                    if ($convertEndTime1 <= "24:00" && $convertEndTime1 >= "20:00") {
+                        $nightTime += $this->getTimeDiff("20:00", $convertEndTime1);
+                    }
+                    if ($convertStartTime1 >= "00:00") {
+                        // $dayTime = $this->getTimeDiff($convertStartTime1, "20:00");
+                        $dayTime = $mainTimeDiff - $nightTime;
+                    }
+                    // $nightTime = $this->getTimeDiff($convertStartTime1, "06:00");
+                    // exit;
+                    // $dayTime = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
+                    // echo " ==333== " .$dayTime;
                 }
-                $payableAmount += ($dayTime * $payable_day_rate);
+                // echo $nightTime . " <= Night \n Day => " . $dayTime;
+                // echo "    END";
+                // exit;
+                $payableAmount += ($dayTime + $dayTime1) * $payable_day_rate;
                 $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
-                $chargebleAmount += ($dayTime * $chargeable_day_rate);
+                $chargebleAmount += ($dayTime + $dayTime1) * $chargeable_day_rate;
                 $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
             }
+
+            // // $result =  $this->checkDayNight($convertStartTime1, $convertEndTime1);
+            // // exit;
+
+            // if ($convertStartTime >= "00:00:00" && $convertEndTime <= "20:00:00") {
+            //     if ($convertStartTime < "06:00:00") {
+            //         if ($convertEndTime <= "06:00:00") {
+            //             $nightTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
+            //             $payableAmount += $nightTime * $payable_night_rate;
+            //             $chargebleAmount += $nightTime * $chargeable_night_rate;
+            //         } else {
+            //             $nightTime = $this->getTimeDiff($convertStartTime, "06:00:00");
+            //             $dayTime = $this->getTimeDiff("06:00:00", $convertEndTime);
+            //             $payableAmount += $dayTime * $payable_day_rate;
+            //             $payableAmount += $nightTime * $payable_night_rate;
+            //             $chargebleAmount += $dayTime * $chargeable_day_rate;
+            //             $chargebleAmount += $nightTime * $chargeable_night_rate;
+            //         }
+            //     } else if ($convertStartTime >= "06:00:00" && $convertEndTime > "08:00:00") {
+            //         if ($convertEndTime < $convertStartTime) {
+            //             $nightTime1 = 0;
+            //             $dayTime = 0;
+            //             if ($convertStartTime < "20:00:00") {
+            //                 $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+            //             }
+            //             $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
+            //             if ($nightTime <= 4) {
+            //                 $nightTime += $this->getTimeDiff("20:00:00", $convertEndTime);
+            //             }
+            //             if ($nightTime > 4) {
+            //                 $nightTime = $this->getTimeDiff("20:00:00", "24:00:00");
+            //                 $nightTime += $this->getTimeDiff("00:00:00", "06:00:00");
+            //                 $dayTime += $this->getTimeDiff("06:00:00", $convertEndTime);
+            //             }
+            //             $payableAmount += ($dayTime * $payable_day_rate);
+            //             $payableAmount += ($nightTime) * $payable_night_rate;
+            //             $chargebleAmount += ($dayTime * $chargeable_day_rate);
+            //             $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+            //         } else {
+            //             $timeDay = $this->getTimeDiff($convertStartTime, $convertEndTime);
+            //             $payableAmount += $timeDay * $payable_day_rate;
+            //             $chargebleAmount += $timeDay * $chargeable_day_rate;
+            //         }
+            //     } elseif ($convertEndTime == "00:00:00") {
+            //         $nightTime1 = 0;
+            //         $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+            //         $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
+            //         $payableAmount += ($dayTime * $payable_day_rate);
+            //         $payableAmount += ($nightTime) * $payable_night_rate;
+            //         $chargebleAmount += ($dayTime * $chargeable_day_rate);
+            //         $chargebleAmount += ($nightTime)  * $chargeable_night_rate;
+            //     } elseif ($convertEndTime < $convertStartTime && $convertStartTime >= "06:00:00") {
+            //         if ($convertEndTime > "00:00:00") {
+            //             $dayTime = $this->getTimeDiff($convertStartTime, ($convertStartTime  > "20:00:00") ? "24:00:00" : "20:00:00");
+            //             $nightTime = $this->getTimeDiff($convertStartTime > "20:00:00" ? $convertStartTime : "20:00:00", "24:00:00");
+            //             $nightTime1 = $this->getTimeDiff("00:00:00", $convertEndTime);
+            //         }
+            //         $payableAmount += ($dayTime * $payable_day_rate);
+            //         $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
+            //         $chargebleAmount += ($dayTime * $chargeable_day_rate);
+            //         $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+            //     }
+            // } elseif ($convertStartTime >= "12:00:00" && $convertEndTime >= "20:00:00" && $convertEndTime <= "23:30:00") {
+            //     $dayTime1 = ($convertStartTime > "20:00:00") ? 0 : $this->getTimeDiff($convertStartTime, "20:00:00");
+            //     $nightTime = $this->getTimeDiff(($convertStartTime > "20:00:00") ? $convertStartTime : "20:00:00", $convertEndTime);
+            //     $payableAmount += ($dayTime1 * $payable_day_rate);
+            //     $payableAmount += $nightTime  * $payable_night_rate;
+            //     $chargebleAmount += ($dayTime1 * $chargeable_day_rate);
+            //     $chargebleAmount += $nightTime * $chargeable_night_rate;
+            // } elseif ($convertStartTime >= "00:00:00" && $convertEndTime <= "23:30:00") {
+            //     $dayTime = 0;
+            //     $nightTime1 = 0;
+            //     if ($convertEndTime > "08:00:00") {
+            //         $dayTime = $this->getTimeDiff($convertStartTime, "20:00:00");
+            //         $nightTime = $this->getTimeDiff("20:00:00", $convertEndTime);
+            //     } else {
+            //         $checkTime = $this->getTimeDiff("06:00:00", $convertEndTime);
+            //         $nightTime = ($checkTime - 14);
+            //         $dayTime =  ($checkTime - $nightTime);
+            //         $nightTime1 = $this->getTimeDiff($convertStartTime, "06:00:00");
+            //     }
+            //     $payableAmount += ($dayTime * $payable_day_rate);
+            //     $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
+            //     $chargebleAmount += ($dayTime * $chargeable_day_rate);
+            //     $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+            // }
+
         }
         $returnResult['payableAmount'] = number_format($payableAmount, 2);
         $returnResult['chargebleAmount'] = number_format($chargebleAmount, 2);
@@ -1533,5 +1633,22 @@ class Booking extends Model
         $subQuery->groupBy('booking_matches.signee_id');
         $result = $subQuery->first();
         return $result;
+    }
+
+    public function checkDayNight($startDate, $endDate)
+    {
+        // echo $startDate;
+        $start = str_replace(":", ".", $startDate);
+        $end = str_replace(":", ".", $endDate);
+        //   echo $start ."<===>".$end;
+        if ($start > 06 && $end < 20) {
+            return "Day";
+        }
+        if ($start >= 20 && $end <= 24) {
+            return "Night";
+        }
+        if ($start >= 0 && $end <= 6) {
+            return "Night";
+        }
     }
 }
