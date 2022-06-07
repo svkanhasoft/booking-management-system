@@ -191,6 +191,7 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
+            'booking_matches.preference_match',
             // 'users.status as profile_status',
             'signee_organization.profile_status',
             'signee_organization.status as compliance_status',
