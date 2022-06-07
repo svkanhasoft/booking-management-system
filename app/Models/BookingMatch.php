@@ -127,6 +127,8 @@ class BookingMatch extends Model
         $objBookingMatchDelete = BookingMatch::where('signee_id', '=', $signeeId)->whereNotIn('booking_id', $bookingIdArray)->delete();
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);exit;
+            $preference = $this->checkPreferenceMatch($values);
+
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
                 'booking_id' => $values['booking_id'], 'trust_id' => $values['trust_id'],
@@ -138,6 +140,7 @@ class BookingMatch extends Model
             $objBookingMatch->match_count = $values['signeeBookingCount'];
             $objBookingMatch->booking_date = $values['date'];
             $objBookingMatch->shift_id = $values['shift_id'];
+            $objBookingMatch->preference_match = $preference;
             // $objBookingMatch->signee_booking_status = 'PENDING';
             $objBookingMatch->save();
             $objBookingMatch = '';
@@ -233,7 +236,7 @@ class BookingMatch extends Model
 
         $booking->where('bookings.status', 'CREATED');
         $booking->where('users.id', Auth::user()->id);
-        $booking->where('bookings.date', '>=', date('y-m-d'));
+        $booking->where('bookings.date', '>=', date('Y-m-d'));
         if (!empty($requestData['day'])) {
             $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
             $booking->where('users.parent_id', Auth::user()->parent_id);
