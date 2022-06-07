@@ -821,7 +821,7 @@ class Booking extends Model
         $subQuery->leftJoin('signee_preference',  'signee_preference.user_id', '=', 'users.id');
         $subQuery->leftJoin('hospitals',  'hospitals.id', '=', 'bookings.hospital_id');
         $subQuery->leftJoin('ward',  'ward.id', '=', 'bookings.ward_id');
-
+        $subQuery->where('bookings.date', '>=', date('Y-m-d'));
         $subQuery->where('users.role', 'SIGNEE');
         $subQuery->where('users.id', $signeeId);
         $subQuery->whereNull('signee_speciality.deleted_at');
@@ -830,21 +830,7 @@ class Booking extends Model
         // $subQuery->groupBy('signee_speciality.id','booking_specialities.id');
         $subQuery->groupBy('bookings.id');
         $subQuery->orderBy('signeeBookingCount', 'DESC');
-        // $subQuery->whereRaw("(
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 1, (`signee_preference`.`sunday_day` = 1 or `signee_preference`.`sunday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 2, (`signee_preference`.`monday_day` = 1 or `signee_preference`.`monday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 3, (`signee_preference`.`tuesday_day` = 1 or `signee_preference`.`tuesday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 4, (`signee_preference`.`wednesday_day` = 1 or `signee_preference`.`wednesday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 5, (`signee_preference`.`thursday_day` = 1 or `signee_preference`.`thursday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 6, (`signee_preference`.`friday_day` = 1 or `signee_preference`.`friday_night` = 1),'')
-        //     or
-        //     IF(DAYOFWEEK(`bookings`.`date`) = 7, (`signee_preference`.`saturday_day` = 1 or `signee_preference`.`saturday_night` = 1),'')
-        // )");
+      
         $res = $subQuery->get()->toArray();
         return $res;
     }

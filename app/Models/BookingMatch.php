@@ -201,16 +201,8 @@ class BookingMatch extends Model
             // DB::raw('GROUP_CONCAT(DISTINCT signee_speciality.id SEPARATOR ", ") AS saaaaa'),
         );
         $booking->leftJoin('booking_specialities',  'booking_specialities.booking_id', '=', 'bookings.id');
-        // $booking->leftJoin('signee_speciality',  'signee_speciality.speciality_id', '=', 'booking_specialities.speciality_id');
         $booking->leftJoin('specialities',  'specialities.id', '=', 'booking_specialities.speciality_id');
-
-        // $booking->whereRaw("(
-        //     (bookings.id = booking_specialities.booking_id AND  or `booking_specialities`.`deleted_at` = null),'')
-        //      and
-        //      (signee_speciality.speciality_id = booking_specialities.speciality_id AND  or `booking_specialities`.`deleted_at` = null),'')
-        //      and
-        //      (specialities.id = booking_specialities.speciality_id AND  or `specialities`.`deleted_at` = null),'')
-        // )");
+ 
 
         $booking->leftJoin('trusts',  'trusts.id', '=', 'bookings.trust_id');
         $booking->leftJoin('hospitals', 'hospitals.id', '=', 'bookings.hospital_id');
@@ -218,21 +210,15 @@ class BookingMatch extends Model
         $booking->leftJoin('ward_type', 'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type', 'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('users',  'users.parent_id', '=', 'bookings.user_id');
-        $booking->leftJoin('booking_matches', 'booking_matches.booking_id', '=', 'bookings.id');
-        //$booking->leftJoin('signee_organization', 'signee_organization.organization_id', '=', 'users.parent_id');
-        // $booking->leftJoin('signee_organization', function ($join) {
-        //     $join->on('signee_organization.user_id', '=', 'users.id');
-        //     $join->on('signee_organization.organization_id', '=', 'users.parent_id');
-        //     //$join->orOn('users as staff',  'staff.id', '=', 'bookings.user_id');
-        //     //$join->orOn('signee_organization as signee_org',  'signee_org.organization_id', '=', 'staff.parent_id');
-        // });
+        // $booking->leftJoin('booking_matches', 'booking_matches.booking_id', '=', 'bookings.id');
+        $booking->leftJoin('booking_matches', function ($join) {
+            $join->on('booking_matches.booking_id', '=', 'bookings.id');
+            $join->where('booking_matches.signee_id', '=', Auth::user()->id);
+        });
+       
         $booking->leftJoin('signee_organization', function ($join) {
             $join->on('signee_organization.user_id', '=', 'users.id');
             $join->on('signee_organization.organization_id', '=', 'users.parent_id');
-            //$join->on('bookings.user_id', '=', 'users.parent_id');
-            //$join->on('users.parent_id', '=', 'signee_organization.organization_id');
-            //$join->orOn('users as staff',  'staff.id', '=', 'bookings.user_id');
-            //$join->orOn('signee_organization as signee_org',  'signee_org.organization_id', '=', 'staff.parent_id');
         });
 
         $booking->where('bookings.status', 'CREATED');
@@ -507,6 +493,7 @@ class BookingMatch extends Model
 
     public function checkPreferenceMatch($postData)
     {
+       
         $ismatch = 0;
         $dayName = strtolower(date('l', strtotime($postData['date'])));
         $day = $dayName."_day as day_name";
