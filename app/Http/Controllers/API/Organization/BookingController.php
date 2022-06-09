@@ -521,7 +521,7 @@ class BookingController extends Controller
                     "Expires"             => "0"
                 );
     
-                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time','Amount Payable','Amount Charge','Trust Code', 'Candidate Name');
+                $columns = array('Trust Name', 'Hospital Name', 'Ward Name', 'Grade', 'Date', 'Shift Time','Amount Payable','Amount Charge','Trust Code','Booker/Salespersons', 'Candidate Name');
     
                 //$callback = function() use($booking, $columns) {
                     $uploadFile = $fileName;
@@ -538,10 +538,11 @@ class BookingController extends Controller
                         $row['Amount Payable']  = $task->payableAmount;
                         $row['Amount Charge']  = $task->totalChargeable;
                         $row['Trust Code']  = $task->code;
+                        $row['Booker/Salespersons']  =  $task->created_shift_org_name;
                         // $row['candidate']  = $task->candidate;
                         $explodeResult = explode(',',$task->candidate);
                         foreach($explodeResult as $key => $val){
-                            $row['candidate'.$key]  = $task->created_shift_org_name ." / ".trim($val);
+                            $row['candidate'.$key]  = trim($val);
                         }
                         fputcsv($file, $row);
                         // fputcsv($file, array($row['Trust Name'], $row['Hospital Name'], $row['Ward Name'], $row['Grade'], 
