@@ -483,6 +483,15 @@ class SuperAdminController extends Controller
     {
         try {
             $requestData = $request->all();
+            $validator = Validator::make($request->all(), [
+                'holiday_date' => 'required|unique:holidays',
+                'holiday_title' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $error = $validator->messages()->first();
+                return response()->json(['status' => false, 'message' => $error], 200);
+            }
+
             $planObj = new Holiday();
             $resonse =  $planObj->create($requestData);
             if ($resonse) {
@@ -533,6 +542,27 @@ class SuperAdminController extends Controller
                 return response()->json(['status' => true, 'message' => 'Holiday details get Successfully.', 'data' => $result], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Holiday details get failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+    /**
+     * [getHolidayById description]
+     *
+     * @param   Request  $request  [$request description]
+     * @param   [integer]   $id       [$id description]
+     *
+     * @return  [json array]             [return description]
+     */
+    public function deleteHolidayById(Request $request, $id)
+    {
+        try {
+            $result = Holiday::destroy($id);
+            if ($result) {
+                return response()->json(['status' => true, 'message' => 'Holiday delete Successfully.', 'data' => $result], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Holiday delete failed!', 'status' => false], $this->successStatus);
             }
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);

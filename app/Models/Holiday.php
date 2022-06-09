@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Holiday extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
     /**
      * The database table used by the model.
      *
@@ -27,7 +27,7 @@ class Holiday extends Model
      *
      * @var array
      */
-    protected $fillable = ['holiday_date'];
+    protected $fillable = ['holiday_date','holiday_title'];
 
     
 }

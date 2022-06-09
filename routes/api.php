@@ -33,6 +33,7 @@ Route::prefix('superadmin')->group(function () {
         Route::post('/holiday', [SuperAdminController::class, 'addHoliday']);
         Route::put('/holiday/{id?}', [SuperAdminController::class, 'editHoliday']);
         Route::get('/holiday/{id?}', [SuperAdminController::class, 'getHolidayById']);
+        Route::delete('/holiday/{id?}', [SuperAdminController::class, 'deleteHolidayById']);
         Route::post('/change-password', [SuperAdminController::class, 'changePassword']);
         Route::get('/get-detail', [SuperAdminController::class, 'details']);
         Route::post('/update-profile', [SuperAdminController::class, 'updates']);
