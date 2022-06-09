@@ -10,6 +10,7 @@ use Validator;
 use Session;
 use App\Models\User;
 use App\Models\Organization;
+use App\Models\Holiday;
 use App\Models\Designation;
 use App\Models\Plan;
 use App\Models\OrganizationUserDetail;
@@ -94,7 +95,7 @@ class SuperAdminController extends Controller
         if ($checkRecord->status != 'Active') {
             return response()->json(['message' => "Sorry, your account is inactive please contact to administrator", 'status' => false], 200);
         }
-
+        $userObj = new User();
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             // $user['subscription_expire'] = $this->checkSubscriptionExpire($user->subscriptsubscription_purchase_dateion_name,$user->subscription_name);
@@ -103,7 +104,10 @@ class SuperAdminController extends Controller
                 // $user['staffdetails'] =  $checkRecord->stafdetails;
                 $user['staffdetails'] = $userDetais['designation_name'];
             }
-
+            if ($checkRecord->role == 'ORGANIZATION') {
+                // $user['staffdetails'] =  $checkRecord->stafdetails;
+                $user['organization_name'] = $userObj->getOrganizationById($user->id)['organization_name'];
+            }
             if ($user['subscription_expire_date'] >= date('Y-m-d')) {
                 $user['is_plan_expire'] = false;
             } else {
@@ -412,14 +416,14 @@ class SuperAdminController extends Controller
      * Update plan by id
      * @return \Illuminate\Http\Response
      */
-    public function updatePlan(Request $request,$id)
+    public function updatePlan(Request $request, $id)
     {
         try {
             $requestData = $request->all();
             $planObj = Plan::findOrFail($id);
             $requestData['updated_by'] = $this->userId;
             $resonse =  $planObj->update($requestData);
-            if($resonse){
+            if ($resonse) {
                 return response()->json(['status' => true, 'message' => 'Plan update Successfully.', 'data' => $planObj], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Plan update failed!', 'status' => false], $this->successStatus);
@@ -438,12 +442,12 @@ class SuperAdminController extends Controller
      *
      * @return  [array]             [return description]
      */
-    public function getPlan(Request $request,$id)
+    public function getPlan(Request $request, $id)
     {
         try {
             $requestData = $request->all();
             $planObj = Plan::findOrFail($id);
-            if($planObj){
+            if ($planObj) {
                 return response()->json(['status' => true, 'message' => 'Plan get Successfully.', 'data' => $planObj], $this->successStatus);
             } else {
                 return response()->json(['message' => 'Sorry, Plan update failed!', 'status' => false], $this->successStatus);
@@ -453,4 +457,85 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function getHoliday(Request $request)
+    {
+        try {
+            $requestData = $request->all();
+            $planObj = Holiday::all();
+            if ($planObj) {
+                return response()->json(['status' => true, 'message' => 'Holiday get Successfully.', 'data' => $planObj], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Holiday no available!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+
+    /**
+     * [addHoliday description]
+     *
+     * @param   Request  $request  [$request description]
+     *
+     * @return  [json]             [return description]
+     */
+    public function addHoliday(Request $request)
+    {
+        try {
+            $requestData = $request->all();
+            $planObj = new Holiday();
+            $resonse =  $planObj->create($requestData);
+            if ($resonse) {
+                return response()->json(['status' => true, 'message' => 'Holiday add Successfully.', 'data' => $resonse], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Holiday add failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+    /**
+     * [editHoliday description]
+     *
+     * @param   Request  $request  [$request description]
+     * @param   [type]   $id       [$id description]
+     *
+     * @return  [type]             [return description]
+     */
+    public function editHoliday(Request $request, $id)
+    {
+        try {
+            $requestData = $request->all();
+            $planObj = Holiday::findOrFail($id);
+            $resonse =  $planObj->update($requestData);
+            if ($resonse) {
+                return response()->json(['status' => true, 'message' => 'Holiday update Successfully.', 'data' => $resonse], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Holiday update failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+    /**
+     * [getHolidayById description]
+     *
+     * @param   Request  $request  [$request description]
+     * @param   [integer]   $id       [$id description]
+     *
+     * @return  [json array]             [return description]
+     */
+    public function getHolidayById(Request $request, $id)
+    {
+        try {
+            $result = Holiday::findOrFail($id);
+            if ($result) {
+                return response()->json(['status' => true, 'message' => 'Holiday details get Successfully.', 'data' => $result], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Holiday details get failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
 }
