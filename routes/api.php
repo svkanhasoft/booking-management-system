@@ -29,11 +29,7 @@ Route::prefix('superadmin')->group(function () {
     Route::post('/signin', [SuperAdminController::class, 'signinV2']);
     Route::post('/otp-verify', [SuperAdminController::class, 'otpVerify']);
     Route::middleware(['auth:api'])->group(function () {
-        Route::get('/holiday', [SuperAdminController::class, 'getHoliday']);
-        Route::post('/holiday', [SuperAdminController::class, 'addHoliday']);
-        Route::put('/holiday/{id?}', [SuperAdminController::class, 'editHoliday']);
-        Route::get('/holiday/{id?}', [SuperAdminController::class, 'getHolidayById']);
-        Route::delete('/holiday/{id?}', [SuperAdminController::class, 'deleteHolidayById']);
+      
         Route::post('/change-password', [SuperAdminController::class, 'changePassword']);
         Route::get('/get-detail', [SuperAdminController::class, 'details']);
         Route::post('/update-profile', [SuperAdminController::class, 'updates']);
@@ -61,6 +57,11 @@ Route::prefix('organization')->group(function () {
     Route::post('/otp-verify', [OrganizationController::class, 'otpVerify']);
     //Route::post('/reset-password', [App\Http\Controllers\API\Signees\OrganizationController::class, 'resetPassword']);
     Route::middleware(['auth:api'])->group(function () {
+        Route::get('/holiday', [SuperAdminController::class, 'getHoliday']);
+        Route::post('/holiday', [SuperAdminController::class, 'addHoliday']);
+        Route::put('/holiday/{id?}', [SuperAdminController::class, 'editHoliday']);
+        Route::get('/holiday/{id?}', [SuperAdminController::class, 'getHolidayById']);
+        Route::delete('/holiday/{id?}', [SuperAdminController::class, 'deleteHolidayById']);
         Route::post('/purchase-subscription', [UserController::class, 'purchaseSubscription']);
         Route::get('/booking-notification-cron', [ScriptController::class, 'getBooking']);
         Route::get('/get-designation-list', [DesignationController::class, 'list']);

@@ -27,7 +27,7 @@ class Holiday extends Model
      *
      * @var array
      */
-    protected $fillable = ['holiday_date','holiday_title'];
+    protected $fillable = ['holiday_date','holiday_title','organization_id'];
 
     
 }

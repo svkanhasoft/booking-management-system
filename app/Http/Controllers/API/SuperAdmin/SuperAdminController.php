@@ -461,7 +461,7 @@ class SuperAdminController extends Controller
     {
         try {
             $requestData = $request->all();
-            $planObj = Holiday::all();
+            $planObj = Holiday::where('organization_id',Auth::user()->id)->get()->toArray();
             if ($planObj) {
                 return response()->json(['status' => true, 'message' => 'Holiday get Successfully.', 'data' => $planObj], $this->successStatus);
             } else {
@@ -483,16 +483,22 @@ class SuperAdminController extends Controller
     {
         try {
             $requestData = $request->all();
+          
             $validator = Validator::make($request->all(), [
-                'holiday_date' => 'required|unique:holidays',
+                'holiday_date' => 'required',
+                // 'holiday_date' => 'required|unique:holidays',
                 'holiday_title' => 'required',
             ]);
             if ($validator->fails()) {
                 $error = $validator->messages()->first();
                 return response()->json(['status' => false, 'message' => $error], 200);
             }
-
+            $res = Holiday::where('organization_id',Auth::user()->id)->where('holiday_date',$requestData['holiday_date'])->count();
+            if($res > 0){
+                return response()->json(['message' => 'Holiday date already taken!', 'status' => false], $this->successStatus);
+            }
             $planObj = new Holiday();
+            $requestData['organization_id'] = Auth::user()->id;
             $resonse =  $planObj->create($requestData);
             if ($resonse) {
                 return response()->json(['status' => true, 'message' => 'Holiday add Successfully.', 'data' => $resonse], $this->successStatus);

@@ -1320,13 +1320,14 @@ class Booking extends Model
         $dayTime = 0;
         $dayTime1 = 0;
         $dayName = date('l', strtotime($postData['date']));
-        $holidayRes = Holiday::where('holiday_date', $postData['date'])->count();
+        $orgId = (Auth::user()->role == 'ORGANIZATION') ? Auth::user()->id : Auth::user()->parent_id;
+        $holidayRes = Holiday::where('organization_id',$orgId)->where('holiday_date', $postData['date'])->count();
 
         $startDateTime =  $postData['date'] . " " . $postData['start_time'];
         $secondDateHours = floor($this->getTimeDiff($convertStartTime1, $convertEndTime1));
         $newDate = date('Y-m-d H:i:s', strtotime("+$secondDateHours hour", strtotime($startDateTime)));
 
-        $holidaySecondDay = Holiday::where('holiday_date', date('Y-m-d', strtotime($newDate)))->count();
+        $holidaySecondDay = Holiday::where('organization_id',$orgId)->where('holiday_date', date('Y-m-d', strtotime($newDate)))->count();
 
 
         // exit;
