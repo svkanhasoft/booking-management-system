@@ -1332,7 +1332,11 @@ class Booking extends Model
 
         // exit;
         if ($dayName == 'Sunday' || ($holidayRes > 0  && $dayName == 'Sunday')) {
-            if ($convertStartTime > "13:00:00") {
+            if ($holidaySecondDay > 0 && $holidayRes > 0) {
+                $mainTimeDiff = $this->getTimeDiff($convertStartTime1, $convertEndTime1);
+                $payableAmount += $mainTimeDiff * $payable_holiday_rate;
+                $chargebleAmount += $mainTimeDiff * $chargeable_holiday_rate;
+            }else if ($convertStartTime > "13:00:00") {
                 if ($convertStartTime >= "19:30:00") {
                     if ($convertEndTime > $convertStartTime) {
                         $dayTime = $this->getTimeDiff($convertStartTime, $convertEndTime);
