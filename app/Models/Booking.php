@@ -1582,18 +1582,29 @@ class Booking extends Model
                 // echo  $nightTime . " Night \n" . $dayTime . " day1 \n ".$nightTime1. " Night2 \n" . $dayTime1. " Day2 \n";
                 // echo "    END";
                 // exit;
-
-                $payableAmount += ($dayTime + $dayTime1) * $payable_day_rate;
-                $chargebleAmount += ($dayTime + $dayTime1) * $chargeable_day_rate;
-                if ($dayName == "Friday") {
+                if($holidaySecondDay > 0){
+                    $payableAmount += $dayTime  * $payable_day_rate;
                     $payableAmount += $nightTime * $payable_night_rate;
-                    $payableAmount += $nightTime1 * $payable_saturday_rate;
+                    $payableAmount += $dayTime1 * $payable_holiday_rate;
+                    $payableAmount += $nightTime1 * $payable_holiday_rate;
+                    $chargebleAmount += $dayTime * $chargeable_day_rate;
                     $chargebleAmount += $nightTime * $chargeable_night_rate;
-                    $chargebleAmount += $nightTime1  * $chargeable_saturday_rate;
-                } else {
-                    $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
-                    $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+                    $chargebleAmount += $dayTime1 * $chargeable_holiday_rate;
+                    $chargebleAmount += $nightTime1 * $chargeable_holiday_rate;
+                }else{
+                    $payableAmount += ($dayTime + $dayTime1) * $payable_day_rate;
+                    $chargebleAmount += ($dayTime + $dayTime1) * $chargeable_day_rate;
+                    if ($dayName == "Friday") {
+                        $payableAmount += $nightTime * $payable_night_rate;
+                        $payableAmount += $nightTime1 * $payable_saturday_rate;
+                        $chargebleAmount += $nightTime * $chargeable_night_rate;
+                        $chargebleAmount += $nightTime1  * $chargeable_saturday_rate;
+                    } else {
+                        $payableAmount += ($nightTime + $nightTime1) * $payable_night_rate;
+                        $chargebleAmount += ($nightTime + $nightTime1)  * $chargeable_night_rate;
+                    }
                 }
+
             } else {
                 // echo "Ells   ";
                 if ($convertStartTime1 <= "06:00" && $convertEndTime1 <= "06:00") {
