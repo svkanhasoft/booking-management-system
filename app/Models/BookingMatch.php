@@ -128,7 +128,7 @@ class BookingMatch extends Model
         foreach ($bookingArray as $keys => $values) {
             // print_r($values);exit;
             $preference = $this->checkPreferenceMatch($values);
-
+            $values['signeeId'] = (empty($values['signeeId']) ? $values['signee_id'] : $values['signeeId']);
             $objBookingMatch = BookingMatch::where([
                 'organization_id' => $values['organization_id'], 'signee_id' =>  $values['signeeId'],
                 'booking_id' => $values['booking_id'], 'trust_id' => $values['trust_id'],

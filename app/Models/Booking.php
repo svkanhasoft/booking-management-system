@@ -798,6 +798,7 @@ class Booking extends Model
         $subQuery = Booking::select(
             'users.email',
             'signee_preference.user_id as signeeId',
+            'users.id as signee_id',
             'bookings.id as booking_id',
             'users.address_line_1',
             'users.address_line_2',

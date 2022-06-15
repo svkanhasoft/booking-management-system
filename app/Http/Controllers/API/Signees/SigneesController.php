@@ -716,7 +716,7 @@ class SigneesController extends Controller
     {
         //dd(Auth::user()->parent_id);
         $requestData = $request->all();
-
+        $userId = ($userId == "") ? Auth::user()->id : $userId;
         $validator = Validator::make($request->all(), [
             'speciality_id' => 'required:speciality_id,[]',
         ]);
@@ -724,7 +724,7 @@ class SigneesController extends Controller
             $error = $validator->messages()->first();
             return response()->json(['status' => false, 'message' => "Please select at least one speciality"], 200);
         }
- 
+  
         try {
             $requestData = $request->all();
             $objSpeciality = new SigneeSpecialitie();
@@ -732,10 +732,12 @@ class SigneesController extends Controller
 
             $bookingArray = new Booking();
             $booking = $bookingArray->editMetchBySigneeId($userId);
-            // print_r($booking);exit();
-
+          
             $objBookingMatch = new BookingMatch();
-            $bookingMatch = $objBookingMatch->editBookingMatchBySignee($booking, $userId);
+            if(count($booking) > 0){
+                $bookingMatch = $objBookingMatch->editBookingMatchBySignee($booking, $userId);
+            }
+            
             //print_r($bookingMatch);exit();
 
             if ($objSpeciality) {
