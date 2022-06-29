@@ -176,6 +176,7 @@ class BookingMatch extends Model
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
+            'bookings.payable as rate',
             'bookings.id as bid',
             // 'bookings.date',
             // 'bookings.start_time',
@@ -260,6 +261,7 @@ class BookingMatch extends Model
         //print_r(Auth::user()->id);exit;
         $booking = Booking::select(
             'bookings.*',
+             'bookings.payable as rate',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
@@ -328,6 +330,7 @@ class BookingMatch extends Model
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
+            'bookings.payable as rate',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
@@ -337,6 +340,7 @@ class BookingMatch extends Model
             'trusts.address_line_2',
             'trusts.city',
             'trusts.post_code',
+            'booking_matches.preference_match',
             DB::raw('GROUP_CONCAT( distinct(specialities.speciality_name) SEPARATOR ", ") AS speciality_name'),
         );
         //$booking->leftJoin('bookings',  'bookings.id', '=', 'booking_matches.booking_id');
@@ -348,6 +352,10 @@ class BookingMatch extends Model
         $booking->leftJoin('ward_type',  'ward_type.id', '=', 'ward.ward_type_id');
         $booking->leftJoin('shift_type',  'shift_type.id', '=', 'bookings.shift_type_id');
         $booking->leftJoin('users',  'users.parent_id', '=', 'bookings.user_id');
+         $booking->leftJoin('booking_matches', function ($join) {
+            $join->on('booking_matches.booking_id', '=', 'bookings.id');
+            $join->where('booking_matches.signee_id', '=', Auth::user()->id);
+        });
         if (!empty($requestData['day'])) {
             $booking->whereIn(DB::raw('DAYOFWEEK(date)'), $requestData['day']);
             $booking->where('users.parent_id', Auth::user()->parent_id);
@@ -368,6 +376,7 @@ class BookingMatch extends Model
         $booking->where('users.parent_id', Auth::user()->parent_id);
         $booking->groupBy('bookings.id');
         $booking->orderBy('bookings.date');
+        $booking->orderBy('booking_matches.preference_match','DESC');
         $res = $booking->latest('bookings.created_at')->paginate($perPage);
         return $res;
     }
@@ -382,6 +391,7 @@ class BookingMatch extends Model
         $perPage = 100;
         $booking = Booking::select(
             'bookings.*',
+            'bookings.payable as rate',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
