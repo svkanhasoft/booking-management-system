@@ -125,7 +125,7 @@ Route::prefix('organization')->group(function () {
         Route::post('/upload-logo', [UserController::class, 'uploadLogo']);
         Route::post('/get-rate', [BookingController::class, 'rateCalculation']);
         Route::get('/get-hours', [BookingController::class, 'getHours']);
-
+        Route::post('/upload-document/{id}', [UserController::class, 'documentUpload']);
         /* ROUTE FOR STAFF USSER CREATE BY ORGANIZATION ADMIN  */
 
         Route::prefix('user')->group(function () {

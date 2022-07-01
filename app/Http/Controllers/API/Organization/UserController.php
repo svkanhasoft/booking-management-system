@@ -27,6 +27,7 @@ use Config;
 use DB;
 use DateTime;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -1390,4 +1391,61 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
         }
     }
+
+
+      /**
+     * This function is for candidate to upload his complience documents.
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function documentUpload(Request $request,$id)
+    {
+        $requestData = $request->all();
+        \Log::info("Upload files result!");
+        \Log::info($request->file('files'));
+        $validator = Validator::make($request->all(), [
+            // 'passport[]' => 'mimes:jpeg,jpg,png,gif,csv,txt,pdf|max:2048',
+            'files[]' => 'mimes:jpg,png,jpeg,pdf,docs|size:10048',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->messages()->first();
+            return response()->json(['status' => false, 'message' => $error], 200);
+        }
+        try {
+            $user = User::where('id', $id)->first();
+            if ($request->hasfile('files')) {
+                if ($request->file('files')) {
+                    $files = $request->file('files');
+                    // $size = $request->file('files')->getClientSize();
+                    // echo $size;exit();
+                    foreach ($files as $key => $file) {
+                        $name = $file->getClientOriginalName();
+                        $filename = pathinfo($name, PATHINFO_FILENAME);
+                        $extension = pathinfo($name, PATHINFO_EXTENSION);
+                        // $new_filename = $filename . '_' . time() . '.' . $extension;
+                        $new_filename = $filename . '_' . time() . '.' . strtolower($extension);
+                        $new_name = preg_replace('/[^A-Za-z0-9\-._]/', '', $new_filename);
+                        $file->move(public_path() . '/uploads/signee_docs/', $new_name);
+                        $image = new SigneeDocument();
+                        $image->signee_id = $id;
+                        $image->key = $requestData['key'];
+                        $image->file_name = $new_name;
+                        $image->document_status = 'PENDING';
+                        $image->expire_date = isset($requestData['expire_date']) ? date("Y-m-d", strtotime($requestData['expire_date'])) : null;
+                        $image->organization_id = $user->parent_id;
+                        $docUpload = $image->save();
+                    }
+                    if ($docUpload) {
+                        $document = $image->getDocument($image->signee_id, $image->key, $user->parent_id);
+                        return response()->json(['status' => true, 'message' => 'Document Uploaded Successfully', 'data' => $document], $this->successStatus);
+                    }
+                }
+            } else {
+                return response()->json(['message' => 'No file selected', 'status' => false], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
 }
