@@ -22,6 +22,7 @@ use App\Models\SigneeSpecialitie;
 use App\Models\Speciality;
 use App;
 use App\Models\SigneeDocument;
+use App\Models\ContactEvent;
 use Carbon\Carbon;
 use Config;
 use DB;
@@ -1393,7 +1394,7 @@ class UserController extends Controller
     }
 
 
-      /**
+    /**
      * This function is for candidate to upload his complience documents.
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -1445,6 +1446,61 @@ class UserController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage(), 'status' => false], 400);
+        }
+    }
+
+
+    public function getContactEvent(Request $request,$id)
+    {
+        $keyword = $request->get("search");
+        try {
+            $queryBuild = ContactEvent::select('contact_event.*','users.first_name','users.last_name')->where('signee_id',$id);
+            $queryBuild->leftjoin('users', 'users.id', '=', 'contact_event.created_by');
+            if($request->get("search") != ""){
+                $queryBuild->Where('contact_event.comment',  'LIKE', "%$keyword%");
+                $queryBuild->orWhere('users.first_name',  'LIKE', "%$keyword%");
+                $queryBuild->orWhere('users.last_name',  'LIKE', "%$keyword%");
+            }
+            $planObj =  $queryBuild->get()->toArray();
+            if ($planObj) {
+                return response()->json(['status' => true, 'message' => 'Candidate Contact Event get Successfully.', 'data' => $planObj], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, ContactEvent no available!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
+        }
+    }
+
+    /**
+     * [addHoliday description]
+     *
+     * @param   Request  $request  [$request description]
+     *
+     * @return  [json]             [return description]
+     */
+    public function addContactEvent(Request $request)
+    {
+        try {
+            $requestData = $request->all();
+            $validator = Validator::make($request->all(), [
+                'comment' => 'required',
+            ]);
+            if ($validator->fails()) {
+                $error = $validator->messages()->first();
+                return response()->json(['status' => false, 'message' => $error], 200);
+            }
+            $eventObj = new ContactEvent();
+            $requestData['created_by'] = Auth::user()->id;
+            $requestData['updated_by '] = Auth::user()->id;
+            $resonse =  $eventObj->create($requestData);
+            if ($resonse) {
+                return response()->json(['status' => true, 'message' => 'Contact Event add Successfully.', 'data' => $resonse], $this->successStatus);
+            } else {
+                return response()->json(['message' => 'Sorry, Contact Event add failed!', 'status' => false], $this->successStatus);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' =>  $e->getMessage()], 400);
         }
     }
 
