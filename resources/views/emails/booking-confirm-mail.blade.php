@@ -162,7 +162,7 @@
                                                         {{ $details['data']['reference_id'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
-                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">payable:
+                                                    <span style="font-size:12pt;line-height:145%;font-family:&quot;Arial&quot;,&quot;sans-serif&quot;;mso-fareast-font-family:&quot;Times New Roman&quot;;color:#37424A">Amount Payable: £
                                                         {{ $details['data']['payable'] }} <br></span>
                                                 </p>
                                                 <p class="MsoNormal" style="line-height:145%">
