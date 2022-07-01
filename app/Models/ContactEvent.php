@@ -28,6 +28,6 @@ class ContactEvent extends Model
      * @var array
      */
     protected $fillable = ['comment','signee_id','created_by','updated_by'];
-    protected $hidden = ['deleted_at','updated_at', 'created_at', 'created_by', 'updated_by'];
+    protected $hidden = ['deleted_at','updated_at', 'created_by', 'updated_by'];
     
 }
