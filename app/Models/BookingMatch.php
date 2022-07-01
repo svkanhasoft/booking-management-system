@@ -261,6 +261,7 @@ class BookingMatch extends Model
         //print_r(Auth::user()->id);exit;
         $booking = Booking::select(
             'bookings.*',
+             'bookings.payable as rate',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
@@ -329,6 +330,7 @@ class BookingMatch extends Model
         $perPage = Config::get('constants.pagination.perPage');
         $booking = Booking::select(
             'bookings.*',
+            'bookings.payable as rate',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
@@ -389,6 +391,7 @@ class BookingMatch extends Model
         $perPage = 100;
         $booking = Booking::select(
             'bookings.*',
+            'bookings.payable as rate',
             'hospitals.hospital_name',
             'ward.ward_name',
             'ward_type.ward_type',
